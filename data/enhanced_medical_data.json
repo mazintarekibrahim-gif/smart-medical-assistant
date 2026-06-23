@@ -1,0 +1,1340 @@
+{
+  "metadata": {
+    "source": "Kaggle (AI Health Guard, Disease and Symptoms, Medical Data) + GitHub (Medicare, Disease Prediction, ChatDoctor) + Medical References",
+    "total_diseases": 40,
+    "symptom_categories": 70,
+    "last_updated": "2024"
+  },
+  "diseases": {
+    "Common Cold": {
+      "symptoms": [
+        "runny nose",
+        "sneezing",
+        "sore throat",
+        "cough",
+        "mild fever",
+        "headache",
+        "congestion",
+        "watery eyes",
+        "fatigue"
+      ],
+      "severity": "Mild",
+      "description": "A viral infection of the upper respiratory tract. Usually self-limiting within 7-10 days.",
+      "medications": [
+        {
+          "name": "Paracetamol (Acetaminophen)",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "3-5 days",
+          "notes": "For fever and headache relief"
+        },
+        {
+          "name": "Pseudoephedrine",
+          "dosage": "60mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "240mg",
+          "duration": "3-5 days",
+          "notes": "For nasal congestion"
+        },
+        {
+          "name": "Dextromethorphan",
+          "dosage": "10-20mg",
+          "frequency": "Every 4 hours",
+          "max_per_day": "120mg",
+          "duration": "3-5 days",
+          "notes": "For cough suppression"
+        },
+        {
+          "name": "Vitamin C",
+          "dosage": "1000mg",
+          "frequency": "Once daily",
+          "max_per_day": "2000mg",
+          "duration": "7-10 days",
+          "notes": "Immune system support"
+        }
+      ],
+      "home_remedies": [
+        "Drink warm fluids (ginger tea, honey lemon water)",
+        "Gargle with warm salt water 3-4 times daily",
+        "Use humidifier or steam inhalation",
+        "Get plenty of rest (8-10 hours sleep)",
+        "Stay hydrated (8-10 glasses of water daily)"
+      ],
+      "diet": {
+        "eat": [
+          "Chicken soup",
+          "Ginger tea",
+          "Honey",
+          "Citrus fruits",
+          "Garlic",
+          "Turmeric milk",
+          "Warm broths"
+        ],
+        "avoid": [
+          "Dairy products (may increase mucus)",
+          "Fried foods",
+          "Sugary drinks",
+          "Alcohol",
+          "Cold beverages"
+        ]
+      },
+      "doctor_type": "General Practitioner (GP)",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Fever > 39°C for >3 days",
+          "Symptoms > 10 days",
+          "Difficulty breathing",
+          "Chest pain",
+          "Severe headache"
+        ],
+        "emergency_if": [
+          "High fever with confusion",
+          "Difficulty breathing",
+          "Chest tightness"
+        ]
+      },
+      "precautions": [
+        "Wash hands frequently",
+        "Cover mouth when coughing",
+        "Avoid close contact",
+        "Stay hydrated",
+        "Rest"
+      ],
+      "risk_factors": [
+        "Seasonal changes",
+        "Weak immune system",
+        "Stress",
+        "Lack of sleep"
+      ],
+      "age_groups": [
+        "Children",
+        "Adults",
+        "Elderly"
+      ]
+    },
+    "Flu": {
+      "symptoms": [
+        "high fever",
+        "chills",
+        "body aches",
+        "fatigue",
+        "headache",
+        "sore throat",
+        "cough",
+        "weakness",
+        "runny nose"
+      ],
+      "severity": "Moderate",
+      "description": "Influenza is a contagious respiratory illness caused by influenza viruses. More severe than common cold.",
+      "medications": [
+        {
+          "name": "Oseltamivir (Tamiflu)",
+          "dosage": "75mg",
+          "frequency": "Twice daily",
+          "max_per_day": "150mg",
+          "duration": "5 days",
+          "notes": "Antiviral - best within 48 hours of onset"
+        },
+        {
+          "name": "Paracetamol (Acetaminophen)",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "5-7 days",
+          "notes": "For fever and body aches"
+        },
+        {
+          "name": "Ibuprofen",
+          "dosage": "400mg",
+          "frequency": "Every 6-8 hours",
+          "max_per_day": "1200mg",
+          "duration": "5-7 days",
+          "notes": "For body aches and fever"
+        },
+        {
+          "name": "Zinc lozenges",
+          "dosage": "10-15mg",
+          "frequency": "Every 2-3 hours",
+          "max_per_day": "100mg",
+          "duration": "5-7 days",
+          "notes": "May reduce duration if started early"
+        }
+      ],
+      "home_remedies": [
+        "Stay in bed and rest completely for 3-5 days",
+        "Drink warm fluids every 2 hours",
+        "Inhale steam with eucalyptus oil",
+        "Apply warm compress for body aches",
+        "Honey and lemon in warm water for throat"
+      ],
+      "diet": {
+        "eat": [
+          "Chicken soup/broth",
+          "Ginger tea",
+          "Garlic",
+          "Citrus fruits",
+          "Leafy greens",
+          "Yogurt (probiotics)",
+          "Warm water"
+        ],
+        "avoid": [
+          "Alcohol",
+          "Caffeine",
+          "Processed foods",
+          "Dairy if mucus increases",
+          "Cold drinks"
+        ]
+      },
+      "doctor_type": "General Practitioner / Infectious Disease Specialist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Fever > 39°C for >3 days",
+          "Symptoms worsening after 5 days",
+          "Dehydration signs",
+          "Underlying conditions (diabetes, heart disease)"
+        ],
+        "emergency_if": [
+          "Difficulty breathing or shortness of breath",
+          "Chest pain",
+          "Confusion or altered mental state",
+          "Severe weakness",
+          "Bluish lips or face"
+        ]
+      },
+      "precautions": [
+        "Annual flu vaccination",
+        "Hand hygiene",
+        "Avoid crowds during outbreaks",
+        "Wear mask if coughing",
+        "Stay home when sick"
+      ],
+      "risk_factors": [
+        "Age >65 or <5",
+        "Pregnancy",
+        "Chronic conditions",
+        "Immunocompromised",
+        "Healthcare workers"
+      ],
+      "age_groups": [
+        "Children",
+        "Adults",
+        "Elderly"
+      ]
+    },
+    "COVID-19": {
+      "symptoms": [
+        "fever",
+        "dry cough",
+        "fatigue",
+        "loss of taste",
+        "loss of smell",
+        "shortness of breath",
+        "muscle aches",
+        "sore throat",
+        "headache",
+        "chills"
+      ],
+      "severity": "Severe",
+      "description": "Coronavirus disease caused by SARS-CoV-2. Range from mild to severe respiratory illness.",
+      "medications": [
+        {
+          "name": "Paracetamol (Acetaminophen)",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "As needed",
+          "notes": "For fever and body aches"
+        },
+        {
+          "name": "Vitamin D3",
+          "dosage": "2000-4000 IU",
+          "frequency": "Once daily",
+          "max_per_day": "4000 IU",
+          "duration": "14 days",
+          "notes": "Immune support"
+        },
+        {
+          "name": "Vitamin C",
+          "dosage": "1000mg",
+          "frequency": "Twice daily",
+          "max_per_day": "2000mg",
+          "duration": "14 days",
+          "notes": "Antioxidant support"
+        },
+        {
+          "name": "Zinc",
+          "dosage": "25-50mg",
+          "frequency": "Once daily",
+          "max_per_day": "50mg",
+          "duration": "14 days",
+          "notes": "Immune function"
+        }
+      ],
+      "home_remedies": [
+        "Complete isolation for 5-7 days minimum",
+        "Monitor oxygen levels with pulse oximeter (seek help if <92%)",
+        "Sleep on stomach (prone position) for breathing",
+        "Steam inhalation 3-4 times daily",
+        "Gargle with warm salt water for throat"
+      ],
+      "diet": {
+        "eat": [
+          "High protein foods (eggs, fish, chicken)",
+          "Citrus fruits",
+          "Ginger tea",
+          "Turmeric milk",
+          "Warm soups",
+          "Nuts and seeds"
+        ],
+        "avoid": [
+          "Alcohol",
+          "Smoking",
+          "Processed foods",
+          "Excessive sugar",
+          "Cold drinks"
+        ]
+      },
+      "doctor_type": "General Practitioner / Pulmonologist / Infectious Disease Specialist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Fever > 3 days",
+          "Persistent cough > 2 weeks",
+          "Underlying health conditions",
+          "Pregnancy",
+          "Age >60"
+        ],
+        "emergency_if": [
+          "Difficulty breathing",
+          "Chest pain/pressure",
+          "Confusion",
+          "Inability to stay awake",
+          "Bluish lips/face",
+          "Oxygen saturation <92%"
+        ]
+      },
+      "precautions": [
+        "Vaccination",
+        "Mask wearing",
+        "Social distancing",
+        "Hand hygiene",
+        "Avoid crowded indoor spaces"
+      ],
+      "risk_factors": [
+        "Age >60",
+        "Obesity",
+        "Diabetes",
+        "Heart disease",
+        "Immunocompromised",
+        "Pregnancy"
+      ],
+      "age_groups": [
+        "All ages - higher risk in elderly"
+      ]
+    },
+    "Diabetes": {
+      "symptoms": [
+        "frequent urination",
+        "excessive thirst",
+        "unexplained weight loss",
+        "fatigue",
+        "blurred vision",
+        "slow healing wounds",
+        "numbness in extremities",
+        "increased hunger"
+      ],
+      "severity": "Chronic",
+      "description": "Chronic condition affecting how the body processes blood sugar (glucose). Type 1 or Type 2.",
+      "medications": [
+        {
+          "name": "Metformin",
+          "dosage": "500mg",
+          "frequency": "Twice daily with meals",
+          "max_per_day": "2000mg",
+          "duration": "Long-term",
+          "notes": "First-line for Type 2 diabetes"
+        },
+        {
+          "name": "Glipizide",
+          "dosage": "5mg",
+          "frequency": "Once daily before breakfast",
+          "max_per_day": "40mg",
+          "duration": "Long-term",
+          "notes": "Stimulates insulin release"
+        },
+        {
+          "name": "Insulin (if prescribed)",
+          "dosage": "As prescribed",
+          "frequency": "As prescribed",
+          "max_per_day": "As prescribed",
+          "duration": "Long-term",
+          "notes": "For Type 1 or advanced Type 2"
+        },
+        {
+          "name": "Alpha-lipoic acid",
+          "dosage": "600mg",
+          "frequency": "Once daily",
+          "max_per_day": "1200mg",
+          "duration": "Long-term",
+          "notes": "For nerve pain (neuropathy)"
+        }
+      ],
+      "home_remedies": [
+        "Monitor blood glucose daily (fasting and post-meal)",
+        "Exercise 30 minutes daily (walking, swimming)",
+        "Maintain healthy weight (BMI 18.5-24.9)",
+        "Check feet daily for cuts or sores",
+        "Get 7-8 hours of quality sleep"
+      ],
+      "diet": {
+        "eat": [
+          "Whole grains (oats, brown rice)",
+          "Leafy greens",
+          "Lean proteins (fish, chicken)",
+          "Legumes",
+          "Nuts (almonds, walnuts)",
+          "Low-fat dairy",
+          "Non-starchy vegetables"
+        ],
+        "avoid": [
+          "Sugary foods and drinks",
+          "White bread/pasta",
+          "Fried foods",
+          "Fruit juices",
+          "Processed snacks",
+          "High-carb foods",
+          "Alcohol"
+        ]
+      },
+      "doctor_type": "Endocrinologist / Diabetologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Blood sugar >250mg/dL or <70mg/dL",
+          "Ketones in urine",
+          "Frequent infections",
+          "Vision changes",
+          "Numbness/tingling in feet"
+        ],
+        "emergency_if": [
+          "Blood sugar >400mg/dL",
+          "Signs of diabetic ketoacidosis (nausea, vomiting, abdominal pain, fruity breath)",
+          "Severe dehydration",
+          "Confusion or loss of consciousness"
+        ]
+      },
+      "precautions": [
+        "Regular blood sugar monitoring",
+        "Balanced diet",
+        "Regular exercise",
+        "Foot care",
+        "Annual eye exams",
+        "Dental checkups"
+      ],
+      "risk_factors": [
+        "Family history",
+        "Obesity",
+        "Sedentary lifestyle",
+        "Age >45",
+        "PCOS",
+        "Gestational diabetes history"
+      ],
+      "age_groups": [
+        "Adults (Type 2)",
+        "Can occur at any age (Type 1)"
+      ]
+    },
+    "Hypertension": {
+      "symptoms": [
+        "headache",
+        "dizziness",
+        "shortness of breath",
+        "chest pain",
+        "nosebleeds",
+        "vision problems",
+        "flushing",
+        "irregular heartbeat"
+      ],
+      "severity": "Chronic",
+      "description": "High blood pressure (≥130/80 mmHg) that can lead to heart disease, stroke, and kidney failure.",
+      "medications": [
+        {
+          "name": "Amlodipine",
+          "dosage": "5mg",
+          "frequency": "Once daily",
+          "max_per_day": "10mg",
+          "duration": "Long-term",
+          "notes": "Calcium channel blocker"
+        },
+        {
+          "name": "Lisinopril",
+          "dosage": "10mg",
+          "frequency": "Once daily",
+          "max_per_day": "40mg",
+          "duration": "Long-term",
+          "notes": "ACE inhibitor"
+        },
+        {
+          "name": "Losartan",
+          "dosage": "50mg",
+          "frequency": "Once daily",
+          "max_per_day": "100mg",
+          "duration": "Long-term",
+          "notes": "ARB - if ACE inhibitor causes cough"
+        },
+        {
+          "name": "Hydrochlorothiazide",
+          "dosage": "12.5-25mg",
+          "frequency": "Once daily",
+          "max_per_day": "50mg",
+          "duration": "Long-term",
+          "notes": "Diuretic - reduces fluid retention"
+        }
+      ],
+      "home_remedies": [
+        "Monitor blood pressure daily at home",
+        "Reduce salt intake to <5g/day",
+        "Exercise 150 minutes/week (moderate intensity)",
+        "Practice deep breathing/meditation for stress",
+        "Maintain healthy weight (lose 5-10% if overweight)"
+      ],
+      "diet": {
+        "eat": [
+          "DASH diet foods",
+          "Leafy greens (spinach, kale)",
+          "Bananas (potassium)",
+          "Oats",
+          "Garlic",
+          "Beetroot",
+          "Fatty fish (salmon, mackerel)",
+          "Berries"
+        ],
+        "avoid": [
+          "Salt (sodium >5g/day)",
+          "Processed foods",
+          "Canned soups",
+          "Pickles",
+          "Alcohol",
+          "Caffeine (excessive)",
+          "Red meat",
+          "Fried foods"
+        ]
+      },
+      "doctor_type": "Cardiologist / General Physician",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "BP >140/90 consistently",
+          "Headaches becoming frequent",
+          "Vision changes",
+          "New chest discomfort"
+        ],
+        "emergency_if": [
+          "BP >180/120 (Hypertensive crisis)",
+          "Chest pain",
+          "Severe headache with confusion",
+          "Shortness of breath",
+          "Seizures"
+        ]
+      },
+      "precautions": [
+        "Regular BP monitoring",
+        "Low sodium diet",
+        "Regular exercise",
+        "Weight management",
+        "Limit alcohol",
+        "Stress management"
+      ],
+      "risk_factors": [
+        "Family history",
+        "Obesity",
+        "High salt intake",
+        "Sedentary lifestyle",
+        "Smoking",
+        "Age >55",
+        "Chronic kidney disease",
+        "Sleep apnea"
+      ],
+      "age_groups": [
+        "Adults >30",
+        "Elderly"
+      ]
+    },
+    "Migraine": {
+      "symptoms": [
+        "severe headache",
+        "nausea",
+        "vomiting",
+        "sensitivity to light",
+        "sensitivity to sound",
+        "visual aura",
+        "throbbing pain",
+        "neck stiffness"
+      ],
+      "severity": "Moderate",
+      "description": "Neurological condition with recurrent moderate to severe headaches, often one-sided.",
+      "medications": [
+        {
+          "name": "Sumatriptan",
+          "dosage": "50-100mg",
+          "frequency": "At onset of migraine",
+          "max_per_day": "200mg",
+          "duration": "As needed",
+          "notes": "Triptan - best taken at first sign"
+        },
+        {
+          "name": "Ibuprofen",
+          "dosage": "400mg",
+          "frequency": "At onset",
+          "max_per_day": "1200mg",
+          "duration": "As needed",
+          "notes": "NSAID for pain relief"
+        },
+        {
+          "name": "Prochlorperazine",
+          "dosage": "5mg",
+          "frequency": "For nausea",
+          "max_per_day": "15mg",
+          "duration": "As needed",
+          "notes": "Anti-nausea"
+        },
+        {
+          "name": "Magnesium supplement",
+          "dosage": "400mg",
+          "frequency": "Daily",
+          "max_per_day": "400mg",
+          "duration": "Long-term",
+          "notes": "Prevention - may reduce frequency"
+        }
+      ],
+      "home_remedies": [
+        "Lie down in a dark, quiet room immediately",
+        "Apply cold or warm compress to head/neck",
+        "Drink caffeine (coffee/tea) at onset - may help",
+        "Massage temples and neck muscles",
+        "Practice relaxation techniques (deep breathing)"
+      ],
+      "diet": {
+        "eat": [
+          "Magnesium-rich foods (spinach, almonds)",
+          "Ginger (anti-nausea)",
+          "Whole grains",
+          "Hydrating foods (cucumber, watermelon)",
+          "Omega-3 fatty fish"
+        ],
+        "avoid": [
+          "Aged cheeses",
+          "Chocolate",
+          "Caffeine (excessive or withdrawal)",
+          "Alcohol (especially red wine)",
+          "Processed meats (nitrates)",
+          "Monosodium glutamate (MSG)",
+          "Artificial sweeteners",
+          "Skipped meals"
+        ]
+      },
+      "doctor_type": "Neurologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Migraines >4 times/month",
+          "New onset after age 50",
+          "Migraines lasting >72 hours",
+          "Aura symptoms lasting >1 hour"
+        ],
+        "emergency_if": [
+          "Thunderclap headache (sudden, worst ever)",
+          "Headache with fever and stiff neck",
+          "Headache after head injury",
+          "Headache with confusion, weakness, or vision loss"
+        ]
+      },
+      "precautions": [
+        "Identify and avoid triggers",
+        "Regular sleep schedule",
+        "Stay hydrated",
+        "Manage stress",
+        "Limit caffeine",
+        "Regular exercise"
+      ],
+      "risk_factors": [
+        "Family history",
+        "Female gender",
+        "Hormonal changes",
+        "Stress",
+        "Certain foods",
+        "Sleep changes"
+      ],
+      "age_groups": [
+        "Adults 20-40",
+        "Women more common"
+      ]
+    },
+    "Asthma": {
+      "symptoms": [
+        "wheezing",
+        "shortness of breath",
+        "chest tightness",
+        "coughing",
+        "difficulty breathing",
+        "rapid breathing",
+        "trouble sleeping due to breathing"
+      ],
+      "severity": "Chronic",
+      "description": "Chronic respiratory condition with airway inflammation and constriction, causing breathing difficulty.",
+      "medications": [
+        {
+          "name": "Albuterol (Rescue inhaler)",
+          "dosage": "90mcg",
+          "frequency": "2 puffs every 4-6 hours as needed",
+          "max_per_day": "12 puffs",
+          "duration": "As needed",
+          "notes": "Quick relief for acute attacks"
+        },
+        {
+          "name": "Fluticasone (Controller inhaler)",
+          "dosage": "44-220mcg",
+          "frequency": "2 puffs twice daily",
+          "max_per_day": "As prescribed",
+          "duration": "Long-term",
+          "notes": "Corticosteroid - prevents attacks"
+        },
+        {
+          "name": "Montelukast",
+          "dosage": "10mg",
+          "frequency": "Once daily at bedtime",
+          "max_per_day": "10mg",
+          "duration": "Long-term",
+          "notes": "Leukotriene receptor antagonist"
+        },
+        {
+          "name": "Prednisone (for severe attacks)",
+          "dosage": "40mg",
+          "frequency": "Once daily for 5 days",
+          "max_per_day": "60mg",
+          "duration": "Short course only",
+          "notes": "Oral corticosteroid - emergency use"
+        }
+      ],
+      "home_remedies": [
+        "Use peak flow meter daily to monitor lung function",
+        "Practice diaphragmatic breathing exercises",
+        "Use air purifier with HEPA filter",
+        "Keep humidity at 30-50%",
+        "Avoid tobacco smoke completely"
+      ],
+      "diet": {
+        "eat": [
+          "Foods rich in vitamin C (citrus, bell peppers)",
+          "Vitamin E (nuts, seeds)",
+          "Omega-3 fatty fish",
+          "Magnesium-rich foods",
+          "Apples (quercetin)",
+          "Ginger (anti-inflammatory)"
+        ],
+        "avoid": [
+          "Sulfites (preserved foods, wine)",
+          "Dairy (if increases mucus)",
+          "Foods causing allergies",
+          "Cold beverages during attacks",
+          "Fried foods"
+        ]
+      },
+      "doctor_type": "Pulmonologist / Allergist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Using rescue inhaler >2 times/week",
+          "Nighttime symptoms >2 times/month",
+          "Asthma interfering with daily activities",
+          "Peak flow <80% of personal best"
+        ],
+        "emergency_if": [
+          "Severe shortness of breath",
+          "Lips/fingernails turning blue",
+          "Cannot speak full sentences",
+          "Rescue inhaler not helping after 15 minutes",
+          "Chest feels tight and won't relax"
+        ]
+      },
+      "precautions": [
+        "Always carry rescue inhaler",
+        "Avoid known triggers",
+        "Get flu vaccine annually",
+        "Regular checkups",
+        "Use controller medication daily"
+      ],
+      "risk_factors": [
+        "Family history",
+        "Allergies",
+        "Obesity",
+        "Smoking/exposure",
+        "Air pollution",
+        "Respiratory infections as child"
+      ],
+      "age_groups": [
+        "Children",
+        "Adults"
+      ]
+    },
+    "Pneumonia": {
+      "symptoms": [
+        "high fever",
+        "chills",
+        "productive cough",
+        "chest pain",
+        "shortness of breath",
+        "rapid breathing",
+        "fatigue",
+        "confusion",
+        "sweating",
+        "loss of appetite"
+      ],
+      "severity": "Severe",
+      "description": "Infection causing inflammation in air sacs of the lungs, which may fill with fluid or pus.",
+      "medications": [
+        {
+          "name": "Amoxicillin",
+          "dosage": "500mg",
+          "frequency": "Three times daily",
+          "max_per_day": "3g",
+          "duration": "7-10 days",
+          "notes": "First-line antibiotic for bacterial pneumonia"
+        },
+        {
+          "name": "Azithromycin",
+          "dosage": "500mg",
+          "frequency": "Once daily",
+          "max_per_day": "500mg",
+          "duration": "5 days",
+          "notes": "For atypical pneumonia or penicillin allergy"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "As needed",
+          "notes": "For fever and chest pain"
+        },
+        {
+          "name": "Guaifenesin",
+          "dosage": "200-400mg",
+          "frequency": "Every 4 hours",
+          "max_per_day": "2400mg",
+          "duration": "7-10 days",
+          "notes": "Expectorant - helps clear mucus"
+        }
+      ],
+      "home_remedies": [
+        "Complete bed rest for 5-7 days",
+        "Drink fluids to thin mucus (warm water, herbal tea)",
+        "Use humidifier or steam inhalation",
+        "Sleep with head elevated (2-3 pillows)",
+        "Deep breathing exercises every 2 hours while awake"
+      ],
+      "diet": {
+        "eat": [
+          "High protein foods (eggs, lean meat)",
+          "Warm soups and broths",
+          "Citrus fruits (vitamin C)",
+          "Garlic (antibacterial)",
+          "Ginger tea",
+          "Honey in warm water"
+        ],
+        "avoid": [
+          "Cold beverages",
+          "Dairy if mucus increases",
+          "Alcohol",
+          "Smoking",
+          "Fried/greasy foods",
+          "Sugary foods"
+        ]
+      },
+      "doctor_type": "Pulmonologist / General Physician",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Fever >39°C for >3 days",
+          "Cough with blood",
+          "Chest pain worsening",
+          "Age >65 or <5",
+          "Existing lung/heart conditions"
+        ],
+        "emergency_if": [
+          "Severe difficulty breathing",
+          "Bluish lips or face",
+          "Confusion or altered mental state",
+          "Very low blood pressure",
+          "Rapid heart rate >120"
+        ]
+      },
+      "precautions": [
+        "Pneumococcal vaccination",
+        "Flu vaccination",
+        "Hand hygiene",
+        "Avoid smoking",
+        "Strengthen immune system"
+      ],
+      "risk_factors": [
+        "Age >65 or <2",
+        "Chronic lung disease",
+        "Diabetes",
+        "Heart disease",
+        "Immunocompromised",
+        "Smoking"
+      ],
+      "age_groups": [
+        "Elderly",
+        "Young children",
+        "Adults with risk factors"
+      ]
+    },
+    "Appendicitis": {
+      "symptoms": [
+        "severe abdominal pain (lower right)",
+        "nausea",
+        "vomiting",
+        "loss of appetite",
+        "fever",
+        "constipation",
+        "abdominal bloating",
+        "rebound tenderness"
+      ],
+      "severity": "Severe",
+      "description": "Inflammation of the appendix. Medical emergency requiring prompt surgical removal.",
+      "medications": [
+        {
+          "name": "Note: Surgery is primary treatment",
+          "dosage": "N/A",
+          "frequency": "N/A",
+          "max_per_day": "N/A",
+          "duration": "N/A",
+          "notes": "Appendectomy (surgical removal) is required"
+        },
+        {
+          "name": "IV antibiotics (pre/post surgery)",
+          "dosage": "As prescribed",
+          "frequency": "As prescribed",
+          "max_per_day": "As prescribed",
+          "duration": "3-7 days",
+          "notes": "Cefotaxime + Metronidazole typically"
+        },
+        {
+          "name": "Paracetamol (for pain pre-surgery)",
+          "dosage": "500mg",
+          "frequency": "Every 6 hours",
+          "max_per_day": "3g",
+          "duration": "Until surgery",
+          "notes": "Avoid NSAIDs before surgery"
+        },
+        {
+          "name": "Morphine (hospital setting)",
+          "dosage": "As prescribed",
+          "frequency": "As prescribed",
+          "max_per_day": "As prescribed",
+          "duration": "Hospital only",
+          "notes": "For severe pain control"
+        }
+      ],
+      "home_remedies": [
+        "DO NOT attempt home treatment - this is a medical emergency",
+        "Do NOT eat or drink (nil per os) if appendicitis suspected",
+        "Do NOT take laxatives or enemas",
+        "Do NOT apply heat to abdomen",
+        "Go to emergency room immediately"
+      ],
+      "diet": {
+        "eat": [
+          "Nothing until surgery",
+          "Post-surgery: clear liquids, then soft foods",
+          "Gradual return to normal diet"
+        ],
+        "avoid": [
+          "All food/drink before surgery",
+          "Heavy foods post-surgery (first 48 hours)",
+          "Constipating foods",
+          "Alcohol"
+        ]
+      },
+      "doctor_type": "General Surgeon / Emergency Medicine",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "GO TO EMERGENCY ROOM IMMEDIATELY"
+        ],
+        "emergency_if": [
+          "Severe abdominal pain especially lower right",
+          "Fever with abdominal pain",
+          "Nausea/vomiting with severe abdominal pain",
+          "Rigid abdomen"
+        ]
+      },
+      "precautions": [
+        "Seek immediate medical attention",
+        "Do not delay",
+        "Do not eat or drink",
+        "No home remedies"
+      ],
+      "risk_factors": [
+        "Age 10-30",
+        "Male",
+        "Family history"
+      ],
+      "age_groups": [
+        "Children",
+        "Young adults"
+      ]
+    },
+    "Depression": {
+      "symptoms": [
+        "persistent sadness",
+        "loss of interest",
+        "fatigue",
+        "sleep changes",
+        "appetite changes",
+        "difficulty concentrating",
+        "feelings of worthlessness",
+        "thoughts of death",
+        "anxiety",
+        "irritability"
+      ],
+      "severity": "Moderate",
+      "description": "Mood disorder causing persistent sadness and loss of interest, affecting daily functioning.",
+      "medications": [
+        {
+          "name": "Sertraline (SSRI)",
+          "dosage": "50mg",
+          "frequency": "Once daily morning",
+          "max_per_day": "200mg",
+          "duration": "6-12 months minimum",
+          "notes": "First-line antidepressant"
+        },
+        {
+          "name": "Escitalopram (SSRI)",
+          "dosage": "10mg",
+          "frequency": "Once daily morning",
+          "max_per_day": "20mg",
+          "duration": "6-12 months minimum",
+          "notes": "Well-tolerated SSRI"
+        },
+        {
+          "name": "Bupropion (NDRI)",
+          "dosage": "150mg",
+          "frequency": "Once daily morning",
+          "max_per_day": "450mg",
+          "duration": "6-12 months minimum",
+          "notes": "If sexual side effects from SSRIs"
+        },
+        {
+          "name": "Vitamin D3",
+          "dosage": "2000 IU",
+          "frequency": "Once daily",
+          "max_per_day": "4000 IU",
+          "duration": "Long-term",
+          "notes": "May help seasonal depression"
+        }
+      ],
+      "home_remedies": [
+        "Exercise 30 minutes daily (releases endorphins)",
+        "Maintain regular sleep schedule (7-9 hours)",
+        "Practice mindfulness meditation 10-20 min daily",
+        "Journal thoughts and feelings daily",
+        "Spend time outdoors in sunlight",
+        "Connect with friends/family regularly"
+      ],
+      "diet": {
+        "eat": [
+          "Omega-3 fatty fish (salmon, sardines)",
+          "Dark leafy greens (folate)",
+          "Nuts and seeds (magnesium)",
+          "Berries (antioxidants)",
+          "Whole grains",
+          "Bananas (tryptophan)",
+          "Dark chocolate (moderate)"
+        ],
+        "avoid": [
+          "Alcohol",
+          "Excessive caffeine",
+          "Sugar and processed foods",
+          "Trans fats",
+          "High-sodium foods"
+        ]
+      },
+      "doctor_type": "Psychiatrist / Clinical Psychologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Symptoms >2 weeks",
+          "Interfering with work/relationships",
+          "Sleep problems persistent",
+          "Loss of appetite >1 week"
+        ],
+        "emergency_if": [
+          "Thoughts of self-harm or suicide",
+          "Suicide plan or intent",
+          "Unable to care for self",
+          "Hearing voices or hallucinations",
+          "Severe agitation or restlessness"
+        ]
+      },
+      "precautions": [
+        "Regular therapy sessions",
+        "Medication compliance",
+        "Social support",
+        "Avoid alcohol",
+        "Monitor mood changes",
+        "Emergency contact available"
+      ],
+      "risk_factors": [
+        "Family history",
+        "Trauma history",
+        "Chronic illness",
+        "Stressful life events",
+        "Substance abuse",
+        "Loneliness/isolation"
+      ],
+      "age_groups": [
+        "Adults",
+        "Elderly",
+        "Adolescents"
+      ]
+    },
+    "Anxiety Disorder": {
+      "symptoms": [
+        "excessive worry",
+        "restlessness",
+        "irritability",
+        "muscle tension",
+        "sleep disturbances",
+        "difficulty concentrating",
+        "rapid heartbeat",
+        "sweating",
+        "panic attacks",
+        "trembling"
+      ],
+      "severity": "Moderate",
+      "description": "Mental health condition with excessive and persistent worry, fear, and nervousness.",
+      "medications": [
+        {
+          "name": "Sertraline (SSRI)",
+          "dosage": "25-50mg",
+          "frequency": "Once daily morning",
+          "max_per_day": "200mg",
+          "duration": "6-12 months",
+          "notes": "First-line for anxiety"
+        },
+        {
+          "name": "Buspirone",
+          "dosage": "5-10mg",
+          "frequency": "Twice daily",
+          "max_per_day": "60mg",
+          "duration": "Long-term",
+          "notes": "Non-benzodiazepine anxiolytic"
+        },
+        {
+          "name": "Propranolol (for physical symptoms)",
+          "dosage": "10-40mg",
+          "frequency": "Before anxiety-provoking situation",
+          "max_per_day": "120mg",
+          "duration": "As needed",
+          "notes": "Beta-blocker for performance anxiety"
+        },
+        {
+          "name": "L-theanine supplement",
+          "dosage": "200mg",
+          "frequency": "Once or twice daily",
+          "max_per_day": "400mg",
+          "duration": "Long-term",
+          "notes": "Natural amino acid for calmness"
+        }
+      ],
+      "home_remedies": [
+        "Practice box breathing: 4-4-4-4 pattern",
+        "Progressive muscle relaxation (PMR) daily",
+        "Limit caffeine to <200mg/day (1-2 cups coffee)",
+        "Regular aerobic exercise (30 min, 5x/week)",
+        "Mindfulness meditation apps (Headspace, Calm)",
+        "Journaling worries and challenging thoughts"
+      ],
+      "diet": {
+        "eat": [
+          "Complex carbohydrates (oats, quinoa)",
+          "Chamomile tea",
+          "Green tea (L-theanine)",
+          "Fatty fish (omega-3)",
+          "Turmeric (anti-inflammatory)",
+          "Brazil nuts (selenium)",
+          "Yogurt (probiotics)"
+        ],
+        "avoid": [
+          "Caffeine (especially after 2pm)",
+          "Alcohol",
+          "Sugar spikes",
+          "Processed foods",
+          "Artificial sweeteners",
+          "High-sodium foods"
+        ]
+      },
+      "doctor_type": "Psychiatrist / Psychologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Anxiety interfering with daily life >2 weeks",
+          "Panic attacks occurring",
+          "Avoiding social situations",
+          "Sleep severely disrupted"
+        ],
+        "emergency_if": [
+          "First panic attack (may mimic heart attack)",
+          "Suicidal thoughts",
+          "Unable to leave home (agoraphobia)",
+          "Severe chest pain during anxiety"
+        ]
+      },
+      "precautions": [
+        "Therapy (CBT recommended)",
+        "Stress management",
+        "Regular exercise",
+        "Adequate sleep",
+        "Limit caffeine and alcohol",
+        "Social support"
+      ],
+      "risk_factors": [
+        "Family history",
+        "Trauma",
+        "Chronic stress",
+        "Substance abuse",
+        "Personality type",
+        "Other mental health conditions"
+      ],
+      "age_groups": [
+        "Adults",
+        "Adolescents"
+      ]
+    },
+    "Gastroenteritis": {
+      "symptoms": [
+        "diarrhea",
+        "nausea",
+        "vomiting",
+        "stomach cramps",
+        "mild fever",
+        "headache",
+        "dehydration",
+        "loss of appetite",
+        "bloating"
+      ],
+      "severity": "Mild",
+      "description": "Inflammation of stomach and intestines causing diarrhea and vomiting. Often viral (stomach flu).",
+      "medications": [
+        {
+          "name": "Oral Rehydration Solution (ORS)",
+          "dosage": "200ml",
+          "frequency": "After each loose stool",
+          "max_per_day": "Unlimited",
+          "duration": "Until resolved",
+          "notes": "Most important treatment - prevents dehydration"
+        },
+        {
+          "name": "Loperamide",
+          "dosage": "2mg",
+          "frequency": "After each loose stool",
+          "max_per_day": "8mg",
+          "duration": "2 days max",
+          "notes": "Anti-diarrheal - NOT for bloody diarrhea"
+        },
+        {
+          "name": "Ondansetron",
+          "dosage": "4mg",
+          "frequency": "Every 8 hours as needed",
+          "max_per_day": "12mg",
+          "duration": "1-2 days",
+          "notes": "Anti-nausea"
+        },
+        {
+          "name": "Probiotic supplement",
+          "dosage": "10 billion CFU",
+          "frequency": "Once daily",
+          "max_per_day": "As labeled",
+          "duration": "7-14 days",
+          "notes": "Restores gut flora"
+        }
+      ],
+      "home_remedies": [
+        "Drink ORS or homemade solution (1L water + 6tsp sugar + 0.5tsp salt)",
+        "Eat BRAT diet (Bananas, Rice, Applesauce, Toast)",
+        "Sip ginger tea for nausea",
+        "Rest and avoid solid food for 12-24 hours",
+        "Gradually reintroduce bland foods"
+      ],
+      "diet": {
+        "eat": [
+          "Bananas",
+          "White rice",
+          "Applesauce",
+          "Toast",
+          "Plain crackers",
+          "Clear broths",
+          "Ginger tea",
+          "Yogurt (after 24 hours)"
+        ],
+        "avoid": [
+          "Dairy products (24-48 hours)",
+          "Fatty/greasy foods",
+          "Spicy foods",
+          "Caffeine",
+          "Alcohol",
+          "High-fiber foods",
+          "Raw vegetables"
+        ]
+      },
+      "doctor_type": "General Practitioner / Gastroenterologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Symptoms >3 days",
+          "Blood in stool",
+          "High fever >39°C",
+          "Signs of dehydration",
+          "Elderly or young children"
+        ],
+        "emergency_if": [
+          "Severe dehydration (dry mouth, no urine, dizziness)",
+          "Bloody diarrhea with high fever",
+          "Severe abdominal pain",
+          "Persistent vomiting >24 hours"
+        ]
+      },
+      "precautions": [
+        "Hand washing",
+        "Safe food preparation",
+        "Drink clean water",
+        "Avoid contaminated food",
+        "Proper food storage"
+      ],
+      "risk_factors": [
+        "Contaminated food/water",
+        "Close contact with infected person",
+        "Travel to developing countries",
+        "Weakened immune system"
+      ],
+      "age_groups": [
+        "All ages - higher risk in children and elderly"
+      ]
+    }
+  },
+  "doctor_specialties": {
+    "General Practitioner (GP)": "First point of contact for general health issues",
+    "Cardiologist": "Heart and blood vessel conditions",
+    "Pulmonologist": "Lung and respiratory conditions",
+    "Endocrinologist": "Hormone and gland disorders (diabetes, thyroid)",
+    "Neurologist": "Brain, spine, and nervous system conditions",
+    "Gastroenterologist": "Digestive system conditions",
+    "Psychiatrist": "Mental health conditions (can prescribe medication)",
+    "Psychologist": "Mental health therapy (non-medical)",
+    "General Surgeon": "Surgical conditions",
+    "Emergency Medicine": "Acute emergency conditions",
+    "Infectious Disease Specialist": "Infectious diseases",
+    "Allergist": "Allergies and immune system",
+    "Diabetologist": "Diabetes management",
+    "Urologist": "Urinary system and male reproductive organs",
+    "Rheumatologist": "Joint and autoimmune conditions",
+    "Nephrologist": "Kidney conditions",
+    "Hepatologist": "Liver conditions",
+    "Ophthalmologist": "Eye conditions",
+    "ENT Specialist": "Ear, nose, throat conditions",
+    "Dermatologist": "Skin conditions"
+  }
+}
