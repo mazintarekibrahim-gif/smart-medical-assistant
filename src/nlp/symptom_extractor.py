@@ -108,6 +108,35 @@ class SymptomExtractor:
     def __init__(self):
         self.lemmatizer = WordNetLemmatizer()
         self.stop_words = set(stopwords.words('english'))
+        
+        # Negation words that indicate symptoms should be excluded
+        self.NEGATION_WORDS = {
+            'no', 'not', "don't", "doesn't", "didn't", "without", "never", "none", 
+            "absent", "denies", "deny", "denied", "neither", "nor", "haven't", 
+            "hasn't", "hadn't", "can't", "cannot", "won't", "wouldn't", "shouldn't", 
+            "isn't", "aren't", "wasn't", "weren't", "dont", "doesnt", "didnt", 
+            "wont", "wouldnt", "shouldnt", "isnt", "arent", "wasnt", "werent"
+        }
+    
+    def is_negated(self, text, match_start):
+        """
+        Check if a symptom is negated by looking at words before it.
+        Looks at up to 5 words before the match position.
+        """
+        # Get text before the match
+        before_text = text[:match_start].strip()
+        # Get last 5 words
+        words = before_text.split()[-5:]
+        
+        for word in words:
+            # Clean word for comparison
+            clean_word = word.lower().strip(string.punctuation)
+            if clean_word in self.NEGATION_WORDS:
+                return True
+            # Check for word endings like "don't", "isn't" etc.
+            if clean_word.endswith(("n't", "nt")) and len(clean_word) > 3:
+                return True
+        return False
     
     def preprocess_input(self, text):
         """Clean and normalize user input text."""
@@ -125,6 +154,7 @@ class SymptomExtractor:
         Returns:
             dict: {
                 'extracted_symptoms': list of matched symptom names,
+                'negated_symptoms': list of negated symptom names,
                 'matched_phrases': list of original matched phrases,
                 'confidence': float,
                 'severity': str or None,
@@ -138,21 +168,33 @@ class SymptomExtractor:
         text_trigrams = [' '.join(triplet) for triplet in zip(tokens, tokens[1:], tokens[2:])]
         
         extracted = OrderedDict()
+        negated = OrderedDict()
         matched_phrases = []
         
         for canonical_symptom, variations in self.MEDICAL_SYMPTOMS.items():
             for variant in variations:
                 # Check for multi-word phrases first
                 if ' ' in variant:
-                    if variant in text:
+                    pos = text.find(variant)
+                    if pos != -1:
+                        if self.is_negated(text, pos):
+                            if canonical_symptom not in negated:
+                                negated[canonical_symptom] = len(variant)
+                        else:
+                            if canonical_symptom not in extracted:
+                                extracted[canonical_symptom] = len(variant)
+                                matched_phrases.append(variant)
+                # Check for single words
+                elif variant in tokens or variant in lemmatized:
+                    # Find position in original text for negation check
+                    pos = text.find(variant)
+                    if pos != -1 and self.is_negated(text, pos):
+                        if canonical_symptom not in negated:
+                            negated[canonical_symptom] = len(variant)
+                    else:
                         if canonical_symptom not in extracted:
                             extracted[canonical_symptom] = len(variant)
                             matched_phrases.append(variant)
-                # Check for single words
-                elif variant in tokens or variant in lemmatized:
-                    if canonical_symptom not in extracted:
-                        extracted[canonical_symptom] = len(variant)
-                        matched_phrases.append(variant)
         
         # Extract severity
         severity = None
@@ -190,6 +232,7 @@ class SymptomExtractor:
         
         return {
             'extracted_symptoms': list(extracted.keys()),
+            'negated_symptoms': list(negated.keys()),
             'matched_phrases': matched_phrases,
             'confidence': round(confidence, 2),
             'severity': severity,

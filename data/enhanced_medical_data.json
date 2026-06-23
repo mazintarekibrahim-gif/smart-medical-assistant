@@ -1,9 +1,10 @@
 {
   "metadata": {
     "source": "Kaggle (AI Health Guard, Disease and Symptoms, Medical Data) + GitHub (Medicare, Disease Prediction, ChatDoctor) + Medical References",
-    "total_diseases": 40,
-    "symptom_categories": 70,
-    "last_updated": "2024"
+    "total_diseases": 30,
+    "symptom_categories": 120,
+    "last_updated": "2025-01-26",
+    "version": "2.0"
   },
   "diseases": {
     "Common Cold": {
@@ -1313,6 +1314,1995 @@
       "age_groups": [
         "All ages - higher risk in children and elderly"
       ]
+    },
+    "Anemia": {
+      "symptoms": [
+        "fatigue",
+        "weakness",
+        "pale skin",
+        "shortness of breath",
+        "dizziness",
+        "cold hands and feet",
+        "headache",
+        "chest pain",
+        "brittle nails"
+      ],
+      "severity": "Moderate",
+      "description": "Condition characterized by lack of healthy red blood cells to carry adequate oxygen to tissues.",
+      "medications": [
+        {
+          "name": "Ferrous sulfate (Iron supplement)",
+          "dosage": "65mg elemental iron",
+          "frequency": "Once daily",
+          "max_per_day": "200mg elemental",
+          "duration": "3-6 months",
+          "notes": "Take with vitamin C for absorption"
+        },
+        {
+          "name": "Folic acid",
+          "dosage": "1mg",
+          "frequency": "Once daily",
+          "max_per_day": "1mg",
+          "duration": "3-6 months",
+          "notes": "For folate-deficiency anemia"
+        },
+        {
+          "name": "Vitamin B12 (Cyanocobalamin)",
+          "dosage": "1000mcg",
+          "frequency": "Once daily",
+          "max_per_day": "1000mcg",
+          "duration": "3-6 months",
+          "notes": "For B12-deficiency anemia"
+        },
+        {
+          "name": "Epoetin alfa (if prescribed)",
+          "dosage": "As prescribed",
+          "frequency": "As prescribed",
+          "max_per_day": "As prescribed",
+          "duration": "As prescribed",
+          "notes": "For chronic kidney disease anemia"
+        }
+      ],
+      "home_remedies": [
+        "Eat iron-rich foods (red meat, spinach, lentils)",
+        "Avoid tea/coffee 1 hour before and after meals",
+        "Cook in cast iron pans",
+        "Pair iron with vitamin C foods",
+        "Get adequate rest"
+      ],
+      "diet": {
+        "eat": [
+          "Red meat, liver",
+          "Spinach, kale",
+          "Lentils, beans",
+          "Fortified cereals",
+          "Citrus fruits (vitamin C)",
+          "Pumpkin seeds",
+          "Dark chocolate"
+        ],
+        "avoid": [
+          "Tea and coffee (block iron absorption)",
+          "Dairy around meals",
+          "Whole grains with phytates",
+          "Alcohol"
+        ]
+      },
+      "doctor_type": "Hematologist / General Practitioner",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Persistent fatigue >2 weeks",
+          "Shortness of breath with mild activity",
+          "Rapid heartbeat",
+          "Signs of bleeding"
+        ],
+        "emergency_if": [
+          "Chest pain",
+          "Fainting",
+          "Severe shortness of breath",
+          "Rapid heartbeat with weakness"
+        ]
+      },
+      "precautions": [
+        "Regular blood tests",
+        "Iron supplements with meals",
+        "Avoid excess blood loss",
+        "Monitor symptoms",
+        "Vitamin C with iron"
+      ],
+      "risk_factors": [
+        "Heavy menstrual periods",
+        "Pregnancy",
+        "Vegan/vegetarian diet",
+        "Chronic diseases",
+        "Family history",
+        "Gastrointestinal disorders"
+      ],
+      "age_groups": [
+        "Women of reproductive age",
+        "Elderly",
+        "Children"
+      ]
+    },
+    "Arthritis": {
+      "symptoms": [
+        "joint pain",
+        "joint stiffness",
+        "swelling",
+        "reduced range of motion",
+        "warmth in joints",
+        "morning stiffness",
+        "fatigue",
+        "fever"
+      ],
+      "severity": "Chronic",
+      "description": "Inflammation of one or more joints causing pain and stiffness that can worsen with age.",
+      "medications": [
+        {
+          "name": "Ibuprofen",
+          "dosage": "400mg",
+          "frequency": "Every 6-8 hours",
+          "max_per_day": "1200mg",
+          "duration": "As needed",
+          "notes": "NSAID for pain and inflammation"
+        },
+        {
+          "name": "Methotrexate",
+          "dosage": "7.5-25mg",
+          "frequency": "Once weekly",
+          "max_per_day": "25mg weekly",
+          "duration": "Long-term",
+          "notes": "For rheumatoid arthritis - DMARD"
+        },
+        {
+          "name": "Prednisone",
+          "dosage": "5-10mg",
+          "frequency": "Once daily",
+          "max_per_day": "60mg",
+          "duration": "Short-term flares",
+          "notes": "Corticosteroid for flares"
+        },
+        {
+          "name": "Acetaminophen",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "3g",
+          "duration": "As needed",
+          "notes": "For pain if NSAIDs not suitable"
+        }
+      ],
+      "home_remedies": [
+        "Hot/cold compresses on affected joints",
+        "Gentle range-of-motion exercises",
+        "Epsom salt baths",
+        "Weight management to reduce joint stress",
+        "Use assistive devices (canes, braces)"
+      ],
+      "diet": {
+        "eat": [
+          "Fatty fish (omega-3)",
+          "Turmeric and ginger",
+          "Berries (antioxidants)",
+          "Nuts and seeds",
+          "Green leafy vegetables",
+          "Olive oil",
+          "Cherries"
+        ],
+        "avoid": [
+          "Processed foods",
+          "Sugar",
+          "Red meat",
+          "Fried foods",
+          "Refined carbohydrates",
+          "Alcohol",
+          "Excessive salt"
+        ]
+      },
+      "doctor_type": "Rheumatologist / Orthopedist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Joint pain >2 weeks",
+          "Swelling in multiple joints",
+          "Morning stiffness >1 hour",
+          "Difficulty performing daily activities"
+        ],
+        "emergency_if": [
+          "Severe joint swelling with fever",
+          "Inability to move joint",
+          "Signs of infection (hot, red joint)"
+        ]
+      },
+      "precautions": [
+        "Regular exercise (low-impact)",
+        "Maintain healthy weight",
+        "Joint protection techniques",
+        "Warm up before exercise",
+        "Proper footwear"
+      ],
+      "risk_factors": [
+        "Age >50",
+        "Family history",
+        "Obesity",
+        "Previous joint injury",
+        "Female gender",
+        "Occupation with repetitive stress"
+      ],
+      "age_groups": [
+        "Adults >50",
+        "Elderly"
+      ]
+    },
+    "Bronchitis": {
+      "symptoms": [
+        "persistent cough",
+        "mucus production",
+        "fatigue",
+        "chest discomfort",
+        "wheezing",
+        "shortness of breath",
+        "mild fever",
+        "sore throat"
+      ],
+      "severity": "Moderate",
+      "description": "Inflammation of the bronchial tubes causing cough and mucus production. Can be acute or chronic.",
+      "medications": [
+        {
+          "name": "Guaifenesin",
+          "dosage": "200-400mg",
+          "frequency": "Every 4 hours",
+          "max_per_day": "2400mg",
+          "duration": "7-10 days",
+          "notes": "Expectorant - thins mucus"
+        },
+        {
+          "name": "Dextromethorphan",
+          "dosage": "10-20mg",
+          "frequency": "Every 4 hours",
+          "max_per_day": "120mg",
+          "duration": "7-10 days",
+          "notes": "Cough suppressant for dry cough"
+        },
+        {
+          "name": "Albuterol inhaler",
+          "dosage": "90mcg",
+          "frequency": "2 puffs every 4-6 hours",
+          "max_per_day": "12 puffs",
+          "duration": "7-10 days",
+          "notes": "If wheezing present"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "3-5 days",
+          "notes": "For fever and chest discomfort"
+        }
+      ],
+      "home_remedies": [
+        "Drink plenty of fluids to thin mucus",
+        "Use humidifier to add moisture to air",
+        "Avoid smoke and irritants completely",
+        "Gargle warm salt water for sore throat",
+        "Rest with head elevated"
+      ],
+      "diet": {
+        "eat": [
+          "Warm soups and broths",
+          "Ginger tea",
+          "Honey (for cough)",
+          "Citrus fruits (vitamin C)",
+          "Garlic",
+          "Leafy greens",
+          "Warm water"
+        ],
+        "avoid": [
+          "Dairy (if increases mucus)",
+          "Alcohol",
+          "Smoking",
+          "Cold beverages",
+          "Fried foods",
+          "Processed foods"
+        ]
+      },
+      "doctor_type": "Pulmonologist / General Practitioner",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Cough >3 weeks",
+          "Fever >39°C",
+          "Coughing up blood",
+          "Worsening shortness of breath",
+          "Age >65"
+        ],
+        "emergency_if": [
+          "Severe difficulty breathing",
+          "Chest pain",
+          "Cyanosis (blue lips)",
+          "High fever with confusion"
+        ]
+      },
+      "precautions": [
+        "Avoid smoking and secondhand smoke",
+        "Get flu vaccine annually",
+        "Use humidifier in dry climates",
+        "Hand hygiene",
+        "Wear mask in polluted areas"
+      ],
+      "risk_factors": [
+        "Smoking",
+        "Air pollution",
+        "Asthma/COPD",
+        "Weak immune system",
+        "Age >65",
+        "Gastric reflux"
+      ],
+      "age_groups": [
+        "Adults",
+        "Elderly",
+        "Children"
+      ]
+    },
+    "Dengue": {
+      "symptoms": [
+        "high fever",
+        "severe headache",
+        "muscle pain",
+        "joint pain",
+        "rash",
+        "nausea",
+        "vomiting",
+        "pain behind eyes",
+        "bleeding",
+        "fatigue"
+      ],
+      "severity": "Severe",
+      "description": "Mosquito-borne viral infection causing fever and severe joint/muscle pain. Can develop into severe dengue (dengue hemorrhagic fever).",
+      "medications": [
+        {
+          "name": "Paracetamol (Acetaminophen)",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "5-7 days",
+          "notes": "For fever and pain - AVOID NSAIDs"
+        },
+        {
+          "name": "Oral Rehydration Solution",
+          "dosage": "200ml",
+          "frequency": "After each episode",
+          "max_per_day": "Unlimited",
+          "duration": "Until resolved",
+          "notes": "Prevents dehydration"
+        },
+        {
+          "name": "Vitamin C",
+          "dosage": "1000mg",
+          "frequency": "Twice daily",
+          "max_per_day": "2000mg",
+          "duration": "7-10 days",
+          "notes": "Immune support"
+        },
+        {
+          "name": "Platelet support (if needed)",
+          "dosage": "As prescribed",
+          "frequency": "As prescribed",
+          "max_per_day": "As prescribed",
+          "duration": "As prescribed",
+          "notes": "Hospital monitoring if platelets drop"
+        }
+      ],
+      "home_remedies": [
+        "Drink plenty of fluids (coconut water, oral rehydration)",
+        "Rest completely",
+        "Monitor platelet count daily",
+        "Papaya leaf extract may help platelets (consult doctor)",
+        "Avoid any physical strain"
+      ],
+      "diet": {
+        "eat": [
+          "Coconut water",
+          "Papaya (leaves and fruit)",
+          "Pomegranate juice",
+          "Soups and broths",
+          "Citrus fruits",
+          "Leafy greens",
+          "Protein-rich foods"
+        ],
+        "avoid": [
+          "NSAIDs (ibuprofen, aspirin)",
+          "Alcohol",
+          "Spicy foods",
+          "Fried foods",
+          "Oily foods",
+          "Sugary drinks"
+        ]
+      },
+      "doctor_type": "General Practitioner / Infectious Disease Specialist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Fever >3 days",
+          "Platelet count dropping",
+          "Rash spreading",
+          "Any bleeding signs"
+        ],
+        "emergency_if": [
+          "Severe abdominal pain",
+          "Persistent vomiting",
+          "Bleeding from gums/nose",
+          "Blood in vomit/stool",
+          "Difficulty breathing",
+          "Severe weakness"
+        ]
+      },
+      "precautions": [
+        "Avoid mosquito bites (repellent, nets)",
+        "Remove standing water",
+        "Wear long sleeves/pants",
+        "Screen windows",
+        "Seek immediate care if symptoms worsen"
+      ],
+      "risk_factors": [
+        "Living in tropical/subtropical areas",
+        "Previous dengue infection",
+        "Mosquito exposure",
+        "Weak immune system"
+      ],
+      "age_groups": [
+        "Children",
+        "Adults",
+        "Elderly"
+      ]
+    },
+    "Food Poisoning": {
+      "symptoms": [
+        "nausea",
+        "vomiting",
+        "diarrhea",
+        "stomach cramps",
+        "fever",
+        "weakness",
+        "headache",
+        "loss of appetite",
+        "dehydration"
+      ],
+      "severity": "Mild",
+      "description": "Illness caused by eating contaminated food or drink. Symptoms typically appear within hours to days.",
+      "medications": [
+        {
+          "name": "Oral Rehydration Solution (ORS)",
+          "dosage": "200ml",
+          "frequency": "After each loose stool/vomit",
+          "max_per_day": "Unlimited",
+          "duration": "Until resolved",
+          "notes": "Prevents dehydration - most important"
+        },
+        {
+          "name": "Loperamide",
+          "dosage": "2mg",
+          "frequency": "After each loose stool",
+          "max_per_day": "8mg",
+          "duration": "2 days max",
+          "notes": "NOT for bloody diarrhea or high fever"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "1-2 days",
+          "notes": "For fever and headache"
+        },
+        {
+          "name": "Probiotic supplement",
+          "dosage": "10 billion CFU",
+          "frequency": "Once daily",
+          "max_per_day": "As labeled",
+          "duration": "7 days",
+          "notes": "Restores gut flora"
+        }
+      ],
+      "home_remedies": [
+        "Sip clear fluids frequently (water, clear broths, electrolyte drinks)",
+        "Eat BRAT diet (Bananas, Rice, Applesauce, Toast)",
+        "Avoid solid food for 6-12 hours",
+        "Ginger tea for nausea",
+        "Rest"
+      ],
+      "diet": {
+        "eat": [
+          "Bananas",
+          "White rice",
+          "Applesauce",
+          "Toast",
+          "Clear broths",
+          "Crackers",
+          "Ginger tea",
+          "Coconut water"
+        ],
+        "avoid": [
+          "Dairy products",
+          "Fatty/greasy foods",
+          "Spicy foods",
+          "Caffeine",
+          "Alcohol",
+          "Raw vegetables",
+          "Sugary foods"
+        ]
+      },
+      "doctor_type": "General Practitioner / Gastroenterologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Symptoms >3 days",
+          "Blood in stool",
+          "High fever >38.5°C",
+          "Signs of dehydration",
+          "Elderly or young children"
+        ],
+        "emergency_if": [
+          "Severe dehydration",
+          "Bloody diarrhea with fever",
+          "Severe abdominal pain",
+          "Persistent vomiting >24 hours",
+          "Confusion"
+        ]
+      },
+      "precautions": [
+        "Proper food handling",
+        "Cook meat thoroughly",
+        "Refrigerate promptly",
+        "Avoid cross-contamination",
+        "Check expiry dates",
+        "Hand washing"
+      ],
+      "risk_factors": [
+        "Improper food handling",
+        "Raw/undercooked meat",
+        "Unpasteurized products",
+        "Buffets/potlucks",
+        "Weakened immune system"
+      ],
+      "age_groups": [
+        "All ages"
+      ]
+    },
+    "Gallstones": {
+      "symptoms": [
+        "severe abdominal pain (upper right)",
+        "pain after fatty meals",
+        "nausea",
+        "vomiting",
+        "jaundice",
+        "clay-colored stools",
+        "fever",
+        "bloating"
+      ],
+      "severity": "Moderate",
+      "description": "Hardened deposits in the gallbladder that can block bile ducts and cause severe pain and complications.",
+      "medications": [
+        {
+          "name": "Ursodiol (Ursodeoxycholic acid)",
+          "dosage": "300mg",
+          "frequency": "Twice daily",
+          "max_per_day": "1200mg",
+          "duration": "Months to years",
+          "notes": "Dissolves small cholesterol stones"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "As needed",
+          "notes": "For pain"
+        },
+        {
+          "name": "Ibuprofen",
+          "dosage": "400mg",
+          "frequency": "Every 6-8 hours",
+          "max_per_day": "1200mg",
+          "duration": "As needed",
+          "notes": "For inflammation and pain"
+        },
+        {
+          "name": "Anti-nausea medication",
+          "dosage": "As prescribed",
+          "frequency": "As needed",
+          "max_per_day": "As prescribed",
+          "duration": "As needed",
+          "notes": "For nausea during attacks"
+        }
+      ],
+      "home_remedies": [
+        "Low-fat diet immediately",
+        "Apply warm compress to abdomen during pain",
+        "Drink warm water with lemon",
+        "Apple cider vinegar (1 tbsp in water) may help",
+        "Maintain healthy weight"
+      ],
+      "diet": {
+        "eat": [
+          "High-fiber foods (oats, fruits, vegetables)",
+          "Lean proteins (fish, chicken)",
+          "Whole grains",
+          "Low-fat dairy",
+          "Leafy greens",
+          "Beets",
+          "Apples"
+        ],
+        "avoid": [
+          "Fried foods",
+          "Fatty meats",
+          "Butter and cream",
+          "Cheese",
+          "Processed foods",
+          "High-cholesterol foods",
+          "Large meals"
+        ]
+      },
+      "doctor_type": "Gastroenterologist / General Surgeon",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Recurring pain attacks",
+          "Pain after most meals",
+          "Jaundice",
+          "Fever with abdominal pain"
+        ],
+        "emergency_if": [
+          "Severe unrelenting abdominal pain",
+          "High fever with chills",
+          "Yellowing of skin/eyes",
+          "Dark urine with pale stools"
+        ]
+      },
+      "precautions": [
+        "Low-fat diet",
+        "Maintain healthy weight",
+        "Avoid rapid weight loss",
+        "Regular exercise",
+        "Limit cholesterol intake"
+      ],
+      "risk_factors": [
+        "Obesity",
+        "Female gender",
+        "Age >40",
+        "Pregnancy",
+        "High-cholesterol diet",
+        "Rapid weight loss",
+        "Diabetes"
+      ],
+      "age_groups": [
+        "Adults >40",
+        "Women"
+      ]
+    },
+    "Hepatitis A": {
+      "symptoms": [
+        "fatigue",
+        "nausea",
+        "vomiting",
+        "abdominal pain",
+        "loss of appetite",
+        "low-grade fever",
+        "dark urine",
+        "jaundice",
+        "clay-colored stools"
+      ],
+      "severity": "Moderate",
+      "description": "Viral liver infection spread through contaminated food/water. Usually self-limiting with lifelong immunity.",
+      "medications": [
+        {
+          "name": "Supportive care only",
+          "dosage": "N/A",
+          "frequency": "N/A",
+          "max_per_day": "N/A",
+          "duration": "N/A",
+          "notes": "No specific antiviral - rest and hydration"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "3g",
+          "duration": "As needed",
+          "notes": "For fever - avoid if liver severely affected"
+        },
+        {
+          "name": "Anti-nausea medication",
+          "dosage": "As prescribed",
+          "frequency": "As needed",
+          "max_per_day": "As prescribed",
+          "duration": "As needed",
+          "notes": "For nausea"
+        },
+        {
+          "name": "Vitamin B complex",
+          "dosage": "As labeled",
+          "frequency": "Once daily",
+          "max_per_day": "As labeled",
+          "duration": "2-4 weeks",
+          "notes": "Liver support"
+        }
+      ],
+      "home_remedies": [
+        "Rest completely (2-4 weeks)",
+        "Drink plenty of fluids",
+        "Avoid ALL alcohol",
+        "Eat small, frequent meals",
+        "Avoid fatty foods"
+      ],
+      "diet": {
+        "eat": [
+          "Fruits and vegetables",
+          "Whole grains",
+          "Lean proteins",
+          "Low-fat dairy",
+          "Carrots and sweet potatoes (beta-carotene)",
+          "Green tea",
+          "Citrus fruits"
+        ],
+        "avoid": [
+          "Alcohol (completely)",
+          "Fatty/greasy foods",
+          "Processed foods",
+          "Red meat",
+          "Shellfish",
+          "Raw seafood"
+        ]
+      },
+      "doctor_type": "Hepatologist / Gastroenterologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Jaundice develops",
+          "Unable to keep food down",
+          "Symptoms worsening after 2 weeks",
+          "Confusion or altered mental state"
+        ],
+        "emergency_if": [
+          "Confusion or altered mental state",
+          "Severe vomiting",
+          "Bleeding (nose, gums)",
+          "Severe abdominal swelling"
+        ]
+      },
+      "precautions": [
+        "Hepatitis A vaccination",
+        "Safe food and water practices",
+        "Hand hygiene",
+        "Avoid contaminated shellfish",
+        "Do not share food/drinks"
+      ],
+      "risk_factors": [
+        "Travel to endemic areas",
+        "Contaminated food/water",
+        "Close contact with infected person",
+        "Men who have sex with men",
+        "Drug use"
+      ],
+      "age_groups": [
+        "Children",
+        "Adults",
+        "Travelers"
+      ]
+    },
+    "Hepatitis B": {
+      "symptoms": [
+        "fatigue",
+        "jaundice",
+        "abdominal pain",
+        "nausea",
+        "vomiting",
+        "loss of appetite",
+        "dark urine",
+        "joint pain",
+        "fever"
+      ],
+      "severity": "Chronic",
+      "description": "Viral liver infection transmitted through blood and bodily fluids. Can become chronic and lead to cirrhosis.",
+      "medications": [
+        {
+          "name": "Tenofovir (TDF)",
+          "dosage": "300mg",
+          "frequency": "Once daily",
+          "max_per_day": "300mg",
+          "duration": "Long-term",
+          "notes": "Antiviral for chronic hepatitis B"
+        },
+        {
+          "name": "Entecavir",
+          "dosage": "0.5mg",
+          "frequency": "Once daily",
+          "max_per_day": "1mg",
+          "duration": "Long-term",
+          "notes": "Potent antiviral for HBV"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "3g",
+          "duration": "As needed",
+          "notes": "For pain/fever - use cautiously"
+        },
+        {
+          "name": "Liver support supplement",
+          "dosage": "As labeled",
+          "frequency": "Once daily",
+          "max_per_day": "As labeled",
+          "duration": "Long-term",
+          "notes": "Milk thistle or similar"
+        }
+      ],
+      "home_remedies": [
+        "Complete alcohol abstinence",
+        "Rest and avoid strenuous activity",
+        "Eat a healthy balanced diet",
+        "Monitor liver enzymes regularly",
+        "Avoid hepatotoxic medications"
+      ],
+      "diet": {
+        "eat": [
+          "Fruits and vegetables",
+          "Whole grains",
+          "Lean proteins",
+          "Low-fat dairy",
+          "Green tea",
+          "Beetroot",
+          "Garlic and onions"
+        ],
+        "avoid": [
+          "Alcohol (completely)",
+          "Fatty foods",
+          "Processed foods",
+          "Sugary foods",
+          "High-sodium foods",
+          "Raw/undercooked seafood"
+        ]
+      },
+      "doctor_type": "Hepatologist / Gastroenterologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Jaundice or dark urine",
+          "Persistent fatigue",
+          "Abdominal swelling",
+          "Regular monitoring of liver function"
+        ],
+        "emergency_if": [
+          "Confusion or altered mental state",
+          "Severe abdominal swelling",
+          "Vomiting blood",
+          "Black tarry stools"
+        ]
+      },
+      "precautions": [
+        "Hepatitis B vaccination",
+        "Safe sex practices",
+        "Do not share needles",
+        "Regular liver monitoring",
+        "Avoid alcohol completely"
+      ],
+      "risk_factors": [
+        "Unprotected sex",
+        "Sharing needles",
+        "Healthcare workers",
+        "Blood transfusions (pre-1992)",
+        "Mother-to-child transmission",
+        "Tattoos/piercings with unsterile equipment"
+      ],
+      "age_groups": [
+        "Adults",
+        "Infants (mother-to-child)"
+      ]
+    },
+    "Hepatitis C": {
+      "symptoms": [
+        "fatigue",
+        "jaundice",
+        "dark urine",
+        "clay-colored stools",
+        "nausea",
+        "loss of appetite",
+        "abdominal pain",
+        "joint pain",
+        "easy bruising",
+        "itching"
+      ],
+      "severity": "Chronic",
+      "description": "Viral infection causing liver inflammation, often chronic. Now highly curable with modern antivirals.",
+      "medications": [
+        {
+          "name": "Sofosbuvir + Velpatasvir (Epclusa)",
+          "dosage": "400mg/100mg",
+          "frequency": "Once daily",
+          "max_per_day": "1 tablet",
+          "duration": "12 weeks",
+          "notes": "Pan-genotypic direct-acting antiviral"
+        },
+        {
+          "name": "Glecaprevir + Pibrentasvir (Mavyret)",
+          "dosage": "300mg/120mg",
+          "frequency": "Once daily",
+          "max_per_day": "3 tablets",
+          "duration": "8 weeks",
+          "notes": "Short-course treatment, all genotypes"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "3g",
+          "duration": "As needed",
+          "notes": "For pain/fever"
+        },
+        {
+          "name": "Vitamin D3",
+          "dosage": "2000 IU",
+          "frequency": "Once daily",
+          "max_per_day": "4000 IU",
+          "duration": "12 weeks",
+          "notes": "Immune support during treatment"
+        }
+      ],
+      "home_remedies": [
+        "Complete alcohol abstinence",
+        "Maintain healthy weight",
+        "Eat liver-friendly diet",
+        "Regular exercise",
+        "Get vaccinated for Hepatitis A and B"
+      ],
+      "diet": {
+        "eat": [
+          "Leafy greens",
+          "Cruciferous vegetables (broccoli, cauliflower)",
+          "Berries",
+          "Nuts and seeds",
+          "Fatty fish",
+          "Whole grains",
+          "Green tea"
+        ],
+        "avoid": [
+          "Alcohol (completely)",
+          "Fried foods",
+          "Processed foods",
+          "Sugary foods",
+          "High-sodium foods",
+          "Red meat (excessive)"
+        ]
+      },
+      "doctor_type": "Hepatologist / Gastroenterologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Any signs of liver disease",
+          "Jaundice",
+          "Abdominal swelling",
+          "Regular monitoring during treatment"
+        ],
+        "emergency_if": [
+          "Confusion",
+          "Severe abdominal swelling",
+          "Vomiting blood",
+          "Black stools"
+        ]
+      },
+      "precautions": [
+        "No vaccine available - avoid exposure",
+        "Do not share needles",
+        "Safe sex practices",
+        "Screen blood products",
+        "Regular liver monitoring",
+        "Get vaccinated for Hep A and B"
+      ],
+      "risk_factors": [
+        "Sharing needles",
+        "Blood transfusions before 1992",
+        "Unprotected sex",
+        "Healthcare workers",
+        "Tattoos/piercings with unsterile equipment",
+        "Mother-to-child transmission"
+      ],
+      "age_groups": [
+        "Adults",
+        "Baby boomers (born 1945-1965)"
+      ]
+    },
+    "Hyperthyroidism": {
+      "symptoms": [
+        "weight loss",
+        "rapid heartbeat",
+        "anxiety",
+        "irritability",
+        "tremor",
+        "sweating",
+        "heat sensitivity",
+        "difficulty sleeping",
+        "bulging eyes",
+        "diarrhea"
+      ],
+      "severity": "Chronic",
+      "description": "Overactive thyroid gland producing excessive thyroid hormones, accelerating metabolism.",
+      "medications": [
+        {
+          "name": "Methimazole",
+          "dosage": "10-20mg",
+          "frequency": "Once daily",
+          "max_per_day": "60mg",
+          "duration": "12-18 months",
+          "notes": "First-line antithyroid medication"
+        },
+        {
+          "name": "Propylthiouracil (PTU)",
+          "dosage": "100-150mg",
+          "frequency": "Three times daily",
+          "max_per_day": "900mg",
+          "duration": "12-18 months",
+          "notes": "Alternative if methimazole not tolerated"
+        },
+        {
+          "name": "Propranolol",
+          "dosage": "20-40mg",
+          "frequency": "Three times daily",
+          "max_per_day": "240mg",
+          "duration": "Until thyroid controlled",
+          "notes": "Beta-blocker for rapid heart rate and tremor"
+        },
+        {
+          "name": "Radioactive iodine (I-131)",
+          "dosage": "As calculated",
+          "frequency": "Single dose",
+          "max_per_day": "N/A",
+          "duration": "One-time",
+          "notes": "Destroys overactive thyroid tissue"
+        }
+      ],
+      "home_remedies": [
+        "Avoid iodine-rich foods (seaweed, iodized salt)",
+        "Practice stress-reduction techniques",
+        "Get adequate sleep",
+        "Avoid caffeine and stimulants",
+        "Weight-bearing exercises for bone health"
+      ],
+      "diet": {
+        "eat": [
+          "Non-iodized salt",
+          "Cruciferous vegetables (may help reduce thyroid hormone)",
+          "Berries",
+          "Lean proteins",
+          "Whole grains",
+          "Low-fat dairy",
+          "Green vegetables"
+        ],
+        "avoid": [
+          "Iodized salt",
+          "Seaweed and kelp",
+          "Seafood",
+          "Dairy (high iodine)",
+          "Soy products",
+          "Caffeine",
+          "Alcohol"
+        ]
+      },
+      "doctor_type": "Endocrinologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Heart rate >100 at rest",
+          "Unintentional weight loss",
+          "Eye problems",
+          "Heat intolerance interfering with daily life"
+        ],
+        "emergency_if": [
+          "Thyroid storm: fever >38.5°C, rapid heart rate, agitation, confusion",
+          "Chest pain",
+          "Severe shortness of breath",
+          "Altered mental state"
+        ]
+      },
+      "precautions": [
+        "Regular thyroid function tests",
+        "Avoid excess iodine",
+        "Stress management",
+        "Balanced diet",
+        "Avoid stimulants",
+        "Monitor heart rate"
+      ],
+      "risk_factors": [
+        "Graves' disease",
+        "Family history",
+        "Female gender",
+        "Age 20-40",
+        "Pregnancy",
+        "Previous thyroid issues"
+      ],
+      "age_groups": [
+        "Adults 20-40",
+        "Women more common"
+      ]
+    },
+    "Hypothyroidism": {
+      "symptoms": [
+        "fatigue",
+        "weight gain",
+        "cold sensitivity",
+        "dry skin",
+        "hair loss",
+        "constipation",
+        "depression",
+        "muscle weakness",
+        "slow heart rate",
+        "puffy face"
+      ],
+      "severity": "Chronic",
+      "description": "Underactive thyroid gland not producing enough thyroid hormones, slowing metabolism.",
+      "medications": [
+        {
+          "name": "Levothyroxine (Synthroid)",
+          "dosage": "25-50mcg",
+          "frequency": "Once daily on empty stomach",
+          "max_per_day": "300mcg",
+          "duration": "Lifelong",
+          "notes": "Synthetic T4 - standard treatment"
+        },
+        {
+          "name": "Liothyronine (T3)",
+          "dosage": "5-25mcg",
+          "frequency": "Once daily",
+          "max_per_day": "100mcg",
+          "duration": "As prescribed",
+          "notes": "T3 hormone - sometimes added to T4"
+        },
+        {
+          "name": "Iron supplement",
+          "dosage": "65mg elemental",
+          "frequency": "Once daily",
+          "max_per_day": "200mg",
+          "duration": "3 months",
+          "notes": "If iron deficiency coexists"
+        },
+        {
+          "name": "Vitamin D3",
+          "dosage": "2000 IU",
+          "frequency": "Once daily",
+          "max_per_day": "4000 IU",
+          "duration": "Long-term",
+          "notes": "Often deficient in hypothyroidism"
+        }
+      ],
+      "home_remedies": [
+        "Take medication on empty stomach, 30-60 min before breakfast",
+        "Eat iodine-rich foods (fish, eggs, dairy)",
+        "Regular exercise (moderate intensity)",
+        "Get adequate sleep",
+        "Monitor weight and energy levels"
+      ],
+      "diet": {
+        "eat": [
+          "Iodine-rich foods (fish, seaweed, eggs)",
+          "Selenium-rich foods (Brazil nuts, tuna)",
+          "Fruits and vegetables",
+          "Whole grains",
+          "Lean proteins",
+          "Low-fat dairy"
+        ],
+        "avoid": [
+          "Soy products (may interfere with absorption)",
+          "Cruciferous vegetables in excess (goitrogens)",
+          "Gluten (if Hashimoto's)",
+          "Processed foods",
+          "Excessive fiber with medication"
+        ]
+      },
+      "doctor_type": "Endocrinologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Symptoms worsening despite treatment",
+          "New symptoms develop",
+          "TSH levels abnormal",
+          "Goiter enlargement"
+        ],
+        "emergency_if": [
+          "Myxedema coma: severe cold intolerance, confusion, lethargy",
+          "Very slow heart rate",
+          "Difficulty breathing",
+          "Severe hypothermia"
+        ]
+      },
+      "precautions": [
+        "Regular thyroid function tests (every 6-12 months)",
+        "Take medication consistently at same time",
+        "Avoid taking with calcium/iron supplements",
+        "Monitor cholesterol levels",
+        "Pregnancy requires dose adjustment"
+      ],
+      "risk_factors": [
+        "Hashimoto's thyroiditis",
+        "Family history",
+        "Female gender",
+        "Age >60",
+        "Previous thyroid surgery",
+        "Radiation exposure",
+        "Pregnancy"
+      ],
+      "age_groups": [
+        "Adults >60",
+        "Women",
+        "Elderly"
+      ]
+    },
+    "Jaundice": {
+      "symptoms": [
+        "yellow skin",
+        "yellow eyes",
+        "dark urine",
+        "clay-colored stools",
+        "fatigue",
+        "abdominal pain",
+        "nausea",
+        "vomiting",
+        "fever",
+        "itching"
+      ],
+      "severity": "Moderate",
+      "description": "Yellow discoloration of skin and eyes caused by high bilirubin levels, a symptom of underlying liver or blood disorder.",
+      "medications": [
+        {
+          "name": "Treat underlying cause",
+          "dosage": "N/A",
+          "frequency": "N/A",
+          "max_per_day": "N/A",
+          "duration": "N/A",
+          "notes": "Jaundice is a symptom, not a disease - treat cause"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "3g",
+          "duration": "As needed",
+          "notes": "For fever - avoid if liver disease severe"
+        },
+        {
+          "name": "Anti-itch medication",
+          "dosage": "As prescribed",
+          "frequency": "As needed",
+          "max_per_day": "As prescribed",
+          "duration": "As needed",
+          "notes": "For itching (cholestyramine or antihistamines)"
+        },
+        {
+          "name": "Vitamin K",
+          "dosage": "10mg",
+          "frequency": "Once daily",
+          "max_per_day": "10mg",
+          "duration": "5-7 days",
+          "notes": "If clotting problems from liver dysfunction"
+        }
+      ],
+      "home_remedies": [
+        "Drink plenty of water",
+        "Rest",
+        "Avoid alcohol completely",
+        "Eat liver-friendly foods",
+        "Avoid fatty foods",
+        "Monitor urine and stool color"
+      ],
+      "diet": {
+        "eat": [
+          "Fruits and vegetables",
+          "Whole grains",
+          "Lean proteins",
+          "Low-fat dairy",
+          "Carrots and sweet potatoes",
+          "Green tea",
+          "Coconut water"
+        ],
+        "avoid": [
+          "Alcohol",
+          "Fatty/greasy foods",
+          "Processed foods",
+          "Red meat",
+          "Fried foods",
+          "High-sugar foods"
+        ]
+      },
+      "doctor_type": "Hepatologist / Gastroenterologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Jaundice persists >2 days",
+          "Dark urine or pale stools",
+          "Abdominal pain",
+          "Fever with jaundice"
+        ],
+        "emergency_if": [
+          "Confusion or altered mental state",
+          "Severe abdominal pain",
+          "Vomiting blood",
+          "Black tarry stools"
+        ]
+      },
+      "precautions": [
+        "Hepatitis vaccination",
+        "Avoid alcohol",
+        "Maintain healthy weight",
+        "Avoid hepatotoxic medications",
+        "Regular liver tests",
+        "Safe food practices"
+      ],
+      "risk_factors": [
+        "Hepatitis",
+        "Liver disease",
+        "Gallstones",
+        "Hemolytic anemia",
+        "Alcohol abuse",
+        "Medications toxic to liver"
+      ],
+      "age_groups": [
+        "All ages"
+      ]
+    },
+    "Kidney Stones": {
+      "symptoms": [
+        "severe abdominal pain (flank)",
+        "pain radiating to groin",
+        "blood in urine",
+        "burning urination",
+        "frequent urination",
+        "nausea",
+        "vomiting",
+        "fever",
+        "chills",
+        "cloudy urine"
+      ],
+      "severity": "Severe",
+      "description": "Hard mineral and salt deposits forming in kidneys, causing severe pain when passing through urinary tract.",
+      "medications": [
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "As needed",
+          "notes": "For pain"
+        },
+        {
+          "name": "Ibuprofen",
+          "dosage": "400mg",
+          "frequency": "Every 6-8 hours",
+          "max_per_day": "1200mg",
+          "duration": "As needed",
+          "notes": "NSAID for pain and inflammation"
+        },
+        {
+          "name": "Tamsulosin (alpha-blocker)",
+          "dosage": "0.4mg",
+          "frequency": "Once daily",
+          "max_per_day": "0.4mg",
+          "duration": "Until stone passes",
+          "notes": "Helps relax ureter to pass stone"
+        },
+        {
+          "name": "Potassium citrate",
+          "dosage": "10-20mEq",
+          "frequency": "Twice daily",
+          "max_per_day": "60mEq",
+          "duration": "Long-term",
+          "notes": "Prevents stone formation"
+        }
+      ],
+      "home_remedies": [
+        "Drink 2-3 liters of water daily",
+        "Strain urine to catch stone for analysis",
+        "Apply heat to painful area",
+        "Lemon juice in water (citrate helps)",
+        "Gentle movement/walking may help pass stone"
+      ],
+      "diet": {
+        "eat": [
+          "Water (3+ liters/day)",
+          "Lemon juice",
+          "Cranberry juice",
+          "Calcium-rich foods (with meals)",
+          "Vegetables",
+          "Whole grains"
+        ],
+        "avoid": [
+          "Oxalate-rich foods (spinach, beets, nuts, chocolate)",
+          "High-sodium foods",
+          "Cola drinks",
+          "Animal protein (excess)",
+          "Vitamin C supplements (high doses)"
+        ]
+      },
+      "doctor_type": "Urologist / Nephrologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Pain not controlled with OTC meds",
+          "Fever with stone pain",
+          "Unable to pass urine",
+          "Stone >5mm"
+        ],
+        "emergency_if": [
+          "Severe uncontrolled pain",
+          "Fever >38.5°C with chills",
+          "Unable to urinate",
+          "Vomiting preventing fluid intake"
+        ]
+      },
+      "precautions": [
+        "Drink 2-3 liters water daily",
+        "Reduce sodium intake",
+        "Maintain healthy weight",
+        "Limit oxalate-rich foods",
+        "Regular follow-up with urologist"
+      ],
+      "risk_factors": [
+        "Family history",
+        "Dehydration",
+        "High-sodium diet",
+        "High-protein diet",
+        "Obesity",
+        "Gastric bypass surgery",
+        "Inflammatory bowel disease"
+      ],
+      "age_groups": [
+        "Adults 30-50",
+        "Men more common"
+      ]
+    },
+    "Malaria": {
+      "symptoms": [
+        "high fever",
+        "chills",
+        "shaking",
+        "sweating",
+        "headache",
+        "muscle pain",
+        "nausea",
+        "vomiting",
+        "diarrhea",
+        "anemia",
+        "jaundice"
+      ],
+      "severity": "Severe",
+      "description": "Life-threatening mosquito-borne disease caused by Plasmodium parasites. Requires prompt treatment.",
+      "medications": [
+        {
+          "name": "Artemether + Lumefantrine (Coartem)",
+          "dosage": "20mg/120mg",
+          "frequency": "Twice daily",
+          "max_per_day": "6 tablets over 3 days",
+          "duration": "3 days",
+          "notes": "First-line ACT treatment"
+        },
+        {
+          "name": "Chloroquine (if sensitive)",
+          "dosage": "600mg base",
+          "frequency": "Day 1, then 300mg days 2-3",
+          "max_per_day": "600mg",
+          "duration": "3 days",
+          "notes": "For chloroquine-sensitive malaria"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "3 days",
+          "notes": "For fever"
+        },
+        {
+          "name": "Quinine (severe cases)",
+          "dosage": "10mg/kg IV",
+          "frequency": "Every 8 hours",
+          "max_per_day": "As prescribed",
+          "duration": "Hospital",
+          "notes": "For severe/complicated malaria"
+        }
+      ],
+      "home_remedies": [
+        "Rest in cool, comfortable environment",
+        "Drink plenty of fluids",
+        "Sponge with cool water for fever",
+        "Monitor temperature every 4 hours",
+        "Sleep under insecticide-treated net"
+      ],
+      "diet": {
+        "eat": [
+          "High-calorie foods",
+          "Fruits (papaya, banana, apple)",
+          "Coconut water",
+          "Soups and broths",
+          "Leafy greens",
+          "Protein-rich foods"
+        ],
+        "avoid": [
+          "Alcohol",
+          "Caffeine",
+          "Spicy foods",
+          "Fried foods",
+          "Oily foods",
+          "Heavy meals"
+        ]
+      },
+      "doctor_type": "Infectious Disease Specialist / General Practitioner",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Fever in malaria-endemic area",
+          "Recent travel to endemic area",
+          "Symptoms after travel",
+          "Fever with any travel history"
+        ],
+        "emergency_if": [
+          "Altered consciousness or seizures",
+          "Severe anemia",
+          "Respiratory distress",
+          "Kidney failure signs",
+          "Jaundice with dark urine"
+        ]
+      },
+      "precautions": [
+        "Sleep under insecticide-treated nets",
+        "Use insect repellent (DEET)",
+        "Wear long sleeves/pants at dusk",
+        "Take prophylaxis if traveling to endemic area",
+        "Remove standing water"
+      ],
+      "risk_factors": [
+        "Travel to endemic areas",
+        "Mosquito exposure",
+        "No malaria prophylaxis",
+        "Pregnancy",
+        "Children <5",
+        "Immunocompromised"
+      ],
+      "age_groups": [
+        "Children <5",
+        "Pregnant women",
+        "Travelers"
+      ]
+    },
+    "Osteoporosis": {
+      "symptoms": [
+        "bone fractures easily",
+        "back pain",
+        "loss of height",
+        "stooped posture",
+        "decreased mobility",
+        "shortness of breath",
+        "weakness",
+        "joint pain"
+      ],
+      "severity": "Chronic",
+      "description": "Bone disease causing bones to become brittle and fragile, increasing fracture risk, especially in older adults.",
+      "medications": [
+        {
+          "name": "Alendronate (Fosamax)",
+          "dosage": "70mg",
+          "frequency": "Once weekly",
+          "max_per_day": "70mg",
+          "duration": "3-5 years",
+          "notes": "Bisphosphonate - take on empty stomach with full glass water"
+        },
+        {
+          "name": "Calcium carbonate",
+          "dosage": "500mg elemental",
+          "frequency": "Twice daily",
+          "max_per_day": "1500mg elemental",
+          "duration": "Lifelong",
+          "notes": "With vitamin D for absorption"
+        },
+        {
+          "name": "Vitamin D3",
+          "dosage": "1000-2000 IU",
+          "frequency": "Once daily",
+          "max_per_day": "4000 IU",
+          "duration": "Lifelong",
+          "notes": "Essential for calcium absorption"
+        },
+        {
+          "name": "Denosumab (Prolia)",
+          "dosage": "60mg",
+          "frequency": "Every 6 months (injection)",
+          "max_per_day": "60mg",
+          "duration": "As prescribed",
+          "notes": "For high fracture risk"
+        }
+      ],
+      "home_remedies": [
+        "Weight-bearing exercises (walking, dancing)",
+        "Resistance training 2-3x/week",
+        "Balance exercises to prevent falls",
+        "Get adequate sunlight for vitamin D",
+        "Quit smoking"
+      ],
+      "diet": {
+        "eat": [
+          "Dairy products (milk, yogurt, cheese)",
+          "Leafy greens (spinach, kale)",
+          "Fortified foods",
+          "Fatty fish (salmon, sardines)",
+          "Almonds and seeds",
+          "Beans and lentils",
+          "Eggs"
+        ],
+        "avoid": [
+          "Excessive alcohol",
+          "Caffeine (excess blocks calcium)",
+          "Sodium (excess increases calcium loss)",
+          "Soft drinks (phosphoric acid)",
+          "Smoking"
+        ]
+      },
+      "doctor_type": "Rheumatologist / Endocrinologist / Orthopedist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Fracture from minor fall",
+          "Height loss >1 inch",
+          "Severe back pain",
+          "Diagnosed with osteopenia"
+        ],
+        "emergency_if": [
+          "Hip fracture",
+          "Spinal compression fracture with nerve symptoms",
+          "Fall with inability to move"
+        ]
+      },
+      "precautions": [
+        "Regular bone density scans (DEXA)",
+        "Fall prevention at home",
+        "Calcium and vitamin D supplementation",
+        "Weight-bearing exercise",
+        "Avoid smoking and excessive alcohol"
+      ],
+      "risk_factors": [
+        "Age >50 (women), >70 (men)",
+        "Female gender",
+        "Family history",
+        "Low body weight",
+        "Smoking",
+        "Alcohol abuse",
+        "Long-term steroid use",
+        "Calcium/vitamin D deficiency"
+      ],
+      "age_groups": [
+        "Postmenopausal women",
+        "Elderly men",
+        "Long-term steroid users"
+      ]
+    },
+    "Tuberculosis": {
+      "symptoms": [
+        "persistent cough",
+        "coughing up blood",
+        "chest pain",
+        "weight loss",
+        "fatigue",
+        "fever",
+        "night sweats",
+        "loss of appetite",
+        "shortness of breath"
+      ],
+      "severity": "Severe",
+      "description": "Bacterial infection primarily affecting the lungs, requiring prolonged antibiotic treatment. Can be fatal if untreated.",
+      "medications": [
+        {
+          "name": "Isoniazid (INH) + Rifampin + Pyrazinamide + Ethambutol",
+          "dosage": "As per weight",
+          "frequency": "Daily",
+          "max_per_day": "As prescribed",
+          "duration": "6-9 months",
+          "notes": "Standard first-line regimen (HRZE)"
+        },
+        {
+          "name": "Vitamin B6 (Pyridoxine)",
+          "dosage": "25-50mg",
+          "frequency": "Once daily",
+          "max_per_day": "50mg",
+          "duration": "6-9 months",
+          "notes": "Prevents INH-induced neuropathy"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "As needed",
+          "notes": "For fever and pain"
+        },
+        {
+          "name": "Anti-nausea medication",
+          "dosage": "As prescribed",
+          "frequency": "As needed",
+          "max_per_day": "As prescribed",
+          "duration": "As needed",
+          "notes": "For medication side effects"
+        }
+      ],
+      "home_remedies": [
+        "Complete FULL treatment course (never stop early)",
+        "Eat nutritious, high-protein diet",
+        "Rest adequately",
+        "Cover mouth when coughing",
+        "Ensure good ventilation at home"
+      ],
+      "diet": {
+        "eat": [
+          "High-protein foods (eggs, meat, fish, legumes)",
+          "Whole grains",
+          "Fruits and vegetables",
+          "Dairy products",
+          "Nuts and seeds",
+          "Iron-rich foods",
+          "Vitamin C-rich foods"
+        ],
+        "avoid": [
+          "Alcohol (interferes with treatment and damages liver)",
+          "Grapefruit (interferes with rifampin)",
+          "High-fat foods",
+          "Junk food",
+          "Excessive caffeine"
+        ]
+      },
+      "doctor_type": "Pulmonologist / Infectious Disease Specialist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Persistent cough >3 weeks",
+          "Coughing up blood",
+          "Unexplained weight loss",
+          "Night sweats",
+          "Known exposure to TB"
+        ],
+        "emergency_if": [
+          "Massive hemoptysis (coughing large amounts of blood)",
+          "Severe shortness of breath",
+          "Altered mental state",
+          "Chest pain with breathing"
+        ]
+      },
+      "precautions": [
+        "BCG vaccination",
+        "Avoid close contact with infected",
+        "Proper ventilation",
+        "Mask wearing",
+        "Complete full treatment course",
+        "Directly Observed Therapy (DOT)"
+      ],
+      "risk_factors": [
+        "Close contact with TB patient",
+        "HIV/AIDS",
+        "Diabetes",
+        "Immunosuppression",
+        "Malnutrition",
+        "Living in crowded conditions",
+        "Healthcare workers"
+      ],
+      "age_groups": [
+        "Adults",
+        "Elderly",
+        "Immunocompromised"
+      ]
+    },
+    "Typhoid": {
+      "symptoms": [
+        "sustained high fever",
+        "stomach pain",
+        "weakness",
+        "loss of appetite",
+        "headache",
+        "diarrhea or constipation",
+        "rash (rose spots)",
+        "cough",
+        "confusion"
+      ],
+      "severity": "Severe",
+      "description": "Bacterial infection caused by Salmonella typhi, spread through contaminated food and water. Can be life-threatening.",
+      "medications": [
+        {
+          "name": "Azithromycin",
+          "dosage": "500mg",
+          "frequency": "Once daily",
+          "max_per_day": "500mg",
+          "duration": "7-14 days",
+          "notes": "First-line treatment, especially for drug-resistant strains"
+        },
+        {
+          "name": "Ceftriaxone (IV)",
+          "dosage": "1-2g",
+          "frequency": "Once daily",
+          "max_per_day": "2g",
+          "duration": "10-14 days",
+          "notes": "For severe cases or hospitalization"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": "Every 4-6 hours",
+          "max_per_day": "4g",
+          "duration": "As needed",
+          "notes": "For fever - never give aspirin (risk of bleeding)"
+        },
+        {
+          "name": "Oral Rehydration Solution",
+          "dosage": "200ml",
+          "frequency": "After each episode",
+          "max_per_day": "Unlimited",
+          "duration": "Until resolved",
+          "notes": "Prevents dehydration"
+        }
+      ],
+      "home_remedies": [
+        "Drink plenty of fluids",
+        "Eat soft, bland diet",
+        "Rest completely",
+        "Monitor temperature",
+        "Sponge bath for fever",
+        "Hand hygiene"
+      ],
+      "diet": {
+        "eat": [
+          "Soft, bland foods (rice, bananas, toast)",
+          "Soups and broths",
+          "Coconut water",
+          "Fruits (cooked or peeled)",
+          "Boiled vegetables",
+          "Yogurt",
+          "Plenty of fluids"
+        ],
+        "avoid": [
+          "Raw vegetables and fruits",
+          "Uncooked food",
+          "Street food",
+          "Spicy foods",
+          "Fatty foods",
+          "Dairy (if diarrhea severe)",
+          "Alcohol"
+        ]
+      },
+      "doctor_type": "Infectious Disease Specialist / General Practitioner",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Fever >3 days in endemic area",
+          "Recent travel to endemic area",
+          "Suspected typhoid",
+          "Symptoms not improving after 48 hours of antibiotics"
+        ],
+        "emergency_if": [
+          "Severe abdominal distension",
+          "Bloody stools",
+          "Confusion or altered mental state",
+          "Severe weakness",
+          "Persistent vomiting"
+        ]
+      },
+      "precautions": [
+        "Safe drinking water (boiled or bottled)",
+        "Proper food hygiene",
+        "Hand washing",
+        "Typhoid vaccination before travel",
+        "Avoid street food in endemic areas"
+      ],
+      "risk_factors": [
+        "Travel to South Asia, Africa, Latin America",
+        "Contaminated food/water",
+        "Poor sanitation",
+        "Close contact with carrier",
+        "No vaccination"
+      ],
+      "age_groups": [
+        "Children",
+        "Adults",
+        "Travelers"
+      ]
+    },
+    "Urinary Tract Infection": {
+      "symptoms": [
+        "frequent urination",
+        "urgent urination",
+        "burning during urination",
+        "pelvic pain",
+        "cloudy urine",
+        "blood in urine",
+        "strong-smelling urine",
+        "fever",
+        "back pain",
+        "fatigue"
+      ],
+      "severity": "Mild",
+      "description": "Infection in any part of the urinary system (kidneys, ureters, bladder, urethra). More common in women.",
+      "medications": [
+        {
+          "name": "Nitrofurantoin (Macrobid)",
+          "dosage": "100mg",
+          "frequency": "Twice daily",
+          "max_per_day": "200mg",
+          "duration": "5 days",
+          "notes": "First-line for uncomplicated UTI"
+        },
+        {
+          "name": "Trimethoprim-sulfamethoxazole (Bactrim)",
+          "dosage": "160mg/800mg",
+          "frequency": "Twice daily",
+          "max_per_day": "2 tablets",
+          "duration": "3 days",
+          "notes": "If local resistance is low"
+        },
+        {
+          "name": "Phenazopyridine (Pyridium)",
+          "dosage": "200mg",
+          "frequency": "Three times daily",
+          "max_per_day": "600mg",
+          "duration": "2 days",
+          "notes": "For pain relief only - turns urine orange"
+        },
+        {
+          "name": "Cranberry extract",
+          "dosage": "500mg",
+          "frequency": "Twice daily",
+          "max_per_day": "1000mg",
+          "duration": "7-14 days",
+          "notes": "May help prevent recurrent UTIs"
+        }
+      ],
+      "home_remedies": [
+        "Drink plenty of water (8-10 glasses/day)",
+        "Cranberry juice or supplements",
+        "Urinate frequently (don't hold urine)",
+        "Urinate after sexual intercourse",
+        "Wipe front to back",
+        "Avoid scented feminine products"
+      ],
+      "diet": {
+        "eat": [
+          "Water (lots)",
+          "Cranberry juice (unsweetened)",
+          "Blueberries",
+          "Probiotic yogurt",
+          "Garlic",
+          "Vitamin C-rich foods"
+        ],
+        "avoid": [
+          "Caffeine",
+          "Alcohol",
+          "Spicy foods",
+          "Citrus (if bladder irritant)",
+          "Carbonated drinks",
+          "Artificial sweeteners"
+        ]
+      },
+      "doctor_type": "Urologist / General Practitioner / Gynecologist",
+      "urgency_rules": {
+        "see_doctor_if": [
+          "Symptoms >2 days",
+          "Fever with UTI symptoms",
+          "Back pain (possible kidney infection)",
+          "Recurrent UTIs (>3/year)",
+          "Pregnancy"
+        ],
+        "emergency_if": [
+          "High fever with back pain",
+          "Vomiting preventing fluid intake",
+          "Confusion (especially in elderly)",
+          "Severe flank pain"
+        ]
+      },
+      "precautions": [
+        "Stay hydrated",
+        "Urinate after sex",
+        "Wipe front to back",
+        "Avoid holding urine",
+        "Cotton underwear",
+        "Avoid irritating products"
+      ],
+      "risk_factors": [
+        "Female anatomy",
+        "Sexual activity",
+        "Menopause",
+        "Diabetes",
+        "Urinary catheters",
+        "Kidney stones",
+        "Immunosuppression"
+      ],
+      "age_groups": [
+        "Women (all ages)",
+        "Elderly",
+        "Men with prostate issues"
+      ]
     }
   },
   "doctor_specialties": {
@@ -1335,6 +3325,9 @@
     "Hepatologist": "Liver conditions",
     "Ophthalmologist": "Eye conditions",
     "ENT Specialist": "Ear, nose, throat conditions",
-    "Dermatologist": "Skin conditions"
+    "Dermatologist": "Skin conditions",
+    "Hematologist": "Blood disorders and conditions",
+    "Orthopedist": "Bone, joint, and muscle conditions",
+    "Gynecologist": "Female reproductive health"
   }
 }

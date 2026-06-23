@@ -231,8 +231,7 @@ class MedicalMLTrainer:
         
         model = xgb.XGBClassifier(
             random_state=42, 
-            eval_metric='mlogloss',
-            use_label_encoder=False
+            eval_metric='mlogloss'
         )
         grid_search = GridSearchCV(
             model, param_grid, cv=5, scoring='f1_weighted', n_jobs=-1, verbose=0
@@ -356,6 +355,35 @@ class MedicalMLTrainer:
         plt.tight_layout()
         plt.savefig(os.path.join(output_dir, f'confusion_matrix_{best_model_name}.png'), dpi=150, bbox_inches='tight')
         plt.close()
+        
+        # Visualization 3: Feature Importance for tree-based models
+        if hasattr(best_model, 'feature_importances_'):
+            fig, ax = plt.subplots(figsize=(14, 8))
+            importances = best_model.feature_importances_
+            # Use top 30 features
+            if len(importances) > 30:
+                idx = np.argsort(importances)[::-1][:30]
+                top_importances = importances[idx]
+                top_names = [feature_names[i] if i < len(feature_names) else f'feature_{i}' for i in idx]
+            else:
+                top_importances = importances
+                top_names = feature_names[:len(importances)]
+            
+            y_pos = np.arange(len(top_importances))
+            ax.barh(y_pos, top_importances, align='center', color='#3498db')
+            ax.set_yticks(y_pos)
+            ax.set_yticklabels(top_names, fontsize=10)
+            ax.invert_yaxis()
+            ax.set_xlabel('Importance', fontsize=12)
+            ax.set_title(f'Feature Importance - {best_model_name}', fontsize=14, fontweight='bold')
+            ax.grid(axis='x', alpha=0.3)
+            plt.tight_layout()
+            plt.savefig(os.path.join(output_dir, f'feature_importance_{best_model_name}.png'), dpi=150, bbox_inches='tight')
+            plt.close()
+            
+            # Save feature importance CSV
+            fi_df = pd.DataFrame({'Feature': top_names, 'Importance': top_importances})
+            fi_df.to_csv(os.path.join(output_dir, 'feature_importance.csv'), index=False)
         
         # Save best model
         best_model = self.models[best_model_name]

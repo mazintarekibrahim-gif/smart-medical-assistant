@@ -1,715 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Medical Chatbot</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: linear-gradient(135deg, #e0e7ff 0%, #f0f9ff 50%, #e0e7ff 100%); color: #1e293b; height: 100vh; overflow: hidden; }
-        
-        .app-container { max-width: 800px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background: white; box-shadow: 0 0 40px rgba(0,0,0,0.1); }
-        
-        /* Header */
-        .chat-header { background: linear-gradient(135deg, #0f172a, #1e3a5f, #2563eb); color: white; padding: 16px 20px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); flex-shrink: 0; }
-        .chat-header .avatar { width: 44px; height: 44px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-        .chat-header .info { flex: 1; }
-        .chat-header .info h1 { font-size: 1.15rem; font-weight: 700; }
-        .chat-header .info p { font-size: 0.8rem; opacity: 0.8; }
-        .chat-header .status { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
-        /* Chat area */
-        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; }
-        
-        .message { max-width: 80%; padding: 14px 18px; border-radius: 18px; font-size: 0.95rem; line-height: 1.5; animation: fadeIn 0.3s ease; position: relative; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .message.bot { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); color: #1e293b; }
-        .message.user { align-self: flex-end; background: linear-gradient(135deg, #2563eb, #1e40af); color: white; border-bottom-right-radius: 4px; box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
-        .message.user a { color: #dbeafe; }
-        
-        .message-time { font-size: 0.7rem; opacity: 0.5; margin-top: 6px; text-align: right; }
-        .message.bot .message-time { text-align: left; }
-        
-        /* Typing indicator */
-        .typing { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-radius: 18px; border-bottom-left-radius: 4px; padding: 18px 20px; display: none; align-items: center; gap: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .typing .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; animation: typingBounce 1.4s infinite ease-in-out; }
-        .typing .dot:nth-child(1) { animation-delay: 0s; }
-        .typing .dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing .dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typingBounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
-        
-        /* Quick reply buttons */
-        .quick-replies { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding-left: 4px; }
-        .quick-replies .reply-btn { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-weight: 500; }
-        .quick-replies .reply-btn:hover { background: #dbeafe; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(37,99,235,0.15); }
-        
-        /* Input area */
-        .chat-input-area { padding: 16px 20px; border-top: 1px solid #e2e8f0; background: #f8fafc; display: flex; gap: 10px; flex-shrink: 0; }
-        .chat-input-area input { flex: 1; padding: 12px 16px; border: 2px solid #cbd5e1; border-radius: 24px; font-size: 0.95rem; outline: none; transition: all 0.2s; font-family: inherit; }
-        .chat-input-area input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        .chat-input-area button { width: 46px; height: 46px; border-radius: 50%; border: none; background: linear-gradient(135deg, #2563eb, #1e40af); color: white; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .chat-input-area button:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
-        .chat-input-area button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-        
-        /* Result cards inside chat */
-        .result-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin-top: 8px; }
-        .result-card h3 { font-size: 1rem; color: #0f172a; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-        .result-card h3 .icon { font-size: 1.2rem; }
-        
-        .symptom-tag { display: inline-block; background: #eff6ff; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; margin: 2px; font-weight: 500; border: 1px solid #bfdbfe; }
-        .urgency { padding: 12px; border-radius: 10px; margin: 8px 0; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
-        .urgency-caution { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        .urgency-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-        .urgency-urgent { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-        .urgency .icon { font-size: 1.3rem; }
-        
-        .prediction-item { display: flex; align-items: center; padding: 10px; border-radius: 10px; background: white; border: 1px solid #e2e8f0; margin-bottom: 8px; }
-        .prediction-item.top { border: 2px solid #2563eb; background: linear-gradient(135deg, #eff6ff, #dbeafe); }
-        .prediction-name { font-weight: 700; font-size: 1rem; color: #0f172a; }
-        .prediction-severity { font-size: 0.8rem; margin-top: 2px; }
-        .severity-Mild { color: #059669; }
-        .severity-Moderate { color: #d97706; }
-        .severity-Severe { color: #dc2626; }
-        .severity-Chronic { color: #7c3aed; }
-        .confidence-bar { width: 80px; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; flex-shrink: 0; margin-left: auto; margin-right: 8px; }
-        .confidence-fill { height: 100%; border-radius: 4px; }
-        .confidence-value { font-size: 0.8rem; font-weight: 700; color: #2563eb; min-width: 36px; text-align: right; }
-        
-        .med-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 8px; }
-        .med-table th { background: #dcfce7; color: #166534; padding: 8px; text-align: left; font-weight: 600; border-bottom: 2px solid #bbf7d0; }
-        .med-table td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
-        .med-name { font-weight: 600; color: #0f172a; }
-        .med-notes { color: #64748b; font-size: 0.75rem; font-style: italic; }
-        
-        .diet-card-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-        .diet-eat-mini { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px; }
-        .diet-avoid-mini { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px; }
-        .diet-eat-mini h4 { color: #15803d; font-size: 0.85rem; margin-bottom: 6px; }
-        .diet-avoid-mini h4 { color: #991b1b; font-size: 0.85rem; margin-bottom: 6px; }
-        .diet-list-mini { list-style: none; padding: 0; font-size: 0.8rem; }
-        .diet-list-mini li { padding: 2px 0; padding-left: 16px; position: relative; }
-        .diet-eat-mini .diet-list-mini li::before { content: '✓'; position: absolute; left: 0; color: #16a34a; font-weight: 700; }
-        .diet-avoid-mini .diet-list-mini li::before { content: '✗'; position: absolute; left: 0; color: #dc2626; font-weight: 700; }
-        
-        .doctor-card-mini { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 12px; margin-top: 8px; display: flex; align-items: flex-start; gap: 12px; }
-        .doctor-card-mini .doctor-icon { font-size: 2rem; flex-shrink: 0; }
-        .doctor-card-mini h4 { color: #991b1b; font-size: 0.95rem; margin-bottom: 4px; }
-        .doctor-card-mini p { color: #7f1d1d; font-size: 0.85rem; }
-        
-        .remedy-list-mini { list-style: none; padding: 0; font-size: 0.85rem; }
-        .remedy-list-mini li { padding: 4px 0; padding-left: 20px; position: relative; }
-        .remedy-list-mini li::before { content: '✓'; position: absolute; left: 0; color: #d97706; font-weight: 700; }
-        
-        .disclaimer-mini { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 12px; color: #991b1b; font-size: 0.8rem; margin-top: 12px; text-align: center; }
-        
-        .section-divider { border: none; border-top: 1px solid #e2e8f0; margin: 12px 0; }
-        
-        .precaution-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-        .precaution-tag { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; border: 1px solid #e2e8f0; }
-        
-        @media (max-width: 600px) {
-            .app-container { max-width: 100%; }
-            .message { max-width: 90%; font-size: 0.9rem; padding: 12px 14px; }
-            .diet-card-mini { grid-template-columns: 1fr; }
-            .chat-header .info h1 { font-size: 1rem; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Medical Chatbot - v2.0</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: linear-gradient(135deg, #e0e7ff 0%, #f0f9ff 50%, #e0e7ff 100%); color: #1e293b; height: 100vh; overflow: hidden; }
+.app-container { max-width: 800px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background: white; box-shadow: 0 0 40px rgba(0,0,0,0.1); }
+.chat-header { background: linear-gradient(135deg, #0f172a, #1e3a5f, #2563eb); color: white; padding: 16px 20px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); flex-shrink: 0; }
+.chat-header .avatar { width: 44px; height: 44px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.chat-header .info { flex: 1; }
+.chat-header .info h1 { font-size: 1.15rem; font-weight: 700; }
+.chat-header .info p { font-size: 0.8rem; opacity: 0.8; }
+.chat-header .status { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; }
+.message { max-width: 80%; padding: 14px 18px; border-radius: 18px; font-size: 0.95rem; line-height: 1.5; animation: fadeIn 0.3s ease; position: relative; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.message.bot { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); color: #1e293b; }
+.message.user { align-self: flex-end; background: linear-gradient(135deg, #2563eb, #1e40af); color: white; border-bottom-right-radius: 4px; box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
+.message-time { font-size: 0.7rem; opacity: 0.5; margin-top: 6px; text-align: right; }
+.message.bot .message-time { text-align: left; }
+.typing { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-radius: 18px; border-bottom-left-radius: 4px; padding: 18px 20px; display: none; align-items: center; gap: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.typing .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; animation: typingBounce 1.4s infinite ease-in-out; }
+.typing .dot:nth-child(1) { animation-delay: 0s; }
+.typing .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing .dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+.quick-replies { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding-left: 4px; }
+.quick-replies .reply-btn { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-weight: 500; }
+.quick-replies .reply-btn:hover { background: #dbeafe; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(37,99,235,0.15); }
+.chat-input-area { padding: 16px 20px; border-top: 1px solid #e2e8f0; background: #f8fafc; display: flex; gap: 10px; flex-shrink: 0; }
+.chat-input-area input { flex: 1; padding: 12px 16px; border: 2px solid #cbd5e1; border-radius: 24px; font-size: 0.95rem; outline: none; transition: all 0.2s; font-family: inherit; }
+.chat-input-area input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.chat-input-area button { width: 46px; height: 46px; border-radius: 50%; border: none; background: linear-gradient(135deg, #2563eb, #1e40af); color: white; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.chat-input-area button:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+.chat-input-area button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.result-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin-top: 8px; }
+.result-card h3 { font-size: 1rem; color: #0f172a; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.symptom-tag { display: inline-block; background: #eff6ff; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; margin: 2px; font-weight: 500; border: 1px solid #bfdbfe; }
+.urgency { padding: 12px; border-radius: 10px; margin: 8px 0; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
+.urgency-caution { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+.urgency-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.urgency-urgent { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+.prediction-item { display: flex; align-items: center; padding: 10px; border-radius: 10px; background: white; border: 1px solid #e2e8f0; margin-bottom: 8px; }
+.prediction-item.top { border: 2px solid #2563eb; background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+.prediction-name { font-weight: 700; font-size: 1rem; color: #0f172a; }
+.prediction-severity { font-size: 0.8rem; margin-top: 2px; }
+.severity-Mild { color: #059669; } .severity-Moderate { color: #d97706; } .severity-Severe { color: #dc2626; } .severity-Chronic { color: #7c3aed; }
+.confidence-bar { width: 80px; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; flex-shrink: 0; margin-left: auto; margin-right: 8px; }
+.confidence-fill { height: 100%; border-radius: 4px; }
+.confidence-value { font-size: 0.8rem; font-weight: 700; color: #2563eb; min-width: 36px; text-align: right; }
+.med-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 8px; }
+.med-table th { background: #dcfce7; color: #166534; padding: 8px; text-align: left; font-weight: 600; border-bottom: 2px solid #bbf7d0; }
+.med-table td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
+.med-name { font-weight: 600; color: #0f172a; }
+.med-notes { color: #64748b; font-size: 0.75rem; font-style: italic; }
+.diet-card-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+.diet-eat-mini { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px; }
+.diet-avoid-mini { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px; }
+.diet-eat-mini h4 { color: #15803d; font-size: 0.85rem; margin-bottom: 6px; }
+.diet-avoid-mini h4 { color: #991b1b; font-size: 0.85rem; margin-bottom: 6px; }
+.diet-list-mini { list-style: none; padding: 0; font-size: 0.8rem; }
+.diet-list-mini li { padding: 2px 0; padding-left: 16px; position: relative; }
+.diet-eat-mini .diet-list-mini li::before { content: "v"; position: absolute; left: 0; color: #16a34a; font-weight: 700; }
+.diet-avoid-mini .diet-list-mini li::before { content: "x"; position: absolute; left: 0; color: #dc2626; font-weight: 700; }
+.doctor-card-mini { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 12px; margin-top: 8px; display: flex; align-items: flex-start; gap: 12px; }
+.doctor-card-mini .doctor-icon { font-size: 2rem; flex-shrink: 0; }
+.doctor-card-mini h4 { color: #991b1b; font-size: 0.95rem; margin-bottom: 4px; }
+.doctor-card-mini p { color: #7f1d1d; font-size: 0.85rem; }
+.remedy-list-mini { list-style: none; padding: 0; font-size: 0.85rem; }
+.remedy-list-mini li { padding: 4px 0; padding-left: 20px; position: relative; }
+.remedy-list-mini li::before { content: "v"; position: absolute; left: 0; color: #d97706; font-weight: 700; }
+.disclaimer-mini { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 12px; color: #991b1b; font-size: 0.8rem; margin-top: 12px; text-align: center; }
+.precaution-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.precaution-tag { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; border: 1px solid #e2e8f0; }
+.input-error { color: #dc2626; font-size: 0.85rem; margin-top: 6px; display: none; padding: 0 20px; background: #fef2f2; }
+.input-error.show { display: block; }
+.input-hint { color: #64748b; font-size: 0.8rem; padding: 8px 20px; background: #f8fafc; }
+.symptom-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.symptom-chip { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+.symptom-chip:hover { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+@media (max-width: 600px) { .app-container { max-width: 100%; } .message { max-width: 90%; font-size: 0.9rem; padding: 12px 14px; } .diet-card-mini { grid-template-columns: 1fr; } .chat-header .info h1 { font-size: 1rem; } }
+</style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="chat-header">
-            <div class="avatar">🤖</div>
-            <div class="info">
-                <h1>Dr. AI Assistant</h1>
-                <p>Smart Medical Chatbot</p>
-            </div>
-            <div class="status">
-                <div class="status-dot"></div>
-                <span>Online</span>
-            </div>
-        </div>
-        
-        <div class="chat-messages" id="chatMessages"></div>
-        
-        <div class="typing" id="typingIndicator">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-        
-        <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Type your message..." onkeydown="if(event.key==='Enter')sendMessage()">
-            <button onclick="sendMessage()" id="sendBtn">➤</button>
-        </div>
-    </div>
-
-<script>
-const MEDICAL_DATA = {"metadata":{"source":"Kaggle (AI Health Guard, Disease and Symptoms, Medical Data) + GitHub (Medicare, Disease Prediction, ChatDoctor) + Medical References","total_diseases":40,"symptom_categories":70,"last_updated":"2024"},"diseases":{"Common Cold":{"symptoms":["runny nose","sneezing","sore throat","cough","mild fever","headache","congestion","watery eyes","fatigue"],"severity":"Mild","description":"A viral infection of the upper respiratory tract. Usually self-limiting within 7-10 days.","medications":[{"name":"Paracetamol (Acetaminophen)","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"3-5 days","notes":"For fever and headache relief"},{"name":"Pseudoephedrine","dosage":"60mg","frequency":"Every 4-6 hours","max_per_day":"240mg","duration":"3-5 days","notes":"For nasal congestion"},{"name":"Dextromethorphan","dosage":"10-20mg","frequency":"Every 4 hours","max_per_day":"120mg","duration":"3-5 days","notes":"For cough suppression"},{"name":"Vitamin C","dosage":"1000mg","frequency":"Once daily","max_per_day":"2000mg","duration":"7-10 days","notes":"Immune system support"}],"home_remedies":["Drink warm fluids (ginger tea, honey lemon water)","Gargle with warm salt water 3-4 times daily","Use humidifier or steam inhalation","Get plenty of rest (8-10 hours sleep)","Stay hydrated (8-10 glasses of water daily)"],"diet":{"eat":["Chicken soup","Ginger tea","Honey","Citrus fruits","Garlic","Turmeric milk","Warm broths"],"avoid":["Dairy products (may increase mucus)","Fried foods","Sugary drinks","Alcohol","Cold beverages"]},"doctor_type":"General Practitioner (GP)","urgency_rules":{"see_doctor_if":["Fever > 39°C for >3 days","Symptoms > 10 days","Difficulty breathing","Chest pain","Severe headache"],"emergency_if":["High fever with confusion","Difficulty breathing","Chest tightness"]},"precautions":["Wash hands frequently","Cover mouth when coughing","Avoid close contact","Stay hydrated","Rest"],"risk_factors":["Seasonal changes","Weak immune system","Stress","Lack of sleep"],"age_groups":["Children","Adults","Elderly"]},"Flu":{"symptoms":["high fever","chills","body aches","fatigue","headache","sore throat","cough","weakness","runny nose"],"severity":"Moderate","description":"Influenza is a contagious respiratory illness caused by influenza viruses. More severe than common cold.","medications":[{"name":"Oseltamivir (Tamiflu)","dosage":"75mg","frequency":"Twice daily","max_per_day":"150mg","duration":"5 days","notes":"Antiviral - best within 48 hours of onset"},{"name":"Paracetamol (Acetaminophen)","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"5-7 days","notes":"For fever and body aches"},{"name":"Ibuprofen","dosage":"400mg","frequency":"Every 6-8 hours","max_per_day":"1200mg","duration":"5-7 days","notes":"For body aches and fever"},{"name":"Zinc lozenges","dosage":"10-15mg","frequency":"Every 2-3 hours","max_per_day":"100mg","duration":"5-7 days","notes":"May reduce duration if started early"}],"home_remedies":["Stay in bed and rest completely for 3-5 days","Drink warm fluids every 2 hours","Inhale steam with eucalyptus oil","Apply warm compress for body aches","Honey and lemon in warm water for throat"],"diet":{"eat":["Chicken soup/broth","Ginger tea","Garlic","Citrus fruits","Leafy greens","Yogurt (probiotics)","Warm water"],"avoid":["Alcohol","Caffeine","Processed foods","Dairy if mucus increases","Cold drinks"]},"doctor_type":"General Practitioner / Infectious Disease Specialist","urgency_rules":{"see_doctor_if":["Fever > 39°C for >3 days","Symptoms worsening after 5 days","Dehydration signs","Underlying conditions (diabetes, heart disease)"],"emergency_if":["Difficulty breathing or shortness of breath","Chest pain","Confusion or altered mental state","Severe weakness","Bluish lips or face"]},"precautions":["Annual flu vaccination","Hand hygiene","Avoid crowds during outbreaks","Wear mask if coughing","Stay home when sick"],"risk_factors":["Age >65 or <5","Pregnancy","Chronic conditions","Immunocompromised","Healthcare workers"],"age_groups":["Children","Adults","Elderly"]},"COVID-19":{"symptoms":["fever","dry cough","fatigue","loss of taste","loss of smell","shortness of breath","muscle aches","sore throat","headache","chills"],"severity":"Severe","description":"Coronavirus disease caused by SARS-CoV-2. Range from mild to severe respiratory illness.","medications":[{"name":"Paracetamol (Acetaminophen)","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"As needed","notes":"For fever and body aches"},{"name":"Vitamin D3","dosage":"2000-4000 IU","frequency":"Once daily","max_per_day":"4000 IU","duration":"14 days","notes":"Immune support"},{"name":"Vitamin C","dosage":"1000mg","frequency":"Twice daily","max_per_day":"2000mg","duration":"14 days","notes":"Antioxidant support"},{"name":"Zinc","dosage":"25-50mg","frequency":"Once daily","max_per_day":"50mg","duration":"14 days","notes":"Immune function"}],"home_remedies":["Complete isolation for 5-7 days minimum","Monitor oxygen levels with pulse oximeter (seek help if <92%)","Sleep on stomach (prone position) for breathing","Steam inhalation 3-4 times daily","Gargle with warm salt water for throat"],"diet":{"eat":["High protein foods (eggs, fish, chicken)","Citrus fruits","Ginger tea","Turmeric milk","Warm soups","Nuts and seeds"],"avoid":["Alcohol","Smoking","Processed foods","Excessive sugar","Cold drinks"]},"doctor_type":"General Practitioner / Pulmonologist / Infectious Disease Specialist","urgency_rules":{"see_doctor_if":["Fever > 3 days","Persistent cough > 2 weeks","Underlying health conditions","Pregnancy","Age >60"],"emergency_if":["Difficulty breathing","Chest pain/pressure","Confusion","Inability to stay awake","Bluish lips/face","Oxygen saturation <92%"]},"precautions":["Vaccination","Mask wearing","Social distancing","Hand hygiene","Avoid crowded indoor spaces"],"risk_factors":["Age >60","Obesity","Diabetes","Heart disease","Immunocompromised","Pregnancy"],"age_groups":["All ages - higher risk in elderly"]},"Diabetes":{"symptoms":["frequent urination","excessive thirst","unexplained weight loss","fatigue","blurred vision","slow healing wounds","numbness in extremities","increased hunger"],"severity":"Chronic","description":"Chronic condition affecting how the body processes blood sugar (glucose). Type 1 or Type 2.","medications":[{"name":"Metformin","dosage":"500mg","frequency":"Twice daily with meals","max_per_day":"2000mg","duration":"Long-term","notes":"First-line for Type 2 diabetes"},{"name":"Glipizide","dosage":"5mg","frequency":"Once daily before breakfast","max_per_day":"40mg","duration":"Long-term","notes":"Stimulates insulin release"},{"name":"Insulin (if prescribed)","dosage":"As prescribed","frequency":"As prescribed","max_per_day":"As prescribed","duration":"Long-term","notes":"For Type 1 or advanced Type 2"},{"name":"Alpha-lipoic acid","dosage":"600mg","frequency":"Once daily","max_per_day":"1200mg","duration":"Long-term","notes":"For nerve pain (neuropathy)"}],"home_remedies":["Monitor blood glucose daily (fasting and post-meal)","Exercise 30 minutes daily (walking, swimming)","Maintain healthy weight (BMI 18.5-24.9)","Check feet daily for cuts or sores","Get 7-8 hours of quality sleep"],"diet":{"eat":["Whole grains (oats, brown rice)","Leafy greens","Lean proteins (fish, chicken)","Legumes","Nuts (almonds, walnuts)","Low-fat dairy","Non-starchy vegetables"],"avoid":["Sugary foods and drinks","White bread/pasta","Fried foods","Fruit juices","Processed snacks","High-carb foods","Alcohol"]},"doctor_type":"Endocrinologist / Diabetologist","urgency_rules":{"see_doctor_if":["Blood sugar >250mg/dL or <70mg/dL","Ketones in urine","Frequent infections","Vision changes","Numbness/tingling in feet"],"emergency_if":["Blood sugar >400mg/dL","Signs of diabetic ketoacidosis (nausea, vomiting, abdominal pain, fruity breath)","Severe dehydration","Confusion or loss of consciousness"]},"precautions":["Regular blood sugar monitoring","Balanced diet","Regular exercise","Foot care","Annual eye exams","Dental checkups"],"risk_factors":["Family history","Obesity","Sedentary lifestyle","Age >45","PCOS","Gestational diabetes history"],"age_groups":["Adults (Type 2)","Can occur at any age (Type 1)"]},"Hypertension":{"symptoms":["headache","dizziness","shortness of breath","chest pain","nosebleeds","vision problems","flushing","irregular heartbeat"],"severity":"Chronic","description":"High blood pressure (≥130/80 mmHg) that can lead to heart disease, stroke, and kidney failure.","medications":[{"name":"Amlodipine","dosage":"5mg","frequency":"Once daily","max_per_day":"10mg","duration":"Long-term","notes":"Calcium channel blocker"},{"name":"Lisinopril","dosage":"10mg","frequency":"Once daily","max_per_day":"40mg","duration":"Long-term","notes":"ACE inhibitor"},{"name":"Losartan","dosage":"50mg","frequency":"Once daily","max_per_day":"100mg","duration":"Long-term","notes":"ARB - if ACE inhibitor causes cough"},{"name":"Hydrochlorothiazide","dosage":"12.5-25mg","frequency":"Once daily","max_per_day":"50mg","duration":"Long-term","notes":"Diuretic - reduces fluid retention"}],"home_remedies":["Monitor blood pressure daily at home","Reduce salt intake to <5g/day","Exercise 150 minutes/week (moderate intensity)","Practice deep breathing/meditation for stress","Maintain healthy weight (lose 5-10% if overweight)"],"diet":{"eat":["DASH diet foods","Leafy greens (spinach, kale)","Bananas (potassium)","Oats","Garlic","Beetroot","Fatty fish (salmon, mackerel)","Berries"],"avoid":["Salt (sodium >5g/day)","Processed foods","Canned soups","Pickles","Alcohol","Caffeine (excessive)","Red meat","Fried foods"]},"doctor_type":"Cardiologist / General Physician","urgency_rules":{"see_doctor_if":["BP >140/90 consistently","Headaches becoming frequent","Vision changes","New chest discomfort"],"emergency_if":["BP >180/120 (Hypertensive crisis)","Chest pain","Severe headache with confusion","Shortness of breath","Seizures"]},"precautions":["Regular BP monitoring","Low sodium diet","Regular exercise","Weight management","Limit alcohol","Stress management"],"risk_factors":["Family history","Obesity","High salt intake","Sedentary lifestyle","Smoking","Age >55","Chronic kidney disease","Sleep apnea"],"age_groups":["Adults >30","Elderly"]},"Migraine":{"symptoms":["severe headache","nausea","vomiting","sensitivity to light","sensitivity to sound","visual aura","throbbing pain","neck stiffness"],"severity":"Moderate","description":"Neurological condition with recurrent moderate to severe headaches, often one-sided.","medications":[{"name":"Sumatriptan","dosage":"50-100mg","frequency":"At onset of migraine","max_per_day":"200mg","duration":"As needed","notes":"Triptan - best taken at first sign"},{"name":"Ibuprofen","dosage":"400mg","frequency":"At onset","max_per_day":"1200mg","duration":"As needed","notes":"NSAID for pain relief"},{"name":"Prochlorperazine","dosage":"5mg","frequency":"For nausea","max_per_day":"15mg","duration":"As needed","notes":"Anti-nausea"},{"name":"Magnesium supplement","dosage":"400mg","frequency":"Daily","max_per_day":"400mg","duration":"Long-term","notes":"Prevention - may reduce frequency"}],"home_remedies":["Lie down in a dark, quiet room immediately","Apply cold or warm compress to head/neck","Drink caffeine (coffee/tea) at onset - may help","Massage temples and neck muscles","Practice relaxation techniques (deep breathing)"],"diet":{"eat":["Magnesium-rich foods (spinach, almonds)","Ginger (anti-nausea)","Whole grains","Hydrating foods (cucumber, watermelon)","Omega-3 fatty fish"],"avoid":["Aged cheeses","Chocolate","Caffeine (excessive or withdrawal)","Alcohol (especially red wine)","Processed meats (nitrates)","Monosodium glutamate (MSG)","Artificial sweeteners","Skipped meals"]},"doctor_type":"Neurologist","urgency_rules":{"see_doctor_if":["Migraines >4 times/month","New onset after age 50","Migraines lasting >72 hours","Aura symptoms lasting >1 hour"],"emergency_if":["Thunderclap headache (sudden, worst ever)","Headache with fever and stiff neck","Headache after head injury","Headache with confusion, weakness, or vision loss"]},"precautions":["Identify and avoid triggers","Regular sleep schedule","Stay hydrated","Manage stress","Limit caffeine","Regular exercise"],"risk_factors":["Family history","Female gender","Hormonal changes","Stress","Certain foods","Sleep changes"],"age_groups":["Adults 20-40","Women more common"]},"Asthma":{"symptoms":["wheezing","shortness of breath","chest tightness","coughing","difficulty breathing","rapid breathing","trouble sleeping due to breathing"],"severity":"Chronic","description":"Chronic respiratory condition with airway inflammation and constriction, causing breathing difficulty.","medications":[{"name":"Albuterol (Rescue inhaler)","dosage":"90mcg","frequency":"2 puffs every 4-6 hours as needed","max_per_day":"12 puffs","duration":"As needed","notes":"Quick relief for acute attacks"},{"name":"Fluticasone (Controller inhaler)","dosage":"44-220mcg","frequency":"2 puffs twice daily","max_per_day":"As prescribed","duration":"Long-term","notes":"Corticosteroid - prevents attacks"},{"name":"Montelukast","dosage":"10mg","frequency":"Once daily at bedtime","max_per_day":"10mg","duration":"Long-term","notes":"Leukotriene receptor antagonist"},{"name":"Prednisone (for severe attacks)","dosage":"40mg","frequency":"Once daily for 5 days","max_per_day":"60mg","duration":"Short course only","notes":"Oral corticosteroid - emergency use"}],"home_remedies":["Use peak flow meter daily to monitor lung function","Practice diaphragmatic breathing exercises","Use air purifier with HEPA filter","Keep humidity at 30-50%","Avoid tobacco smoke completely"],"diet":{"eat":["Foods rich in vitamin C (citrus, bell peppers)","Vitamin E (nuts, seeds)","Omega-3 fatty fish","Magnesium-rich foods","Apples (quercetin)","Ginger (anti-inflammatory)"],"avoid":["Sulfites (preserved foods, wine)","Dairy (if increases mucus)","Foods causing allergies","Cold beverages during attacks","Fried foods"]},"doctor_type":"Pulmonologist / Allergist","urgency_rules":{"see_doctor_if":["Using rescue inhaler >2 times/week","Nighttime symptoms >2 times/month","Asthma interfering with daily activities","Peak flow <80% of personal best"],"emergency_if":["Severe shortness of breath","Lips/fingernails turning blue","Cannot speak full sentences","Rescue inhaler not helping after 15 minutes","Chest feels tight and won't relax"]},"precautions":["Always carry rescue inhaler","Avoid known triggers","Get flu vaccine annually","Regular checkups","Use controller medication daily"],"risk_factors":["Family history","Allergies","Obesity","Smoking/exposure","Air pollution","Respiratory infections as child"],"age_groups":["Children","Adults"]},"Pneumonia":{"symptoms":["high fever","chills","productive cough","chest pain","shortness of breath","rapid breathing","fatigue","confusion","sweating","loss of appetite"],"severity":"Severe","description":"Infection causing inflammation in air sacs of the lungs, which may fill with fluid or pus.","medications":[{"name":"Amoxicillin","dosage":"500mg","frequency":"Three times daily","max_per_day":"3g","duration":"7-10 days","notes":"First-line antibiotic for bacterial pneumonia"},{"name":"Azithromycin","dosage":"500mg","frequency":"Once daily","max_per_day":"500mg","duration":"5 days","notes":"For atypical pneumonia or penicillin allergy"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"As needed","notes":"For fever and chest pain"},{"name":"Guaifenesin","dosage":"200-400mg","frequency":"Every 4 hours","max_per_day":"2400mg","duration":"7-10 days","notes":"Expectorant - helps clear mucus"}],"home_remedies":["Complete bed rest for 5-7 days","Drink fluids to thin mucus (warm water, herbal tea)","Use humidifier or steam inhalation","Sleep with head elevated (2-3 pillows)","Deep breathing exercises every 2 hours while awake"],"diet":{"eat":["High protein foods (eggs, lean meat)","Warm soups and broths","Citrus fruits (vitamin C)","Garlic (antibacterial)","Ginger tea","Honey in warm water"],"avoid":["Cold beverages","Dairy if mucus increases","Alcohol","Smoking","Fried/greasy foods","Sugary foods"]},"doctor_type":"Pulmonologist / General Physician","urgency_rules":{"see_doctor_if":["Fever >39°C for >3 days","Cough with blood","Chest pain worsening","Age >65 or <5","Existing lung/heart conditions"],"emergency_if":["Severe difficulty breathing","Bluish lips or face","Confusion or altered mental state","Very low blood pressure","Rapid heart rate >120"]},"precautions":["Pneumococcal vaccination","Flu vaccination","Hand hygiene","Avoid smoking","Strengthen immune system"],"risk_factors":["Age >65 or <2","Chronic lung disease","Diabetes","Heart disease","Immunocompromised","Smoking"],"age_groups":["Elderly","Young children","Adults with risk factors"]},"Appendicitis":{"symptoms":["severe abdominal pain (lower right)","nausea","vomiting","loss of appetite","fever","constipation","abdominal bloating","rebound tenderness"],"severity":"Severe","description":"Inflammation of the appendix. Medical emergency requiring prompt surgical removal.","medications":[{"name":"Note: Surgery is primary treatment","dosage":"N/A","frequency":"N/A","max_per_day":"N/A","duration":"N/A","notes":"Appendectomy (surgical removal) is required"},{"name":"IV antibiotics (pre/post surgery)","dosage":"As prescribed","frequency":"As prescribed","max_per_day":"As prescribed","duration":"3-7 days","notes":"Cefotaxime + Metronidazole typically"},{"name":"Paracetamol (for pain pre-surgery)","dosage":"500mg","frequency":"Every 6 hours","max_per_day":"3g","duration":"Until surgery","notes":"Avoid NSAIDs before surgery"},{"name":"Morphine (hospital setting)","dosage":"As prescribed","frequency":"As prescribed","max_per_day":"As prescribed","duration":"Hospital only","notes":"For severe pain control"}],"home_remedies":["DO NOT attempt home treatment - this is a medical emergency","Do NOT eat or drink (nil per os) if appendicitis suspected","Do NOT take laxatives or enemas","Do NOT apply heat to abdomen","Go to emergency room immediately"],"diet":{"eat":["Nothing until surgery","Post-surgery: clear liquids, then soft foods","Gradual return to normal diet"],"avoid":["All food/drink before surgery","Heavy foods post-surgery (first 48 hours)","Constipating foods","Alcohol"]},"doctor_type":"General Surgeon / Emergency Medicine","urgency_rules":{"see_doctor_if":["GO TO EMERGENCY ROOM IMMEDIATELY"],"emergency_if":["Severe abdominal pain especially lower right","Fever with abdominal pain","Nausea/vomiting with severe abdominal pain","Rigid abdomen"]},"precautions":["Seek immediate medical attention","Do not delay","Do not eat or drink","No home remedies"],"risk_factors":["Age 10-30","Male","Family history"],"age_groups":["Children","Young adults"]},"Depression":{"symptoms":["persistent sadness","loss of interest","fatigue","sleep changes","appetite changes","difficulty concentrating","feelings of worthlessness","thoughts of death","anxiety","irritability"],"severity":"Moderate","description":"Mood disorder causing persistent sadness and loss of interest, affecting daily functioning.","medications":[{"name":"Sertraline (SSRI)","dosage":"50mg","frequency":"Once daily morning","max_per_day":"200mg","duration":"6-12 months minimum","notes":"First-line antidepressant"},{"name":"Escitalopram (SSRI)","dosage":"10mg","frequency":"Once daily morning","max_per_day":"20mg","duration":"6-12 months minimum","notes":"Well-tolerated SSRI"},{"name":"Bupropion (NDRI)","dosage":"150mg","frequency":"Once daily morning","max_per_day":"450mg","duration":"6-12 months minimum","notes":"If sexual side effects from SSRIs"},{"name":"Vitamin D3","dosage":"2000 IU","frequency":"Once daily","max_per_day":"4000 IU","duration":"Long-term","notes":"May help seasonal depression"}],"home_remedies":["Exercise 30 minutes daily (releases endorphins)","Maintain regular sleep schedule (7-9 hours)","Practice mindfulness meditation 10-20 min daily","Journal thoughts and feelings daily","Spend time outdoors in sunlight","Connect with friends/family regularly"],"diet":{"eat":["Omega-3 fatty fish (salmon, sardines)","Dark leafy greens (folate)","Nuts and seeds (magnesium)","Berries (antioxidants)","Whole grains","Bananas (tryptophan)","Dark chocolate (moderate)"],"avoid":["Alcohol","Excessive caffeine","Sugar and processed foods","Trans fats","High-sodium foods"]},"doctor_type":"Psychiatrist / Clinical Psychologist","urgency_rules":{"see_doctor_if":["Symptoms >2 weeks","Interfering with work/relationships","Sleep problems persistent","Loss of appetite >1 week"],"emergency_if":["Thoughts of self-harm or suicide","Suicide plan or intent","Unable to care for self","Hearing voices or hallucinations","Severe agitation or restlessness"]},"precautions":["Regular therapy sessions","Medication compliance","Social support","Avoid alcohol","Monitor mood changes","Emergency contact available"],"risk_factors":["Family history","Trauma history","Chronic illness","Stressful life events","Substance abuse","Loneliness/isolation"],"age_groups":["Adults","Elderly","Adolescents"]},"Anxiety Disorder":{"symptoms":["excessive worry","restlessness","irritability","muscle tension","sleep disturbances","difficulty concentrating","rapid heartbeat","sweating","panic attacks","trembling"],"severity":"Moderate","description":"Mental health condition with excessive and persistent worry, fear, and nervousness.","medications":[{"name":"Sertraline (SSRI)","dosage":"25-50mg","frequency":"Once daily morning","max_per_day":"200mg","duration":"6-12 months","notes":"First-line for anxiety"},{"name":"Buspirone","dosage":"5-10mg","frequency":"Twice daily","max_per_day":"60mg","duration":"Long-term","notes":"Non-benzodiazepine anxiolytic"},{"name":"Propranolol (for physical symptoms)","dosage":"10-40mg","frequency":"Before anxiety-provoking situation","max_per_day":"120mg","duration":"As needed","notes":"Beta-blocker for performance anxiety"},{"name":"L-theanine supplement","dosage":"200mg","frequency":"Once or twice daily","max_per_day":"400mg","duration":"Long-term","notes":"Natural amino acid for calmness"}],"home_remedies":["Practice box breathing: 4-4-4-4 pattern","Progressive muscle relaxation (PMR) daily","Limit caffeine to <200mg/day (1-2 cups coffee)","Regular aerobic exercise (30 min, 5x/week)","Mindfulness meditation apps (Headspace, Calm)","Journaling worries and challenging thoughts"],"diet":{"eat":["Complex carbohydrates (oats, quinoa)","Chamomile tea","Green tea (L-theanine)","Fatty fish (omega-3)","Turmeric (anti-inflammatory)","Brazil nuts (selenium)","Yogurt (probiotics)"],"avoid":["Caffeine (especially after 2pm)","Alcohol","Sugar spikes","Processed foods","Artificial sweeteners","High-sodium foods"]},"doctor_type":"Psychiatrist / Psychologist","urgency_rules":{"see_doctor_if":["Anxiety interfering with daily life >2 weeks","Panic attacks occurring","Avoiding social situations","Sleep severely disrupted"],"emergency_if":["First panic attack (may mimic heart attack)","Suicidal thoughts","Unable to leave home (agoraphobia)","Severe chest pain during anxiety"]},"precautions":["Therapy (CBT recommended)","Stress management","Regular exercise","Adequate sleep","Limit caffeine and alcohol","Social support"],"risk_factors":["Family history","Trauma","Chronic stress","Substance abuse","Personality type","Other mental health conditions"],"age_groups":["Adults","Adolescents"]},"Gastroenteritis":{"symptoms":["diarrhea","nausea","vomiting","stomach cramps","mild fever","headache","dehydration","loss of appetite","bloating"],"severity":"Mild","description":"Inflammation of stomach and intestines causing diarrhea and vomiting. Often viral (stomach flu).","medications":[{"name":"Oral Rehydration Solution (ORS)","dosage":"200ml","frequency":"After each loose stool","max_per_day":"Unlimited","duration":"Until resolved","notes":"Most important treatment - prevents dehydration"},{"name":"Loperamide","dosage":"2mg","frequency":"After each loose stool","max_per_day":"8mg","duration":"2 days max","notes":"Anti-diarrheal - NOT for bloody diarrhea"},{"name":"Ondansetron","dosage":"4mg","frequency":"Every 8 hours as needed","max_per_day":"12mg","duration":"1-2 days","notes":"Anti-nausea"},{"name":"Probiotic supplement","dosage":"10 billion CFU","frequency":"Once daily","max_per_day":"As labeled","duration":"7-14 days","notes":"Restores gut flora"}],"home_remedies":["Drink ORS or homemade solution (1L water + 6tsp sugar + 0.5tsp salt)","Eat BRAT diet (Bananas, Rice, Applesauce, Toast)","Sip ginger tea for nausea","Rest and avoid solid food for 12-24 hours","Gradually reintroduce bland foods"],"diet":{"eat":["Bananas","White rice","Applesauce","Toast","Plain crackers","Clear broths","Ginger tea","Yogurt (after 24 hours)"],"avoid":["Dairy products (24-48 hours)","Fatty/greasy foods","Spicy foods","Caffeine","Alcohol","High-fiber foods","Raw vegetables"]},"doctor_type":"General Practitioner / Gastroenterologist","urgency_rules":{"see_doctor_if":["Symptoms >3 days","Blood in stool","High fever >39°C","Signs of dehydration","Elderly or young children"],"emergency_if":["Severe dehydration (dry mouth, no urine, dizziness)","Bloody diarrhea with high fever","Severe abdominal pain","Persistent vomiting >24 hours"]},"precautions":["Hand washing","Safe food preparation","Drink clean water","Avoid contaminated food","Proper food storage"],"risk_factors":["Contaminated food/water","Close contact with infected person","Travel to developing countries","Weakened immune system"],"age_groups":["All ages - higher risk in children and elderly"]}},"doctor_specialties":{"General Practitioner (GP)":"First point of contact for general health issues","Cardiologist":"Heart and blood vessel conditions","Pulmonologist":"Lung and respiratory conditions","Endocrinologist":"Hormone and gland disorders (diabetes, thyroid)","Neurologist":"Brain, spine, and nervous system conditions","Gastroenterologist":"Digestive system conditions","Psychiatrist":"Mental health conditions (can prescribe medication)","Psychologist":"Mental health therapy (non-medical)","General Surgeon":"Surgical conditions","Emergency Medicine":"Acute emergency conditions","Infectious Disease Specialist":"Infectious diseases","Allergist":"Allergies and immune system","Diabetologist":"Diabetes management","Urologist":"Urinary system and male reproductive organs","Rheumatologist":"Joint and autoimmune conditions","Nephrologist":"Kidney conditions","Hepatologist":"Liver conditions","Ophthalmologist":"Eye conditions","ENT Specialist":"Ear, nose, throat conditions","Dermatologist":"Skin conditions"}};
+<div class="app-container">
+<div class="chat-header">
+<div class="avatar">ROBOT</div>
+<div class="info"><h1>Dr. AI Assistant</h1><p>Smart Medical Chatbot v2.0</p></div>
+<div class="status"><div class="status-dot"></div><span>Online</span></div>
+</div>
+<div class="chat-messages" id="chatMessages"></div>
+<div class="typing" id="typingIndicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+<div class="input-hint">Quick symptoms: <span class="symptom-chips" id="quickSymptoms"></span></div>
+<div class="chat-input-area">
+<input type="text" id="userInput" placeholder="Describe your symptoms..." onkeydown="if(event.key==='Enter')sendMessage()" maxlength="500">
+<button onclick="sendMessage()" id="sendBtn">GO</button>
+</div>
+<div class="input-error" id="inputError">Please describe at least 3 characters.</div>
+</div>
+<script>const MEDICAL_DATA = {"metadata":{"source":"Kaggle (AI Health Guard, Disease and Symptoms, Medical Data) + GitHub (Medicare, Disease Prediction, ChatDoctor) + Medical References","total_diseases":30,"symptom_categories":120,"last_updated":"2025-01-26","version":"2.0"},"diseases":{"Common Cold":{"symptoms":["runny nose","sneezing","sore throat","cough","mild fever","headache","congestion","watery eyes","fatigue"],"severity":"Mild","description":"A viral infection of the upper respiratory tract. Usually self-limiting within 7-10 days.","medications":[{"name":"Paracetamol (Acetaminophen)","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"3-5 days","notes":"For fever and headache relief"},{"name":"Pseudoephedrine","dosage":"60mg","frequency":"Every 4-6 hours","max_per_day":"240mg","duration":"3-5 days","notes":"For nasal congestion"},{"name":"Dextromethorphan","dosage":"10-20mg","frequency":"Every 4 hours","max_per_day":"120mg","duration":"3-5 days","notes":"For cough suppression"},{"name":"Vitamin C","dosage":"1000mg","frequency":"Once daily","max_per_day":"2000mg","duration":"7-10 days","notes":"Immune system support"}],"home_remedies":["Drink warm fluids (ginger tea, honey lemon water)","Gargle with warm salt water 3-4 times daily","Use humidifier or steam inhalation","Get plenty of rest (8-10 hours sleep)","Stay hydrated (8-10 glasses of water daily)"],"diet":{"eat":["Chicken soup","Ginger tea","Honey","Citrus fruits","Garlic","Turmeric milk","Warm broths"],"avoid":["Dairy products (may increase mucus)","Fried foods","Sugary drinks","Alcohol","Cold beverages"]},"doctor_type":"General Practitioner (GP)","urgency_rules":{"see_doctor_if":["Fever > 39°C for >3 days","Symptoms > 10 days","Difficulty breathing","Chest pain","Severe headache"],"emergency_if":["High fever with confusion","Difficulty breathing","Chest tightness"]},"precautions":["Wash hands frequently","Cover mouth when coughing","Avoid close contact","Stay hydrated","Rest"],"risk_factors":["Seasonal changes","Weak immune system","Stress","Lack of sleep"],"age_groups":["Children","Adults","Elderly"]},"Flu":{"symptoms":["high fever","chills","body aches","fatigue","headache","sore throat","cough","weakness","runny nose"],"severity":"Moderate","description":"Influenza is a contagious respiratory illness caused by influenza viruses. More severe than common cold.","medications":[{"name":"Oseltamivir (Tamiflu)","dosage":"75mg","frequency":"Twice daily","max_per_day":"150mg","duration":"5 days","notes":"Antiviral - best within 48 hours of onset"},{"name":"Paracetamol (Acetaminophen)","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"5-7 days","notes":"For fever and body aches"},{"name":"Ibuprofen","dosage":"400mg","frequency":"Every 6-8 hours","max_per_day":"1200mg","duration":"5-7 days","notes":"For body aches and fever"},{"name":"Zinc lozenges","dosage":"10-15mg","frequency":"Every 2-3 hours","max_per_day":"100mg","duration":"5-7 days","notes":"May reduce duration if started early"}],"home_remedies":["Stay in bed and rest completely for 3-5 days","Drink warm fluids every 2 hours","Inhale steam with eucalyptus oil","Apply warm compress for body aches","Honey and lemon in warm water for throat"],"diet":{"eat":["Chicken soup/broth","Ginger tea","Garlic","Citrus fruits","Leafy greens","Yogurt (probiotics)","Warm water"],"avoid":["Alcohol","Caffeine","Processed foods","Dairy if mucus increases","Cold drinks"]},"doctor_type":"General Practitioner / Infectious Disease Specialist","urgency_rules":{"see_doctor_if":["Fever > 39°C for >3 days","Symptoms worsening after 5 days","Dehydration signs","Underlying conditions (diabetes, heart disease)"],"emergency_if":["Difficulty breathing or shortness of breath","Chest pain","Confusion or altered mental state","Severe weakness","Bluish lips or face"]},"precautions":["Annual flu vaccination","Hand hygiene","Avoid crowds during outbreaks","Wear mask if coughing","Stay home when sick"],"risk_factors":["Age >65 or <5","Pregnancy","Chronic conditions","Immunocompromised","Healthcare workers"],"age_groups":["Children","Adults","Elderly"]},"COVID-19":{"symptoms":["fever","dry cough","fatigue","loss of taste","loss of smell","shortness of breath","muscle aches","sore throat","headache","chills"],"severity":"Severe","description":"Coronavirus disease caused by SARS-CoV-2. Range from mild to severe respiratory illness.","medications":[{"name":"Paracetamol (Acetaminophen)","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"As needed","notes":"For fever and body aches"},{"name":"Vitamin D3","dosage":"2000-4000 IU","frequency":"Once daily","max_per_day":"4000 IU","duration":"14 days","notes":"Immune support"},{"name":"Vitamin C","dosage":"1000mg","frequency":"Twice daily","max_per_day":"2000mg","duration":"14 days","notes":"Antioxidant support"},{"name":"Zinc","dosage":"25-50mg","frequency":"Once daily","max_per_day":"50mg","duration":"14 days","notes":"Immune function"}],"home_remedies":["Complete isolation for 5-7 days minimum","Monitor oxygen levels with pulse oximeter (seek help if <92%)","Sleep on stomach (prone position) for breathing","Steam inhalation 3-4 times daily","Gargle with warm salt water for throat"],"diet":{"eat":["High protein foods (eggs, fish, chicken)","Citrus fruits","Ginger tea","Turmeric milk","Warm soups","Nuts and seeds"],"avoid":["Alcohol","Smoking","Processed foods","Excessive sugar","Cold drinks"]},"doctor_type":"General Practitioner / Pulmonologist / Infectious Disease Specialist","urgency_rules":{"see_doctor_if":["Fever > 3 days","Persistent cough > 2 weeks","Underlying health conditions","Pregnancy","Age >60"],"emergency_if":["Difficulty breathing","Chest pain/pressure","Confusion","Inability to stay awake","Bluish lips/face","Oxygen saturation <92%"]},"precautions":["Vaccination","Mask wearing","Social distancing","Hand hygiene","Avoid crowded indoor spaces"],"risk_factors":["Age >60","Obesity","Diabetes","Heart disease","Immunocompromised","Pregnancy"],"age_groups":["All ages - higher risk in elderly"]},"Diabetes":{"symptoms":["frequent urination","excessive thirst","unexplained weight loss","fatigue","blurred vision","slow healing wounds","numbness in extremities","increased hunger"],"severity":"Chronic","description":"Chronic condition affecting how the body processes blood sugar (glucose). Type 1 or Type 2.","medications":[{"name":"Metformin","dosage":"500mg","frequency":"Twice daily with meals","max_per_day":"2000mg","duration":"Long-term","notes":"First-line for Type 2 diabetes"},{"name":"Glipizide","dosage":"5mg","frequency":"Once daily before breakfast","max_per_day":"40mg","duration":"Long-term","notes":"Stimulates insulin release"},{"name":"Insulin (if prescribed)","dosage":"As prescribed","frequency":"As prescribed","max_per_day":"As prescribed","duration":"Long-term","notes":"For Type 1 or advanced Type 2"},{"name":"Alpha-lipoic acid","dosage":"600mg","frequency":"Once daily","max_per_day":"1200mg","duration":"Long-term","notes":"For nerve pain (neuropathy)"}],"home_remedies":["Monitor blood glucose daily (fasting and post-meal)","Exercise 30 minutes daily (walking, swimming)","Maintain healthy weight (BMI 18.5-24.9)","Check feet daily for cuts or sores","Get 7-8 hours of quality sleep"],"diet":{"eat":["Whole grains (oats, brown rice)","Leafy greens","Lean proteins (fish, chicken)","Legumes","Nuts (almonds, walnuts)","Low-fat dairy","Non-starchy vegetables"],"avoid":["Sugary foods and drinks","White bread/pasta","Fried foods","Fruit juices","Processed snacks","High-carb foods","Alcohol"]},"doctor_type":"Endocrinologist / Diabetologist","urgency_rules":{"see_doctor_if":["Blood sugar >250mg/dL or <70mg/dL","Ketones in urine","Frequent infections","Vision changes","Numbness/tingling in feet"],"emergency_if":["Blood sugar >400mg/dL","Signs of diabetic ketoacidosis (nausea, vomiting, abdominal pain, fruity breath)","Severe dehydration","Confusion or loss of consciousness"]},"precautions":["Regular blood sugar monitoring","Balanced diet","Regular exercise","Foot care","Annual eye exams","Dental checkups"],"risk_factors":["Family history","Obesity","Sedentary lifestyle","Age >45","PCOS","Gestational diabetes history"],"age_groups":["Adults (Type 2)","Can occur at any age (Type 1)"]},"Hypertension":{"symptoms":["headache","dizziness","shortness of breath","chest pain","nosebleeds","vision problems","flushing","irregular heartbeat"],"severity":"Chronic","description":"High blood pressure (≥130/80 mmHg) that can lead to heart disease, stroke, and kidney failure.","medications":[{"name":"Amlodipine","dosage":"5mg","frequency":"Once daily","max_per_day":"10mg","duration":"Long-term","notes":"Calcium channel blocker"},{"name":"Lisinopril","dosage":"10mg","frequency":"Once daily","max_per_day":"40mg","duration":"Long-term","notes":"ACE inhibitor"},{"name":"Losartan","dosage":"50mg","frequency":"Once daily","max_per_day":"100mg","duration":"Long-term","notes":"ARB - if ACE inhibitor causes cough"},{"name":"Hydrochlorothiazide","dosage":"12.5-25mg","frequency":"Once daily","max_per_day":"50mg","duration":"Long-term","notes":"Diuretic - reduces fluid retention"}],"home_remedies":["Monitor blood pressure daily at home","Reduce salt intake to <5g/day","Exercise 150 minutes/week (moderate intensity)","Practice deep breathing/meditation for stress","Maintain healthy weight (lose 5-10% if overweight)"],"diet":{"eat":["DASH diet foods","Leafy greens (spinach, kale)","Bananas (potassium)","Oats","Garlic","Beetroot","Fatty fish (salmon, mackerel)","Berries"],"avoid":["Salt (sodium >5g/day)","Processed foods","Canned soups","Pickles","Alcohol","Caffeine (excessive)","Red meat","Fried foods"]},"doctor_type":"Cardiologist / General Physician","urgency_rules":{"see_doctor_if":["BP >140/90 consistently","Headaches becoming frequent","Vision changes","New chest discomfort"],"emergency_if":["BP >180/120 (Hypertensive crisis)","Chest pain","Severe headache with confusion","Shortness of breath","Seizures"]},"precautions":["Regular BP monitoring","Low sodium diet","Regular exercise","Weight management","Limit alcohol","Stress management"],"risk_factors":["Family history","Obesity","High salt intake","Sedentary lifestyle","Smoking","Age >55","Chronic kidney disease","Sleep apnea"],"age_groups":["Adults >30","Elderly"]},"Migraine":{"symptoms":["severe headache","nausea","vomiting","sensitivity to light","sensitivity to sound","visual aura","throbbing pain","neck stiffness"],"severity":"Moderate","description":"Neurological condition with recurrent moderate to severe headaches, often one-sided.","medications":[{"name":"Sumatriptan","dosage":"50-100mg","frequency":"At onset of migraine","max_per_day":"200mg","duration":"As needed","notes":"Triptan - best taken at first sign"},{"name":"Ibuprofen","dosage":"400mg","frequency":"At onset","max_per_day":"1200mg","duration":"As needed","notes":"NSAID for pain relief"},{"name":"Prochlorperazine","dosage":"5mg","frequency":"For nausea","max_per_day":"15mg","duration":"As needed","notes":"Anti-nausea"},{"name":"Magnesium supplement","dosage":"400mg","frequency":"Daily","max_per_day":"400mg","duration":"Long-term","notes":"Prevention - may reduce frequency"}],"home_remedies":["Lie down in a dark, quiet room immediately","Apply cold or warm compress to head/neck","Drink caffeine (coffee/tea) at onset - may help","Massage temples and neck muscles","Practice relaxation techniques (deep breathing)"],"diet":{"eat":["Magnesium-rich foods (spinach, almonds)","Ginger (anti-nausea)","Whole grains","Hydrating foods (cucumber, watermelon)","Omega-3 fatty fish"],"avoid":["Aged cheeses","Chocolate","Caffeine (excessive or withdrawal)","Alcohol (especially red wine)","Processed meats (nitrates)","Monosodium glutamate (MSG)","Artificial sweeteners","Skipped meals"]},"doctor_type":"Neurologist","urgency_rules":{"see_doctor_if":["Migraines >4 times/month","New onset after age 50","Migraines lasting >72 hours","Aura symptoms lasting >1 hour"],"emergency_if":["Thunderclap headache (sudden, worst ever)","Headache with fever and stiff neck","Headache after head injury","Headache with confusion, weakness, or vision loss"]},"precautions":["Identify and avoid triggers","Regular sleep schedule","Stay hydrated","Manage stress","Limit caffeine","Regular exercise"],"risk_factors":["Family history","Female gender","Hormonal changes","Stress","Certain foods","Sleep changes"],"age_groups":["Adults 20-40","Women more common"]},"Asthma":{"symptoms":["wheezing","shortness of breath","chest tightness","coughing","difficulty breathing","rapid breathing","trouble sleeping due to breathing"],"severity":"Chronic","description":"Chronic respiratory condition with airway inflammation and constriction, causing breathing difficulty.","medications":[{"name":"Albuterol (Rescue inhaler)","dosage":"90mcg","frequency":"2 puffs every 4-6 hours as needed","max_per_day":"12 puffs","duration":"As needed","notes":"Quick relief for acute attacks"},{"name":"Fluticasone (Controller inhaler)","dosage":"44-220mcg","frequency":"2 puffs twice daily","max_per_day":"As prescribed","duration":"Long-term","notes":"Corticosteroid - prevents attacks"},{"name":"Montelukast","dosage":"10mg","frequency":"Once daily at bedtime","max_per_day":"10mg","duration":"Long-term","notes":"Leukotriene receptor antagonist"},{"name":"Prednisone (for severe attacks)","dosage":"40mg","frequency":"Once daily for 5 days","max_per_day":"60mg","duration":"Short course only","notes":"Oral corticosteroid - emergency use"}],"home_remedies":["Use peak flow meter daily to monitor lung function","Practice diaphragmatic breathing exercises","Use air purifier with HEPA filter","Keep humidity at 30-50%","Avoid tobacco smoke completely"],"diet":{"eat":["Foods rich in vitamin C (citrus, bell peppers)","Vitamin E (nuts, seeds)","Omega-3 fatty fish","Magnesium-rich foods","Apples (quercetin)","Ginger (anti-inflammatory)"],"avoid":["Sulfites (preserved foods, wine)","Dairy (if increases mucus)","Foods causing allergies","Cold beverages during attacks","Fried foods"]},"doctor_type":"Pulmonologist / Allergist","urgency_rules":{"see_doctor_if":["Using rescue inhaler >2 times/week","Nighttime symptoms >2 times/month","Asthma interfering with daily activities","Peak flow <80% of personal best"],"emergency_if":["Severe shortness of breath","Lips/fingernails turning blue","Cannot speak full sentences","Rescue inhaler not helping after 15 minutes","Chest feels tight and won't relax"]},"precautions":["Always carry rescue inhaler","Avoid known triggers","Get flu vaccine annually","Regular checkups","Use controller medication daily"],"risk_factors":["Family history","Allergies","Obesity","Smoking/exposure","Air pollution","Respiratory infections as child"],"age_groups":["Children","Adults"]},"Pneumonia":{"symptoms":["high fever","chills","productive cough","chest pain","shortness of breath","rapid breathing","fatigue","confusion","sweating","loss of appetite"],"severity":"Severe","description":"Infection causing inflammation in air sacs of the lungs, which may fill with fluid or pus.","medications":[{"name":"Amoxicillin","dosage":"500mg","frequency":"Three times daily","max_per_day":"3g","duration":"7-10 days","notes":"First-line antibiotic for bacterial pneumonia"},{"name":"Azithromycin","dosage":"500mg","frequency":"Once daily","max_per_day":"500mg","duration":"5 days","notes":"For atypical pneumonia or penicillin allergy"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"As needed","notes":"For fever and chest pain"},{"name":"Guaifenesin","dosage":"200-400mg","frequency":"Every 4 hours","max_per_day":"2400mg","duration":"7-10 days","notes":"Expectorant - helps clear mucus"}],"home_remedies":["Complete bed rest for 5-7 days","Drink fluids to thin mucus (warm water, herbal tea)","Use humidifier or steam inhalation","Sleep with head elevated (2-3 pillows)","Deep breathing exercises every 2 hours while awake"],"diet":{"eat":["High protein foods (eggs, lean meat)","Warm soups and broths","Citrus fruits (vitamin C)","Garlic (antibacterial)","Ginger tea","Honey in warm water"],"avoid":["Cold beverages","Dairy if mucus increases","Alcohol","Smoking","Fried/greasy foods","Sugary foods"]},"doctor_type":"Pulmonologist / General Physician","urgency_rules":{"see_doctor_if":["Fever >39°C for >3 days","Cough with blood","Chest pain worsening","Age >65 or <5","Existing lung/heart conditions"],"emergency_if":["Severe difficulty breathing","Bluish lips or face","Confusion or altered mental state","Very low blood pressure","Rapid heart rate >120"]},"precautions":["Pneumococcal vaccination","Flu vaccination","Hand hygiene","Avoid smoking","Strengthen immune system"],"risk_factors":["Age >65 or <2","Chronic lung disease","Diabetes","Heart disease","Immunocompromised","Smoking"],"age_groups":["Elderly","Young children","Adults with risk factors"]},"Appendicitis":{"symptoms":["severe abdominal pain (lower right)","nausea","vomiting","loss of appetite","fever","constipation","abdominal bloating","rebound tenderness"],"severity":"Severe","description":"Inflammation of the appendix. Medical emergency requiring prompt surgical removal.","medications":[{"name":"Note: Surgery is primary treatment","dosage":"N/A","frequency":"N/A","max_per_day":"N/A","duration":"N/A","notes":"Appendectomy (surgical removal) is required"},{"name":"IV antibiotics (pre/post surgery)","dosage":"As prescribed","frequency":"As prescribed","max_per_day":"As prescribed","duration":"3-7 days","notes":"Cefotaxime + Metronidazole typically"},{"name":"Paracetamol (for pain pre-surgery)","dosage":"500mg","frequency":"Every 6 hours","max_per_day":"3g","duration":"Until surgery","notes":"Avoid NSAIDs before surgery"},{"name":"Morphine (hospital setting)","dosage":"As prescribed","frequency":"As prescribed","max_per_day":"As prescribed","duration":"Hospital only","notes":"For severe pain control"}],"home_remedies":["DO NOT attempt home treatment - this is a medical emergency","Do NOT eat or drink (nil per os) if appendicitis suspected","Do NOT take laxatives or enemas","Do NOT apply heat to abdomen","Go to emergency room immediately"],"diet":{"eat":["Nothing until surgery","Post-surgery: clear liquids, then soft foods","Gradual return to normal diet"],"avoid":["All food/drink before surgery","Heavy foods post-surgery (first 48 hours)","Constipating foods","Alcohol"]},"doctor_type":"General Surgeon / Emergency Medicine","urgency_rules":{"see_doctor_if":["GO TO EMERGENCY ROOM IMMEDIATELY"],"emergency_if":["Severe abdominal pain especially lower right","Fever with abdominal pain","Nausea/vomiting with severe abdominal pain","Rigid abdomen"]},"precautions":["Seek immediate medical attention","Do not delay","Do not eat or drink","No home remedies"],"risk_factors":["Age 10-30","Male","Family history"],"age_groups":["Children","Young adults"]},"Depression":{"symptoms":["persistent sadness","loss of interest","fatigue","sleep changes","appetite changes","difficulty concentrating","feelings of worthlessness","thoughts of death","anxiety","irritability"],"severity":"Moderate","description":"Mood disorder causing persistent sadness and loss of interest, affecting daily functioning.","medications":[{"name":"Sertraline (SSRI)","dosage":"50mg","frequency":"Once daily morning","max_per_day":"200mg","duration":"6-12 months minimum","notes":"First-line antidepressant"},{"name":"Escitalopram (SSRI)","dosage":"10mg","frequency":"Once daily morning","max_per_day":"20mg","duration":"6-12 months minimum","notes":"Well-tolerated SSRI"},{"name":"Bupropion (NDRI)","dosage":"150mg","frequency":"Once daily morning","max_per_day":"450mg","duration":"6-12 months minimum","notes":"If sexual side effects from SSRIs"},{"name":"Vitamin D3","dosage":"2000 IU","frequency":"Once daily","max_per_day":"4000 IU","duration":"Long-term","notes":"May help seasonal depression"}],"home_remedies":["Exercise 30 minutes daily (releases endorphins)","Maintain regular sleep schedule (7-9 hours)","Practice mindfulness meditation 10-20 min daily","Journal thoughts and feelings daily","Spend time outdoors in sunlight","Connect with friends/family regularly"],"diet":{"eat":["Omega-3 fatty fish (salmon, sardines)","Dark leafy greens (folate)","Nuts and seeds (magnesium)","Berries (antioxidants)","Whole grains","Bananas (tryptophan)","Dark chocolate (moderate)"],"avoid":["Alcohol","Excessive caffeine","Sugar and processed foods","Trans fats","High-sodium foods"]},"doctor_type":"Psychiatrist / Clinical Psychologist","urgency_rules":{"see_doctor_if":["Symptoms >2 weeks","Interfering with work/relationships","Sleep problems persistent","Loss of appetite >1 week"],"emergency_if":["Thoughts of self-harm or suicide","Suicide plan or intent","Unable to care for self","Hearing voices or hallucinations","Severe agitation or restlessness"]},"precautions":["Regular therapy sessions","Medication compliance","Social support","Avoid alcohol","Monitor mood changes","Emergency contact available"],"risk_factors":["Family history","Trauma history","Chronic illness","Stressful life events","Substance abuse","Loneliness/isolation"],"age_groups":["Adults","Elderly","Adolescents"]},"Anxiety Disorder":{"symptoms":["excessive worry","restlessness","irritability","muscle tension","sleep disturbances","difficulty concentrating","rapid heartbeat","sweating","panic attacks","trembling"],"severity":"Moderate","description":"Mental health condition with excessive and persistent worry, fear, and nervousness.","medications":[{"name":"Sertraline (SSRI)","dosage":"25-50mg","frequency":"Once daily morning","max_per_day":"200mg","duration":"6-12 months","notes":"First-line for anxiety"},{"name":"Buspirone","dosage":"5-10mg","frequency":"Twice daily","max_per_day":"60mg","duration":"Long-term","notes":"Non-benzodiazepine anxiolytic"},{"name":"Propranolol (for physical symptoms)","dosage":"10-40mg","frequency":"Before anxiety-provoking situation","max_per_day":"120mg","duration":"As needed","notes":"Beta-blocker for performance anxiety"},{"name":"L-theanine supplement","dosage":"200mg","frequency":"Once or twice daily","max_per_day":"400mg","duration":"Long-term","notes":"Natural amino acid for calmness"}],"home_remedies":["Practice box breathing: 4-4-4-4 pattern","Progressive muscle relaxation (PMR) daily","Limit caffeine to <200mg/day (1-2 cups coffee)","Regular aerobic exercise (30 min, 5x/week)","Mindfulness meditation apps (Headspace, Calm)","Journaling worries and challenging thoughts"],"diet":{"eat":["Complex carbohydrates (oats, quinoa)","Chamomile tea","Green tea (L-theanine)","Fatty fish (omega-3)","Turmeric (anti-inflammatory)","Brazil nuts (selenium)","Yogurt (probiotics)"],"avoid":["Caffeine (especially after 2pm)","Alcohol","Sugar spikes","Processed foods","Artificial sweeteners","High-sodium foods"]},"doctor_type":"Psychiatrist / Psychologist","urgency_rules":{"see_doctor_if":["Anxiety interfering with daily life >2 weeks","Panic attacks occurring","Avoiding social situations","Sleep severely disrupted"],"emergency_if":["First panic attack (may mimic heart attack)","Suicidal thoughts","Unable to leave home (agoraphobia)","Severe chest pain during anxiety"]},"precautions":["Therapy (CBT recommended)","Stress management","Regular exercise","Adequate sleep","Limit caffeine and alcohol","Social support"],"risk_factors":["Family history","Trauma","Chronic stress","Substance abuse","Personality type","Other mental health conditions"],"age_groups":["Adults","Adolescents"]},"Gastroenteritis":{"symptoms":["diarrhea","nausea","vomiting","stomach cramps","mild fever","headache","dehydration","loss of appetite","bloating"],"severity":"Mild","description":"Inflammation of stomach and intestines causing diarrhea and vomiting. Often viral (stomach flu).","medications":[{"name":"Oral Rehydration Solution (ORS)","dosage":"200ml","frequency":"After each loose stool","max_per_day":"Unlimited","duration":"Until resolved","notes":"Most important treatment - prevents dehydration"},{"name":"Loperamide","dosage":"2mg","frequency":"After each loose stool","max_per_day":"8mg","duration":"2 days max","notes":"Anti-diarrheal - NOT for bloody diarrhea"},{"name":"Ondansetron","dosage":"4mg","frequency":"Every 8 hours as needed","max_per_day":"12mg","duration":"1-2 days","notes":"Anti-nausea"},{"name":"Probiotic supplement","dosage":"10 billion CFU","frequency":"Once daily","max_per_day":"As labeled","duration":"7-14 days","notes":"Restores gut flora"}],"home_remedies":["Drink ORS or homemade solution (1L water + 6tsp sugar + 0.5tsp salt)","Eat BRAT diet (Bananas, Rice, Applesauce, Toast)","Sip ginger tea for nausea","Rest and avoid solid food for 12-24 hours","Gradually reintroduce bland foods"],"diet":{"eat":["Bananas","White rice","Applesauce","Toast","Plain crackers","Clear broths","Ginger tea","Yogurt (after 24 hours)"],"avoid":["Dairy products (24-48 hours)","Fatty/greasy foods","Spicy foods","Caffeine","Alcohol","High-fiber foods","Raw vegetables"]},"doctor_type":"General Practitioner / Gastroenterologist","urgency_rules":{"see_doctor_if":["Symptoms >3 days","Blood in stool","High fever >39°C","Signs of dehydration","Elderly or young children"],"emergency_if":["Severe dehydration (dry mouth, no urine, dizziness)","Bloody diarrhea with high fever","Severe abdominal pain","Persistent vomiting >24 hours"]},"precautions":["Hand washing","Safe food preparation","Drink clean water","Avoid contaminated food","Proper food storage"],"risk_factors":["Contaminated food/water","Close contact with infected person","Travel to developing countries","Weakened immune system"],"age_groups":["All ages - higher risk in children and elderly"]},"Anemia":{"symptoms":["fatigue","weakness","pale skin","shortness of breath","dizziness","cold hands and feet","headache","chest pain","brittle nails"],"severity":"Moderate","description":"Condition characterized by lack of healthy red blood cells to carry adequate oxygen to tissues.","medications":[{"name":"Ferrous sulfate (Iron supplement)","dosage":"65mg elemental iron","frequency":"Once daily","max_per_day":"200mg elemental","duration":"3-6 months","notes":"Take with vitamin C for absorption"},{"name":"Folic acid","dosage":"1mg","frequency":"Once daily","max_per_day":"1mg","duration":"3-6 months","notes":"For folate-deficiency anemia"},{"name":"Vitamin B12 (Cyanocobalamin)","dosage":"1000mcg","frequency":"Once daily","max_per_day":"1000mcg","duration":"3-6 months","notes":"For B12-deficiency anemia"},{"name":"Epoetin alfa (if prescribed)","dosage":"As prescribed","frequency":"As prescribed","max_per_day":"As prescribed","duration":"As prescribed","notes":"For chronic kidney disease anemia"}],"home_remedies":["Eat iron-rich foods (red meat, spinach, lentils)","Avoid tea/coffee 1 hour before and after meals","Cook in cast iron pans","Pair iron with vitamin C foods","Get adequate rest"],"diet":{"eat":["Red meat, liver","Spinach, kale","Lentils, beans","Fortified cereals","Citrus fruits (vitamin C)","Pumpkin seeds","Dark chocolate"],"avoid":["Tea and coffee (block iron absorption)","Dairy around meals","Whole grains with phytates","Alcohol"]},"doctor_type":"Hematologist / General Practitioner","urgency_rules":{"see_doctor_if":["Persistent fatigue >2 weeks","Shortness of breath with mild activity","Rapid heartbeat","Signs of bleeding"],"emergency_if":["Chest pain","Fainting","Severe shortness of breath","Rapid heartbeat with weakness"]},"precautions":["Regular blood tests","Iron supplements with meals","Avoid excess blood loss","Monitor symptoms","Vitamin C with iron"],"risk_factors":["Heavy menstrual periods","Pregnancy","Vegan/vegetarian diet","Chronic diseases","Family history","Gastrointestinal disorders"],"age_groups":["Women of reproductive age","Elderly","Children"]},"Arthritis":{"symptoms":["joint pain","joint stiffness","swelling","reduced range of motion","warmth in joints","morning stiffness","fatigue","fever"],"severity":"Chronic","description":"Inflammation of one or more joints causing pain and stiffness that can worsen with age.","medications":[{"name":"Ibuprofen","dosage":"400mg","frequency":"Every 6-8 hours","max_per_day":"1200mg","duration":"As needed","notes":"NSAID for pain and inflammation"},{"name":"Methotrexate","dosage":"7.5-25mg","frequency":"Once weekly","max_per_day":"25mg weekly","duration":"Long-term","notes":"For rheumatoid arthritis - DMARD"},{"name":"Prednisone","dosage":"5-10mg","frequency":"Once daily","max_per_day":"60mg","duration":"Short-term flares","notes":"Corticosteroid for flares"},{"name":"Acetaminophen","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"3g","duration":"As needed","notes":"For pain if NSAIDs not suitable"}],"home_remedies":["Hot/cold compresses on affected joints","Gentle range-of-motion exercises","Epsom salt baths","Weight management to reduce joint stress","Use assistive devices (canes, braces)"],"diet":{"eat":["Fatty fish (omega-3)","Turmeric and ginger","Berries (antioxidants)","Nuts and seeds","Green leafy vegetables","Olive oil","Cherries"],"avoid":["Processed foods","Sugar","Red meat","Fried foods","Refined carbohydrates","Alcohol","Excessive salt"]},"doctor_type":"Rheumatologist / Orthopedist","urgency_rules":{"see_doctor_if":["Joint pain >2 weeks","Swelling in multiple joints","Morning stiffness >1 hour","Difficulty performing daily activities"],"emergency_if":["Severe joint swelling with fever","Inability to move joint","Signs of infection (hot, red joint)"]},"precautions":["Regular exercise (low-impact)","Maintain healthy weight","Joint protection techniques","Warm up before exercise","Proper footwear"],"risk_factors":["Age >50","Family history","Obesity","Previous joint injury","Female gender","Occupation with repetitive stress"],"age_groups":["Adults >50","Elderly"]},"Bronchitis":{"symptoms":["persistent cough","mucus production","fatigue","chest discomfort","wheezing","shortness of breath","mild fever","sore throat"],"severity":"Moderate","description":"Inflammation of the bronchial tubes causing cough and mucus production. Can be acute or chronic.","medications":[{"name":"Guaifenesin","dosage":"200-400mg","frequency":"Every 4 hours","max_per_day":"2400mg","duration":"7-10 days","notes":"Expectorant - thins mucus"},{"name":"Dextromethorphan","dosage":"10-20mg","frequency":"Every 4 hours","max_per_day":"120mg","duration":"7-10 days","notes":"Cough suppressant for dry cough"},{"name":"Albuterol inhaler","dosage":"90mcg","frequency":"2 puffs every 4-6 hours","max_per_day":"12 puffs","duration":"7-10 days","notes":"If wheezing present"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"3-5 days","notes":"For fever and chest discomfort"}],"home_remedies":["Drink plenty of fluids to thin mucus","Use humidifier to add moisture to air","Avoid smoke and irritants completely","Gargle warm salt water for sore throat","Rest with head elevated"],"diet":{"eat":["Warm soups and broths","Ginger tea","Honey (for cough)","Citrus fruits (vitamin C)","Garlic","Leafy greens","Warm water"],"avoid":["Dairy (if increases mucus)","Alcohol","Smoking","Cold beverages","Fried foods","Processed foods"]},"doctor_type":"Pulmonologist / General Practitioner","urgency_rules":{"see_doctor_if":["Cough >3 weeks","Fever >39°C","Coughing up blood","Worsening shortness of breath","Age >65"],"emergency_if":["Severe difficulty breathing","Chest pain","Cyanosis (blue lips)","High fever with confusion"]},"precautions":["Avoid smoking and secondhand smoke","Get flu vaccine annually","Use humidifier in dry climates","Hand hygiene","Wear mask in polluted areas"],"risk_factors":["Smoking","Air pollution","Asthma/COPD","Weak immune system","Age >65","Gastric reflux"],"age_groups":["Adults","Elderly","Children"]},"Dengue":{"symptoms":["high fever","severe headache","muscle pain","joint pain","rash","nausea","vomiting","pain behind eyes","bleeding","fatigue"],"severity":"Severe","description":"Mosquito-borne viral infection causing fever and severe joint/muscle pain. Can develop into severe dengue (dengue hemorrhagic fever).","medications":[{"name":"Paracetamol (Acetaminophen)","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"5-7 days","notes":"For fever and pain - AVOID NSAIDs"},{"name":"Oral Rehydration Solution","dosage":"200ml","frequency":"After each episode","max_per_day":"Unlimited","duration":"Until resolved","notes":"Prevents dehydration"},{"name":"Vitamin C","dosage":"1000mg","frequency":"Twice daily","max_per_day":"2000mg","duration":"7-10 days","notes":"Immune support"},{"name":"Platelet support (if needed)","dosage":"As prescribed","frequency":"As prescribed","max_per_day":"As prescribed","duration":"As prescribed","notes":"Hospital monitoring if platelets drop"}],"home_remedies":["Drink plenty of fluids (coconut water, oral rehydration)","Rest completely","Monitor platelet count daily","Papaya leaf extract may help platelets (consult doctor)","Avoid any physical strain"],"diet":{"eat":["Coconut water","Papaya (leaves and fruit)","Pomegranate juice","Soups and broths","Citrus fruits","Leafy greens","Protein-rich foods"],"avoid":["NSAIDs (ibuprofen, aspirin)","Alcohol","Spicy foods","Fried foods","Oily foods","Sugary drinks"]},"doctor_type":"General Practitioner / Infectious Disease Specialist","urgency_rules":{"see_doctor_if":["Fever >3 days","Platelet count dropping","Rash spreading","Any bleeding signs"],"emergency_if":["Severe abdominal pain","Persistent vomiting","Bleeding from gums/nose","Blood in vomit/stool","Difficulty breathing","Severe weakness"]},"precautions":["Avoid mosquito bites (repellent, nets)","Remove standing water","Wear long sleeves/pants","Screen windows","Seek immediate care if symptoms worsen"],"risk_factors":["Living in tropical/subtropical areas","Previous dengue infection","Mosquito exposure","Weak immune system"],"age_groups":["Children","Adults","Elderly"]},"Food Poisoning":{"symptoms":["nausea","vomiting","diarrhea","stomach cramps","fever","weakness","headache","loss of appetite","dehydration"],"severity":"Mild","description":"Illness caused by eating contaminated food or drink. Symptoms typically appear within hours to days.","medications":[{"name":"Oral Rehydration Solution (ORS)","dosage":"200ml","frequency":"After each loose stool/vomit","max_per_day":"Unlimited","duration":"Until resolved","notes":"Prevents dehydration - most important"},{"name":"Loperamide","dosage":"2mg","frequency":"After each loose stool","max_per_day":"8mg","duration":"2 days max","notes":"NOT for bloody diarrhea or high fever"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"1-2 days","notes":"For fever and headache"},{"name":"Probiotic supplement","dosage":"10 billion CFU","frequency":"Once daily","max_per_day":"As labeled","duration":"7 days","notes":"Restores gut flora"}],"home_remedies":["Sip clear fluids frequently (water, clear broths, electrolyte drinks)","Eat BRAT diet (Bananas, Rice, Applesauce, Toast)","Avoid solid food for 6-12 hours","Ginger tea for nausea","Rest"],"diet":{"eat":["Bananas","White rice","Applesauce","Toast","Clear broths","Crackers","Ginger tea","Coconut water"],"avoid":["Dairy products","Fatty/greasy foods","Spicy foods","Caffeine","Alcohol","Raw vegetables","Sugary foods"]},"doctor_type":"General Practitioner / Gastroenterologist","urgency_rules":{"see_doctor_if":["Symptoms >3 days","Blood in stool","High fever >38.5°C","Signs of dehydration","Elderly or young children"],"emergency_if":["Severe dehydration","Bloody diarrhea with fever","Severe abdominal pain","Persistent vomiting >24 hours","Confusion"]},"precautions":["Proper food handling","Cook meat thoroughly","Refrigerate promptly","Avoid cross-contamination","Check expiry dates","Hand washing"],"risk_factors":["Improper food handling","Raw/undercooked meat","Unpasteurized products","Buffets/potlucks","Weakened immune system"],"age_groups":["All ages"]},"Gallstones":{"symptoms":["severe abdominal pain (upper right)","pain after fatty meals","nausea","vomiting","jaundice","clay-colored stools","fever","bloating"],"severity":"Moderate","description":"Hardened deposits in the gallbladder that can block bile ducts and cause severe pain and complications.","medications":[{"name":"Ursodiol (Ursodeoxycholic acid)","dosage":"300mg","frequency":"Twice daily","max_per_day":"1200mg","duration":"Months to years","notes":"Dissolves small cholesterol stones"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"As needed","notes":"For pain"},{"name":"Ibuprofen","dosage":"400mg","frequency":"Every 6-8 hours","max_per_day":"1200mg","duration":"As needed","notes":"For inflammation and pain"},{"name":"Anti-nausea medication","dosage":"As prescribed","frequency":"As needed","max_per_day":"As prescribed","duration":"As needed","notes":"For nausea during attacks"}],"home_remedies":["Low-fat diet immediately","Apply warm compress to abdomen during pain","Drink warm water with lemon","Apple cider vinegar (1 tbsp in water) may help","Maintain healthy weight"],"diet":{"eat":["High-fiber foods (oats, fruits, vegetables)","Lean proteins (fish, chicken)","Whole grains","Low-fat dairy","Leafy greens","Beets","Apples"],"avoid":["Fried foods","Fatty meats","Butter and cream","Cheese","Processed foods","High-cholesterol foods","Large meals"]},"doctor_type":"Gastroenterologist / General Surgeon","urgency_rules":{"see_doctor_if":["Recurring pain attacks","Pain after most meals","Jaundice","Fever with abdominal pain"],"emergency_if":["Severe unrelenting abdominal pain","High fever with chills","Yellowing of skin/eyes","Dark urine with pale stools"]},"precautions":["Low-fat diet","Maintain healthy weight","Avoid rapid weight loss","Regular exercise","Limit cholesterol intake"],"risk_factors":["Obesity","Female gender","Age >40","Pregnancy","High-cholesterol diet","Rapid weight loss","Diabetes"],"age_groups":["Adults >40","Women"]},"Hepatitis A":{"symptoms":["fatigue","nausea","vomiting","abdominal pain","loss of appetite","low-grade fever","dark urine","jaundice","clay-colored stools"],"severity":"Moderate","description":"Viral liver infection spread through contaminated food/water. Usually self-limiting with lifelong immunity.","medications":[{"name":"Supportive care only","dosage":"N/A","frequency":"N/A","max_per_day":"N/A","duration":"N/A","notes":"No specific antiviral - rest and hydration"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"3g","duration":"As needed","notes":"For fever - avoid if liver severely affected"},{"name":"Anti-nausea medication","dosage":"As prescribed","frequency":"As needed","max_per_day":"As prescribed","duration":"As needed","notes":"For nausea"},{"name":"Vitamin B complex","dosage":"As labeled","frequency":"Once daily","max_per_day":"As labeled","duration":"2-4 weeks","notes":"Liver support"}],"home_remedies":["Rest completely (2-4 weeks)","Drink plenty of fluids","Avoid ALL alcohol","Eat small, frequent meals","Avoid fatty foods"],"diet":{"eat":["Fruits and vegetables","Whole grains","Lean proteins","Low-fat dairy","Carrots and sweet potatoes (beta-carotene)","Green tea","Citrus fruits"],"avoid":["Alcohol (completely)","Fatty/greasy foods","Processed foods","Red meat","Shellfish","Raw seafood"]},"doctor_type":"Hepatologist / Gastroenterologist","urgency_rules":{"see_doctor_if":["Jaundice develops","Unable to keep food down","Symptoms worsening after 2 weeks","Confusion or altered mental state"],"emergency_if":["Confusion or altered mental state","Severe vomiting","Bleeding (nose, gums)","Severe abdominal swelling"]},"precautions":["Hepatitis A vaccination","Safe food and water practices","Hand hygiene","Avoid contaminated shellfish","Do not share food/drinks"],"risk_factors":["Travel to endemic areas","Contaminated food/water","Close contact with infected person","Men who have sex with men","Drug use"],"age_groups":["Children","Adults","Travelers"]},"Hepatitis B":{"symptoms":["fatigue","jaundice","abdominal pain","nausea","vomiting","loss of appetite","dark urine","joint pain","fever"],"severity":"Chronic","description":"Viral liver infection transmitted through blood and bodily fluids. Can become chronic and lead to cirrhosis.","medications":[{"name":"Tenofovir (TDF)","dosage":"300mg","frequency":"Once daily","max_per_day":"300mg","duration":"Long-term","notes":"Antiviral for chronic hepatitis B"},{"name":"Entecavir","dosage":"0.5mg","frequency":"Once daily","max_per_day":"1mg","duration":"Long-term","notes":"Potent antiviral for HBV"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"3g","duration":"As needed","notes":"For pain/fever - use cautiously"},{"name":"Liver support supplement","dosage":"As labeled","frequency":"Once daily","max_per_day":"As labeled","duration":"Long-term","notes":"Milk thistle or similar"}],"home_remedies":["Complete alcohol abstinence","Rest and avoid strenuous activity","Eat a healthy balanced diet","Monitor liver enzymes regularly","Avoid hepatotoxic medications"],"diet":{"eat":["Fruits and vegetables","Whole grains","Lean proteins","Low-fat dairy","Green tea","Beetroot","Garlic and onions"],"avoid":["Alcohol (completely)","Fatty foods","Processed foods","Sugary foods","High-sodium foods","Raw/undercooked seafood"]},"doctor_type":"Hepatologist / Gastroenterologist","urgency_rules":{"see_doctor_if":["Jaundice or dark urine","Persistent fatigue","Abdominal swelling","Regular monitoring of liver function"],"emergency_if":["Confusion or altered mental state","Severe abdominal swelling","Vomiting blood","Black tarry stools"]},"precautions":["Hepatitis B vaccination","Safe sex practices","Do not share needles","Regular liver monitoring","Avoid alcohol completely"],"risk_factors":["Unprotected sex","Sharing needles","Healthcare workers","Blood transfusions (pre-1992)","Mother-to-child transmission","Tattoos/piercings with unsterile equipment"],"age_groups":["Adults","Infants (mother-to-child)"]},"Hepatitis C":{"symptoms":["fatigue","jaundice","dark urine","clay-colored stools","nausea","loss of appetite","abdominal pain","joint pain","easy bruising","itching"],"severity":"Chronic","description":"Viral infection causing liver inflammation, often chronic. Now highly curable with modern antivirals.","medications":[{"name":"Sofosbuvir + Velpatasvir (Epclusa)","dosage":"400mg/100mg","frequency":"Once daily","max_per_day":"1 tablet","duration":"12 weeks","notes":"Pan-genotypic direct-acting antiviral"},{"name":"Glecaprevir + Pibrentasvir (Mavyret)","dosage":"300mg/120mg","frequency":"Once daily","max_per_day":"3 tablets","duration":"8 weeks","notes":"Short-course treatment, all genotypes"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"3g","duration":"As needed","notes":"For pain/fever"},{"name":"Vitamin D3","dosage":"2000 IU","frequency":"Once daily","max_per_day":"4000 IU","duration":"12 weeks","notes":"Immune support during treatment"}],"home_remedies":["Complete alcohol abstinence","Maintain healthy weight","Eat liver-friendly diet","Regular exercise","Get vaccinated for Hepatitis A and B"],"diet":{"eat":["Leafy greens","Cruciferous vegetables (broccoli, cauliflower)","Berries","Nuts and seeds","Fatty fish","Whole grains","Green tea"],"avoid":["Alcohol (completely)","Fried foods","Processed foods","Sugary foods","High-sodium foods","Red meat (excessive)"]},"doctor_type":"Hepatologist / Gastroenterologist","urgency_rules":{"see_doctor_if":["Any signs of liver disease","Jaundice","Abdominal swelling","Regular monitoring during treatment"],"emergency_if":["Confusion","Severe abdominal swelling","Vomiting blood","Black stools"]},"precautions":["No vaccine available - avoid exposure","Do not share needles","Safe sex practices","Screen blood products","Regular liver monitoring","Get vaccinated for Hep A and B"],"risk_factors":["Sharing needles","Blood transfusions before 1992","Unprotected sex","Healthcare workers","Tattoos/piercings with unsterile equipment","Mother-to-child transmission"],"age_groups":["Adults","Baby boomers (born 1945-1965)"]},"Hyperthyroidism":{"symptoms":["weight loss","rapid heartbeat","anxiety","irritability","tremor","sweating","heat sensitivity","difficulty sleeping","bulging eyes","diarrhea"],"severity":"Chronic","description":"Overactive thyroid gland producing excessive thyroid hormones, accelerating metabolism.","medications":[{"name":"Methimazole","dosage":"10-20mg","frequency":"Once daily","max_per_day":"60mg","duration":"12-18 months","notes":"First-line antithyroid medication"},{"name":"Propylthiouracil (PTU)","dosage":"100-150mg","frequency":"Three times daily","max_per_day":"900mg","duration":"12-18 months","notes":"Alternative if methimazole not tolerated"},{"name":"Propranolol","dosage":"20-40mg","frequency":"Three times daily","max_per_day":"240mg","duration":"Until thyroid controlled","notes":"Beta-blocker for rapid heart rate and tremor"},{"name":"Radioactive iodine (I-131)","dosage":"As calculated","frequency":"Single dose","max_per_day":"N/A","duration":"One-time","notes":"Destroys overactive thyroid tissue"}],"home_remedies":["Avoid iodine-rich foods (seaweed, iodized salt)","Practice stress-reduction techniques","Get adequate sleep","Avoid caffeine and stimulants","Weight-bearing exercises for bone health"],"diet":{"eat":["Non-iodized salt","Cruciferous vegetables (may help reduce thyroid hormone)","Berries","Lean proteins","Whole grains","Low-fat dairy","Green vegetables"],"avoid":["Iodized salt","Seaweed and kelp","Seafood","Dairy (high iodine)","Soy products","Caffeine","Alcohol"]},"doctor_type":"Endocrinologist","urgency_rules":{"see_doctor_if":["Heart rate >100 at rest","Unintentional weight loss","Eye problems","Heat intolerance interfering with daily life"],"emergency_if":["Thyroid storm: fever >38.5°C, rapid heart rate, agitation, confusion","Chest pain","Severe shortness of breath","Altered mental state"]},"precautions":["Regular thyroid function tests","Avoid excess iodine","Stress management","Balanced diet","Avoid stimulants","Monitor heart rate"],"risk_factors":["Graves' disease","Family history","Female gender","Age 20-40","Pregnancy","Previous thyroid issues"],"age_groups":["Adults 20-40","Women more common"]},"Hypothyroidism":{"symptoms":["fatigue","weight gain","cold sensitivity","dry skin","hair loss","constipation","depression","muscle weakness","slow heart rate","puffy face"],"severity":"Chronic","description":"Underactive thyroid gland not producing enough thyroid hormones, slowing metabolism.","medications":[{"name":"Levothyroxine (Synthroid)","dosage":"25-50mcg","frequency":"Once daily on empty stomach","max_per_day":"300mcg","duration":"Lifelong","notes":"Synthetic T4 - standard treatment"},{"name":"Liothyronine (T3)","dosage":"5-25mcg","frequency":"Once daily","max_per_day":"100mcg","duration":"As prescribed","notes":"T3 hormone - sometimes added to T4"},{"name":"Iron supplement","dosage":"65mg elemental","frequency":"Once daily","max_per_day":"200mg","duration":"3 months","notes":"If iron deficiency coexists"},{"name":"Vitamin D3","dosage":"2000 IU","frequency":"Once daily","max_per_day":"4000 IU","duration":"Long-term","notes":"Often deficient in hypothyroidism"}],"home_remedies":["Take medication on empty stomach, 30-60 min before breakfast","Eat iodine-rich foods (fish, eggs, dairy)","Regular exercise (moderate intensity)","Get adequate sleep","Monitor weight and energy levels"],"diet":{"eat":["Iodine-rich foods (fish, seaweed, eggs)","Selenium-rich foods (Brazil nuts, tuna)","Fruits and vegetables","Whole grains","Lean proteins","Low-fat dairy"],"avoid":["Soy products (may interfere with absorption)","Cruciferous vegetables in excess (goitrogens)","Gluten (if Hashimoto's)","Processed foods","Excessive fiber with medication"]},"doctor_type":"Endocrinologist","urgency_rules":{"see_doctor_if":["Symptoms worsening despite treatment","New symptoms develop","TSH levels abnormal","Goiter enlargement"],"emergency_if":["Myxedema coma: severe cold intolerance, confusion, lethargy","Very slow heart rate","Difficulty breathing","Severe hypothermia"]},"precautions":["Regular thyroid function tests (every 6-12 months)","Take medication consistently at same time","Avoid taking with calcium/iron supplements","Monitor cholesterol levels","Pregnancy requires dose adjustment"],"risk_factors":["Hashimoto's thyroiditis","Family history","Female gender","Age >60","Previous thyroid surgery","Radiation exposure","Pregnancy"],"age_groups":["Adults >60","Women","Elderly"]},"Jaundice":{"symptoms":["yellow skin","yellow eyes","dark urine","clay-colored stools","fatigue","abdominal pain","nausea","vomiting","fever","itching"],"severity":"Moderate","description":"Yellow discoloration of skin and eyes caused by high bilirubin levels, a symptom of underlying liver or blood disorder.","medications":[{"name":"Treat underlying cause","dosage":"N/A","frequency":"N/A","max_per_day":"N/A","duration":"N/A","notes":"Jaundice is a symptom, not a disease - treat cause"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"3g","duration":"As needed","notes":"For fever - avoid if liver disease severe"},{"name":"Anti-itch medication","dosage":"As prescribed","frequency":"As needed","max_per_day":"As prescribed","duration":"As needed","notes":"For itching (cholestyramine or antihistamines)"},{"name":"Vitamin K","dosage":"10mg","frequency":"Once daily","max_per_day":"10mg","duration":"5-7 days","notes":"If clotting problems from liver dysfunction"}],"home_remedies":["Drink plenty of water","Rest","Avoid alcohol completely","Eat liver-friendly foods","Avoid fatty foods","Monitor urine and stool color"],"diet":{"eat":["Fruits and vegetables","Whole grains","Lean proteins","Low-fat dairy","Carrots and sweet potatoes","Green tea","Coconut water"],"avoid":["Alcohol","Fatty/greasy foods","Processed foods","Red meat","Fried foods","High-sugar foods"]},"doctor_type":"Hepatologist / Gastroenterologist","urgency_rules":{"see_doctor_if":["Jaundice persists >2 days","Dark urine or pale stools","Abdominal pain","Fever with jaundice"],"emergency_if":["Confusion or altered mental state","Severe abdominal pain","Vomiting blood","Black tarry stools"]},"precautions":["Hepatitis vaccination","Avoid alcohol","Maintain healthy weight","Avoid hepatotoxic medications","Regular liver tests","Safe food practices"],"risk_factors":["Hepatitis","Liver disease","Gallstones","Hemolytic anemia","Alcohol abuse","Medications toxic to liver"],"age_groups":["All ages"]},"Kidney Stones":{"symptoms":["severe abdominal pain (flank)","pain radiating to groin","blood in urine","burning urination","frequent urination","nausea","vomiting","fever","chills","cloudy urine"],"severity":"Severe","description":"Hard mineral and salt deposits forming in kidneys, causing severe pain when passing through urinary tract.","medications":[{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"As needed","notes":"For pain"},{"name":"Ibuprofen","dosage":"400mg","frequency":"Every 6-8 hours","max_per_day":"1200mg","duration":"As needed","notes":"NSAID for pain and inflammation"},{"name":"Tamsulosin (alpha-blocker)","dosage":"0.4mg","frequency":"Once daily","max_per_day":"0.4mg","duration":"Until stone passes","notes":"Helps relax ureter to pass stone"},{"name":"Potassium citrate","dosage":"10-20mEq","frequency":"Twice daily","max_per_day":"60mEq","duration":"Long-term","notes":"Prevents stone formation"}],"home_remedies":["Drink 2-3 liters of water daily","Strain urine to catch stone for analysis","Apply heat to painful area","Lemon juice in water (citrate helps)","Gentle movement/walking may help pass stone"],"diet":{"eat":["Water (3+ liters/day)","Lemon juice","Cranberry juice","Calcium-rich foods (with meals)","Vegetables","Whole grains"],"avoid":["Oxalate-rich foods (spinach, beets, nuts, chocolate)","High-sodium foods","Cola drinks","Animal protein (excess)","Vitamin C supplements (high doses)"]},"doctor_type":"Urologist / Nephrologist","urgency_rules":{"see_doctor_if":["Pain not controlled with OTC meds","Fever with stone pain","Unable to pass urine","Stone >5mm"],"emergency_if":["Severe uncontrolled pain","Fever >38.5°C with chills","Unable to urinate","Vomiting preventing fluid intake"]},"precautions":["Drink 2-3 liters water daily","Reduce sodium intake","Maintain healthy weight","Limit oxalate-rich foods","Regular follow-up with urologist"],"risk_factors":["Family history","Dehydration","High-sodium diet","High-protein diet","Obesity","Gastric bypass surgery","Inflammatory bowel disease"],"age_groups":["Adults 30-50","Men more common"]},"Malaria":{"symptoms":["high fever","chills","shaking","sweating","headache","muscle pain","nausea","vomiting","diarrhea","anemia","jaundice"],"severity":"Severe","description":"Life-threatening mosquito-borne disease caused by Plasmodium parasites. Requires prompt treatment.","medications":[{"name":"Artemether + Lumefantrine (Coartem)","dosage":"20mg/120mg","frequency":"Twice daily","max_per_day":"6 tablets over 3 days","duration":"3 days","notes":"First-line ACT treatment"},{"name":"Chloroquine (if sensitive)","dosage":"600mg base","frequency":"Day 1, then 300mg days 2-3","max_per_day":"600mg","duration":"3 days","notes":"For chloroquine-sensitive malaria"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"3 days","notes":"For fever"},{"name":"Quinine (severe cases)","dosage":"10mg/kg IV","frequency":"Every 8 hours","max_per_day":"As prescribed","duration":"Hospital","notes":"For severe/complicated malaria"}],"home_remedies":["Rest in cool, comfortable environment","Drink plenty of fluids","Sponge with cool water for fever","Monitor temperature every 4 hours","Sleep under insecticide-treated net"],"diet":{"eat":["High-calorie foods","Fruits (papaya, banana, apple)","Coconut water","Soups and broths","Leafy greens","Protein-rich foods"],"avoid":["Alcohol","Caffeine","Spicy foods","Fried foods","Oily foods","Heavy meals"]},"doctor_type":"Infectious Disease Specialist / General Practitioner","urgency_rules":{"see_doctor_if":["Fever in malaria-endemic area","Recent travel to endemic area","Symptoms after travel","Fever with any travel history"],"emergency_if":["Altered consciousness or seizures","Severe anemia","Respiratory distress","Kidney failure signs","Jaundice with dark urine"]},"precautions":["Sleep under insecticide-treated nets","Use insect repellent (DEET)","Wear long sleeves/pants at dusk","Take prophylaxis if traveling to endemic area","Remove standing water"],"risk_factors":["Travel to endemic areas","Mosquito exposure","No malaria prophylaxis","Pregnancy","Children <5","Immunocompromised"],"age_groups":["Children <5","Pregnant women","Travelers"]},"Osteoporosis":{"symptoms":["bone fractures easily","back pain","loss of height","stooped posture","decreased mobility","shortness of breath","weakness","joint pain"],"severity":"Chronic","description":"Bone disease causing bones to become brittle and fragile, increasing fracture risk, especially in older adults.","medications":[{"name":"Alendronate (Fosamax)","dosage":"70mg","frequency":"Once weekly","max_per_day":"70mg","duration":"3-5 years","notes":"Bisphosphonate - take on empty stomach with full glass water"},{"name":"Calcium carbonate","dosage":"500mg elemental","frequency":"Twice daily","max_per_day":"1500mg elemental","duration":"Lifelong","notes":"With vitamin D for absorption"},{"name":"Vitamin D3","dosage":"1000-2000 IU","frequency":"Once daily","max_per_day":"4000 IU","duration":"Lifelong","notes":"Essential for calcium absorption"},{"name":"Denosumab (Prolia)","dosage":"60mg","frequency":"Every 6 months (injection)","max_per_day":"60mg","duration":"As prescribed","notes":"For high fracture risk"}],"home_remedies":["Weight-bearing exercises (walking, dancing)","Resistance training 2-3x/week","Balance exercises to prevent falls","Get adequate sunlight for vitamin D","Quit smoking"],"diet":{"eat":["Dairy products (milk, yogurt, cheese)","Leafy greens (spinach, kale)","Fortified foods","Fatty fish (salmon, sardines)","Almonds and seeds","Beans and lentils","Eggs"],"avoid":["Excessive alcohol","Caffeine (excess blocks calcium)","Sodium (excess increases calcium loss)","Soft drinks (phosphoric acid)","Smoking"]},"doctor_type":"Rheumatologist / Endocrinologist / Orthopedist","urgency_rules":{"see_doctor_if":["Fracture from minor fall","Height loss >1 inch","Severe back pain","Diagnosed with osteopenia"],"emergency_if":["Hip fracture","Spinal compression fracture with nerve symptoms","Fall with inability to move"]},"precautions":["Regular bone density scans (DEXA)","Fall prevention at home","Calcium and vitamin D supplementation","Weight-bearing exercise","Avoid smoking and excessive alcohol"],"risk_factors":["Age >50 (women), >70 (men)","Female gender","Family history","Low body weight","Smoking","Alcohol abuse","Long-term steroid use","Calcium/vitamin D deficiency"],"age_groups":["Postmenopausal women","Elderly men","Long-term steroid users"]},"Tuberculosis":{"symptoms":["persistent cough","coughing up blood","chest pain","weight loss","fatigue","fever","night sweats","loss of appetite","shortness of breath"],"severity":"Severe","description":"Bacterial infection primarily affecting the lungs, requiring prolonged antibiotic treatment. Can be fatal if untreated.","medications":[{"name":"Isoniazid (INH) + Rifampin + Pyrazinamide + Ethambutol","dosage":"As per weight","frequency":"Daily","max_per_day":"As prescribed","duration":"6-9 months","notes":"Standard first-line regimen (HRZE)"},{"name":"Vitamin B6 (Pyridoxine)","dosage":"25-50mg","frequency":"Once daily","max_per_day":"50mg","duration":"6-9 months","notes":"Prevents INH-induced neuropathy"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"As needed","notes":"For fever and pain"},{"name":"Anti-nausea medication","dosage":"As prescribed","frequency":"As needed","max_per_day":"As prescribed","duration":"As needed","notes":"For medication side effects"}],"home_remedies":["Complete FULL treatment course (never stop early)","Eat nutritious, high-protein diet","Rest adequately","Cover mouth when coughing","Ensure good ventilation at home"],"diet":{"eat":["High-protein foods (eggs, meat, fish, legumes)","Whole grains","Fruits and vegetables","Dairy products","Nuts and seeds","Iron-rich foods","Vitamin C-rich foods"],"avoid":["Alcohol (interferes with treatment and damages liver)","Grapefruit (interferes with rifampin)","High-fat foods","Junk food","Excessive caffeine"]},"doctor_type":"Pulmonologist / Infectious Disease Specialist","urgency_rules":{"see_doctor_if":["Persistent cough >3 weeks","Coughing up blood","Unexplained weight loss","Night sweats","Known exposure to TB"],"emergency_if":["Massive hemoptysis (coughing large amounts of blood)","Severe shortness of breath","Altered mental state","Chest pain with breathing"]},"precautions":["BCG vaccination","Avoid close contact with infected","Proper ventilation","Mask wearing","Complete full treatment course","Directly Observed Therapy (DOT)"],"risk_factors":["Close contact with TB patient","HIV/AIDS","Diabetes","Immunosuppression","Malnutrition","Living in crowded conditions","Healthcare workers"],"age_groups":["Adults","Elderly","Immunocompromised"]},"Typhoid":{"symptoms":["sustained high fever","stomach pain","weakness","loss of appetite","headache","diarrhea or constipation","rash (rose spots)","cough","confusion"],"severity":"Severe","description":"Bacterial infection caused by Salmonella typhi, spread through contaminated food and water. Can be life-threatening.","medications":[{"name":"Azithromycin","dosage":"500mg","frequency":"Once daily","max_per_day":"500mg","duration":"7-14 days","notes":"First-line treatment, especially for drug-resistant strains"},{"name":"Ceftriaxone (IV)","dosage":"1-2g","frequency":"Once daily","max_per_day":"2g","duration":"10-14 days","notes":"For severe cases or hospitalization"},{"name":"Paracetamol","dosage":"500mg","frequency":"Every 4-6 hours","max_per_day":"4g","duration":"As needed","notes":"For fever - never give aspirin (risk of bleeding)"},{"name":"Oral Rehydration Solution","dosage":"200ml","frequency":"After each episode","max_per_day":"Unlimited","duration":"Until resolved","notes":"Prevents dehydration"}],"home_remedies":["Drink plenty of fluids","Eat soft, bland diet","Rest completely","Monitor temperature","Sponge bath for fever","Hand hygiene"],"diet":{"eat":["Soft, bland foods (rice, bananas, toast)","Soups and broths","Coconut water","Fruits (cooked or peeled)","Boiled vegetables","Yogurt","Plenty of fluids"],"avoid":["Raw vegetables and fruits","Uncooked food","Street food","Spicy foods","Fatty foods","Dairy (if diarrhea severe)","Alcohol"]},"doctor_type":"Infectious Disease Specialist / General Practitioner","urgency_rules":{"see_doctor_if":["Fever >3 days in endemic area","Recent travel to endemic area","Suspected typhoid","Symptoms not improving after 48 hours of antibiotics"],"emergency_if":["Severe abdominal distension","Bloody stools","Confusion or altered mental state","Severe weakness","Persistent vomiting"]},"precautions":["Safe drinking water (boiled or bottled)","Proper food hygiene","Hand washing","Typhoid vaccination before travel","Avoid street food in endemic areas"],"risk_factors":["Travel to South Asia, Africa, Latin America","Contaminated food/water","Poor sanitation","Close contact with carrier","No vaccination"],"age_groups":["Children","Adults","Travelers"]},"Urinary Tract Infection":{"symptoms":["frequent urination","urgent urination","burning during urination","pelvic pain","cloudy urine","blood in urine","strong-smelling urine","fever","back pain","fatigue"],"severity":"Mild","description":"Infection in any part of the urinary system (kidneys, ureters, bladder, urethra). More common in women.","medications":[{"name":"Nitrofurantoin (Macrobid)","dosage":"100mg","frequency":"Twice daily","max_per_day":"200mg","duration":"5 days","notes":"First-line for uncomplicated UTI"},{"name":"Trimethoprim-sulfamethoxazole (Bactrim)","dosage":"160mg/800mg","frequency":"Twice daily","max_per_day":"2 tablets","duration":"3 days","notes":"If local resistance is low"},{"name":"Phenazopyridine (Pyridium)","dosage":"200mg","frequency":"Three times daily","max_per_day":"600mg","duration":"2 days","notes":"For pain relief only - turns urine orange"},{"name":"Cranberry extract","dosage":"500mg","frequency":"Twice daily","max_per_day":"1000mg","duration":"7-14 days","notes":"May help prevent recurrent UTIs"}],"home_remedies":["Drink plenty of water (8-10 glasses/day)","Cranberry juice or supplements","Urinate frequently (don't hold urine)","Urinate after sexual intercourse","Wipe front to back","Avoid scented feminine products"],"diet":{"eat":["Water (lots)","Cranberry juice (unsweetened)","Blueberries","Probiotic yogurt","Garlic","Vitamin C-rich foods"],"avoid":["Caffeine","Alcohol","Spicy foods","Citrus (if bladder irritant)","Carbonated drinks","Artificial sweeteners"]},"doctor_type":"Urologist / General Practitioner / Gynecologist","urgency_rules":{"see_doctor_if":["Symptoms >2 days","Fever with UTI symptoms","Back pain (possible kidney infection)","Recurrent UTIs (>3/year)","Pregnancy"],"emergency_if":["High fever with back pain","Vomiting preventing fluid intake","Confusion (especially in elderly)","Severe flank pain"]},"precautions":["Stay hydrated","Urinate after sex","Wipe front to back","Avoid holding urine","Cotton underwear","Avoid irritating products"],"risk_factors":["Female anatomy","Sexual activity","Menopause","Diabetes","Urinary catheters","Kidney stones","Immunosuppression"],"age_groups":["Women (all ages)","Elderly","Men with prostate issues"]}},"doctor_specialties":{"General Practitioner (GP)":"First point of contact for general health issues","Cardiologist":"Heart and blood vessel conditions","Pulmonologist":"Lung and respiratory conditions","Endocrinologist":"Hormone and gland disorders (diabetes, thyroid)","Neurologist":"Brain, spine, and nervous system conditions","Gastroenterologist":"Digestive system conditions","Psychiatrist":"Mental health conditions (can prescribe medication)","Psychologist":"Mental health therapy (non-medical)","General Surgeon":"Surgical conditions","Emergency Medicine":"Acute emergency conditions","Infectious Disease Specialist":"Infectious diseases","Allergist":"Allergies and immune system","Diabetologist":"Diabetes management","Urologist":"Urinary system and male reproductive organs","Rheumatologist":"Joint and autoimmune conditions","Nephrologist":"Kidney conditions","Hepatologist":"Liver conditions","Ophthalmologist":"Eye conditions","ENT Specialist":"Ear, nose, throat conditions","Dermatologist":"Skin conditions","Hematologist":"Blood disorders and conditions","Orthopedist":"Bone, joint, and muscle conditions","Gynecologist":"Female reproductive health"}};
 
 
-// Chat state
-let chatState = 'WELCOME';
-let extractedSymptoms = [];
-let userText = '';
-let symptomExtraction = null;
-let predictions = [];
-let currentFollowUpDisease = null;
-let followUpQuestions = [];
-let followUpIndex = 0;
-let confirmedSymptoms = [];
+let chatState='WELCOME',extractedSymptoms=[],userText='',symptomExtraction=null,predictions=[],currentFollowUpDisease=null,followUpQuestions=[],followUpIndex=0,confirmedSymptoms=[],negatedSymptoms=[];
+function getTime(){const n=new Date();return n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+function addBotMessage(t,h,qr){const c=document.getElementById('chatMessages');const m=document.createElement('div');m.className='message bot';m.innerHTML=(h||t)+'<div class="message-time">'+getTime()+'</div>';c.appendChild(m);if(qr&&qr.length>0){const d=document.createElement('div');d.className='quick-replies';d.id='qr_'+Date.now();for(const r of qr){const b=document.createElement('button');b.className='reply-btn';b.textContent=r.text;b.onclick=function(){handleQuickReply(r.value,d.id);};d.appendChild(b);}c.appendChild(d);}c.scrollTop=c.scrollHeight;}
+function addUserMessage(t){const c=document.getElementById('chatMessages');const m=document.createElement('div');m.className='message user';m.innerHTML=t+'<div class="message-time">'+getTime()+'</div>';c.appendChild(m);c.scrollTop=c.scrollHeight;}
+function showTyping(){document.getElementById('typingIndicator').style.display='flex';document.getElementById('chatMessages').scrollTop=document.getElementById('chatMessages').scrollHeight;}
+function hideTyping(){document.getElementById('typingIndicator').style.display='none';}
+function setInputEnabled(e){document.getElementById('userInput').disabled=!e;document.getElementById('sendBtn').disabled=!e;}
+function showInputError(m){const el=document.getElementById('inputError');el.textContent=m;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
+function handleQuickReply(v,qid){const d=document.getElementById(qid);if(d)d.remove();addUserMessage(v);showTyping();setInputEnabled(false);setTimeout(()=>{processUserInput(v);hideTyping();setInputEnabled(true);document.getElementById('userInput').focus();},600);}
+function sendMessage(){const i=document.getElementById('userInput');const t=i.value.trim();if(!t)return;if(t.length<3){showInputError('Please type at least 3 characters.');return;}if(t.length>500){showInputError('Message too long. Max 500 chars.');return;}i.value='';addUserMessage(t);showTyping();setInputEnabled(false);setTimeout(()=>{processUserInput(t);hideTyping();setInputEnabled(true);i.focus();},800);}
 
-function getTime() {
-    const now = new Date();
-    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
+function isNegated(text,pos){const before=text.substring(0,pos);const words=before.split(/\s+/).slice(-5);const neg=['no','not',"don't","doesn't","didn't","without","never","none","absent","denies","deny","denied","neither","nor","haven't","hasn't","hadn't","can't","cannot","won't","wouldn't","shouldn't","isn't","aren't","wasn't","weren't"];return neg.some(n=>words.some(w=>w===n||w.endsWith(n)));}
+function extractSymptoms(text){const tl=text.toLowerCase();const extracted=[];const negated=[];const all=new Set();for(const d of Object.values(MEDICAL_DATA.diseases)){for(const s of d.symptoms){all.add(s.toLowerCase());}}for(const s of all){const p=tl.indexOf(s);if(p!==-1){if(isNegated(tl,p)){if(!negated.includes(s))negated.push(s);}else{if(!extracted.includes(s))extracted.push(s);}}}
 
-function addBotMessage(text, html = null, quickReplies = []) {
-    const chat = document.getElementById('chatMessages');
-    const msg = document.createElement('div');
-    msg.className = 'message bot';
-    msg.innerHTML = (html || text) + `<div class="message-time">${getTime()}</div>`;
-    chat.appendChild(msg);
-    
-    if (quickReplies.length > 0) {
-        const qrDiv = document.createElement('div');
-        qrDiv.className = 'quick-replies';
-        qrDiv.id = 'quickReplies_' + Date.now();
-        for (const reply of quickReplies) {
-            const btn = document.createElement('button');
-            btn.className = 'reply-btn';
-            btn.textContent = reply.text;
-            btn.onclick = () => handleQuickReply(reply.value, qrDiv.id);
-            qrDiv.appendChild(btn);
-        }
-        chat.appendChild(qrDiv);
-    }
-    
-    chat.scrollTop = chat.scrollHeight;
-}
+const syn={'tired':'fatigue','exhausted':'fatigue','no energy':'fatigue','weak':'fatigue','high temperature':'fever','burning up':'fever','hot':'fever','head pain':'headache','splitting head':'headache','migraine':'headache','stomach pain':'abdominal pain','belly pain':'abdominal pain','tummy ache':'abdominal pain','throwing up':'vomiting','puking':'vomiting','being sick':'vomiting','loose stools':'diarrhea','watery poop':'diarrhea','the runs':'diarrhea','hard to breathe':'shortness of breath','cannot breathe':'shortness of breath','gasping':'shortness of breath','peeing a lot':'frequent urination','always peeing':'frequent urination','very thirsty':'thirst','cannot stop drinking':'thirst','dry mouth':'thirst','sad all the time':'persistent sadness','feeling down':'depression','no interest':'loss of interest','worry a lot':'excessive worry','nervous':'anxiety','panic':'panic attacks','chest hurts':'chest pain','chest pressure':'chest tightness','chest discomfort':'chest pain','joints hurt':'joint pain','knees hurt':'joint pain','swollen joints':'joint swelling','yellow eyes':'jaundice','yellow skin':'jaundice','skin yellow':'jaundice','shaking':'chills','shivering':'chills','freezing':'chills','cannot sleep':'insomnia','sleep problems':'sleep disturbances','waking up at night':'sleep disturbances','gaining weight':'weight gain','getting fat':'weight gain','losing weight':'weight loss','getting thin':'weight loss','wasting away':'weight loss','cannot see clearly':'blurred vision','fuzzy vision':'blurred vision','vision blurry':'blurred vision','pins and needles':'numbness','tingling':'numbness','asleep feeling':'numbness','confused':'confusion','disoriented':'confusion','brain fog':'difficulty concentrating','racing heart':'heart palpitations','heartbeat fast':'heart palpitations','heart pounding':'heart palpitations','back hurts':'back pain','spinal pain':'back pain','lower back ache':'back pain','stiff':'stiffness','cannot move well':'stiffness','hard to bend':'stiffness','whistling when breathing':'wheezing','noisy breathing':'wheezing','light hurts':'sensitivity to light','noise hurts':'sensitivity to sound','bleeding nose':'nosebleeds','nose bleeding':'nosebleeds','red face':'flushing','face hot':'flushing','face red':'flushing','hair falling out':'hair loss','bald':'hair loss','thinning hair':'hair loss','skin dry':'dry skin','flaky skin':'dry skin','always cold':'cold sensitivity','cold hands':'cold sensitivity','cold feet':'cold sensitivity','always hot':'heat sensitivity','sweating a lot':'sweating','drenched in sweat':'sweating','shaky hands':'tremor','shaking hands':'tremor','trembling hands':'tremor','eyes sticking out':'bulging eyes','eyes puffy':'bulging eyes','cannot focus':'difficulty concentrating','cannot think straight':'difficulty concentrating','feel worthless':'feelings of worthlessness','hate myself':'feelings of worthlessness','want to die':'thoughts of death','suicidal':'thoughts of death','end it all':'thoughts of death','easily annoyed':'irritability','short temper':'irritability','angry easily':'irritability','tense muscles':'muscle tension','muscle tightness':'muscle tension','broken sleep':'sleep disturbances','waking up early':'sleep disturbances','pale skin':'pale skin','looking pale':'pale skin','white face':'pale skin','clay poop':'clay-colored stools','pale stools':'clay-colored stools','white stools':'clay-colored stools','dark pee':'dark urine','brown urine':'dark urine','tea-colored urine':'dark urine','pain in my side':'severe abdominal pain (flank)','flank pain':'severe abdominal pain (flank)','side pain':'severe abdominal pain (flank)','pain in my back':'back pain','night sweats':'night sweats','sweating at night':'night sweats','drenching sweats':'night sweats','coughing blood':'coughing up blood','blood in spit':'coughing up blood','bloody sputum':'coughing up blood','appetite loss':'loss of appetite','not hungry':'loss of appetite','no appetite':'loss of appetite'};
+for(const[ph,ca] of Object.entries(syn)){const p=tl.indexOf(ph);if(p!==-1){if(isNegated(tl,p)){if(!negated.includes(ca))negated.push(ca);}else{if(!extracted.includes(ca))extracted.push(ca);}}}
+let sev=null;const sevS=['severe','extreme','intense','unbearable','terrible','awful','worst','agonizing','crippling','debilitating','incapacitating','worsening','persistent','constant','very bad','really bad'];const sevM=['moderate','fairly','quite','rather','uncomfortable','noticeable','significant','pretty bad'];const sevMi=['mild','slight','minor','a little','somewhat','tolerable','bearable','light','occasional','not too bad'];if(sevS.some(w=>tl.includes(w)))sev='Severe';else if(sevM.some(w=>tl.includes(w)))sev='Moderate';else if(sevMi.some(w=>tl.includes(w)))sev='Mild';
+let dur=null;if(['weeks','months','years','long time','chronic','ongoing','persistent','recurring','for years','always have'].some(w=>tl.includes(w)))dur='Chronic';else if(['few days','couple days','three days','four days','last week','about a week','started recently','since last week'].some(w=>tl.includes(w)))dur='Subacute';else if(['sudden','abrupt','recent','today','just started','few hours','since yesterday','last night','this morning','started today'].some(w=>tl.includes(w)))dur='Acute';
+let conf=0;if(extracted.length>=5)conf=0.95;else if(extracted.length>=3)conf=0.85;else if(extracted.length>=2)conf=0.70;else if(extracted.length>=1)conf=0.50;if(sev&&extracted.length>0)conf=Math.min(0.99,conf+0.05);return{extracted,negated,confidence:Math.round(conf*100),severity:sev,duration:dur};}
+function predictDisease(es){if(!es.length)return[];const scores={};for(const[dn,dd] of Object.entries(MEDICAL_DATA.diseases)){let m=0;for(const us of es){for(const ds of dd.symptoms){if(us.includes(ds.toLowerCase())||ds.toLowerCase().includes(us)){m++;break;}}}const sc=m/Math.max(es.length,dd.symptoms.length);scores[dn]=sc;}return Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([d,s])=>({disease:d,confidence:Math.round(s*100),...MEDICAL_DATA.diseases[d]})).filter(p=>p.confidence>0);}
 
-function addUserMessage(text) {
-    const chat = document.getElementById('chatMessages');
-    const msg = document.createElement('div');
-    msg.className = 'message user';
-    msg.innerHTML = text + `<div class="message-time">${getTime()}</div>`;
-    chat.appendChild(msg);
-    chat.scrollTop = chat.scrollHeight;
-}
+function processUserInput(text){const lower=text.toLowerCase();if(chatState==='WELCOME'){userText=text;symptomExtraction=extractSymptoms(text);extractedSymptoms=symptomExtraction.extracted;negatedSymptoms=symptomExtraction.negated||[];if(extractedSymptoms.length===0){chatState='CLARIFYING';addBotMessage('','<div>I did not understand your symptoms. Could you describe them more specifically?</div><div style="margin-top:8px;font-size:0.9rem;color:#64748b">For example: "I have fever, headache, and sore throat" or "I feel very tired and my stomach hurts"</div>');}else{chatState='CONFIRMING';let h='<div>I understand you have these symptoms:</div><div style="margin-top:8px">';for(const s of extractedSymptoms)h+='<span class="symptom-tag">'+s+'</span>';h+='</div>';if(negatedSymptoms.length>0){h+='<div style="margin-top:8px;font-size:0.85rem;color:#64748b">I noticed you said <strong>NOT</strong> having: '+negatedSymptoms.map(s=>'<span style="text-decoration:line-through">'+s+'</span>').join(', ')+' - these were excluded.</div>';}if(symptomExtraction.severity)h+='<div style="margin-top:8px;font-size:0.85rem;color:#64748b">Severity: <strong>'+symptomExtraction.severity+'</strong></div>';if(symptomExtraction.duration)h+='<div style="font-size:0.85rem;color:#64748b">Duration: <strong>'+symptomExtraction.duration+'</strong></div>';h+='<div style="margin-top:12px">Is this correct?</div>';addBotMessage('',h,[{text:"Yes, that\'s right",value:'yes'},{text:"No, let me clarify",value:'no'}]);}return;}if(chatState==='CLARIFYING'){userText=text;symptomExtraction=extractSymptoms(text);extractedSymptoms=symptomExtraction.extracted;negatedSymptoms=symptomExtraction.negated||[];if(extractedSymptoms.length===0){addBotMessage('I still could not understand. Try simpler words like: fever, headache, stomach pain, cough, etc.');}else{chatState='CONFIRMING';let h='<div>Now I understand you have:</div><div style="margin-top:8px">';for(const s of extractedSymptoms)h+='<span class="symptom-tag">'+s+'</span>';h+='</div><div style="margin-top:12px">Is this correct?</div>';addBotMessage('',h,[{text:'Yes',value:'yes'},{text:'No, clarify',value:'no'}]);}return;}if(chatState==='CONFIRMING'){if(lower.includes('no')||lower.includes('wrong')||lower.includes('incorrect')||lower.includes('clarify')){chatState='CLARIFYING';addBotMessage('No problem! Please describe your symptoms again more clearly.');return;}if(lower.includes('yes')||lower.includes('correct')||lower.includes('right')||lower.includes('true')){chatState='FOLLOW_UP';confirmedSymptoms=[...extractedSymptoms];predictions=predictDisease(confirmedSymptoms);if(predictions.length>0){currentFollowUpDisease=predictions[0].disease;const diseaseData=MEDICAL_DATA.diseases[currentFollowUpDisease];const missingSymptoms=diseaseData.symptoms.filter(s=>!confirmedSymptoms.some(cs=>s.toLowerCase().includes(cs)||cs.includes(s.toLowerCase()))).slice(0,3);if(missingSymptoms.length>0){followUpQuestions=missingSymptoms;followUpIndex=0;const q=followUpQuestions[followUpIndex];addBotMessage('Based on your symptoms, you might have <strong>'+currentFollowUpDisease+'</strong>. To help me confirm, do you also have: <strong>'+q+'</strong>?',null,[{text:'Yes',value:'yes'},{text:'No',value:'no'},{text:'Not sure',value:'not sure'}]);}else{showResults();}}else{addBotMessage('I could not match your symptoms to a known condition. Please try describing different symptoms, or consult a healthcare provider.');chatState='WELCOME';}return;}processUserInput(text);return;}if(chatState==='FOLLOW_UP'){const currentQ=followUpQuestions[followUpIndex];if(lower.includes('yes')||lower.includes('sure')||lower.includes('definitely')||lower.includes('a little')){if(!confirmedSymptoms.includes(currentQ))confirmedSymptoms.push(currentQ);}followUpIndex++;if(followUpIndex<followUpQuestions.length){const q=followUpQuestions[followUpIndex];addBotMessage('Do you also have: <strong>'+q+'</strong>?',null,[{text:'Yes',value:'yes'},{text:'No',value:'no'},{text:'Not sure',value:'not sure'}]);}else{addBotMessage('Thank you! Do you have any <strong>other symptoms</strong> I should know about?',null,[{text:"No, that\'s all",value:'done'},{text:'Yes, let me tell you',value:'more'}]);chatState='MORE_SYMPTOMS';}return;}if(chatState==='MORE_SYMPTOMS'){if(lower.includes('done')||lower.includes('all')||lower.includes('no')||lower.includes('that')){showResults();}else{const moreExtraction=extractSymptoms(text);for(const s of moreExtraction.extracted){if(!confirmedSymptoms.includes(s))confirmedSymptoms.push(s);}if(moreExtraction.extracted.length>0){let h='<div>Added symptoms:</div><div style="margin-top:6px">';for(const s of moreExtraction.extracted)h+='<span class="symptom-tag">'+s+'</span>';h+='</div><div style="margin-top:10px">Any other symptoms?</div>';addBotMessage('',h,[{text:"No, that\'s all",value:'done'},{text:'Yes, more',value:'more'}]);}else{addBotMessage('I did not understand those symptoms. Could you describe them differently? Or just say "that\'s all" if you\'re done.');}}return;}if(chatState==='RESULTS'){if(lower.includes('restart')||lower.includes('start')||lower.includes('again')||lower.includes('new')){resetChat();}else if(lower.includes('thank')||lower.includes('bye')||lower.includes('goodbye')){addBotMessage('You\'re welcome! Take care of yourself. If you need anything else, just say "start over". :D');}else{addBotMessage('I\'ve already given you my analysis. If you want to check new symptoms, just say "start over" and we\'ll begin again!');}return;}}
 
-function showTyping() {
-    document.getElementById('typingIndicator').style.display = 'flex';
-    const chat = document.getElementById('chatMessages');
-    chat.scrollTop = chat.scrollHeight;
-}
-
-function hideTyping() {
-    document.getElementById('typingIndicator').style.display = 'none';
-}
-
-function setInputEnabled(enabled) {
-    document.getElementById('userInput').disabled = !enabled;
-    document.getElementById('sendBtn').disabled = !enabled;
-}
-
-function handleQuickReply(value, qrId) {
-    // Remove quick replies
-    const qrDiv = document.getElementById(qrId);
-    if (qrDiv) qrDiv.remove();
-    
-    addUserMessage(value);
-    showTyping();
-    setInputEnabled(false);
-    
-    setTimeout(() => {
-        processUserInput(value);
-        hideTyping();
-        setInputEnabled(true);
-        document.getElementById('userInput').focus();
-    }, 600 + Math.random() * 400);
-}
-
-function sendMessage() {
-    const input = document.getElementById('userInput');
-    const text = input.value.trim();
-    if (!text) return;
-    
-    input.value = '';
-    addUserMessage(text);
-    showTyping();
-    setInputEnabled(false);
-    
-    setTimeout(() => {
-        processUserInput(text);
-        hideTyping();
-        setInputEnabled(true);
-        input.focus();
-    }, 800 + Math.random() * 600);
-}
-
-function processUserInput(text) {
-    const lower = text.toLowerCase();
-    
-    if (chatState === 'WELCOME') {
-        // First user input - treat as symptoms
-        userText = text;
-        symptomExtraction = extractSymptoms(text);
-        extractedSymptoms = symptomExtraction.extracted;
-        
-        if (extractedSymptoms.length === 0) {
-            chatState = 'CLARIFYING';
-            addBotMessage('', `
-                <div>I didn't quite understand your symptoms. Could you describe them more specifically?</div>
-                <div style="margin-top:8px;font-size:0.9rem;color:#64748b">For example: "I have fever, headache, and sore throat" or "I feel tired and my stomach hurts"</div>
-            `);
-        } else {
-            chatState = 'CONFIRMING';
-            let html = `<div>I understand you have the following symptoms:</div><div style="margin-top:8px">`;
-            for (const s of extractedSymptoms) {
-                html += `<span class="symptom-tag">${s}</span>`;
-            }
-            html += `</div>`;
-            if (symptomExtraction.severity) {
-                html += `<div style="margin-top:8px;font-size:0.85rem;color:#64748b">Severity: <strong>${symptomExtraction.severity}</strong></div>`;
-            }
-            if (symptomExtraction.duration) {
-                html += `<div style="font-size:0.85rem;color:#64748b">Duration: <strong>${symptomExtraction.duration}</strong></div>`;
-            }
-            html += `<div style="margin-top:12px">Is this correct?</div>`;
-            addBotMessage('', html, [
-                { text: '✅ Yes, that's right', value: 'yes' },
-                { text: '❌ No, let me clarify', value: 'no' }
-            ]);
-        }
-        return;
-    }
-    
-    if (chatState === 'CLARIFYING') {
-        userText = text;
-        symptomExtraction = extractSymptoms(text);
-        extractedSymptoms = symptomExtraction.extracted;
-        
-        if (extractedSymptoms.length === 0) {
-            addBotMessage('I still could not understand your symptoms. Could you try using simpler words? For example: "fever", "headache", "stomach pain", "cough", etc.');
-        } else {
-            chatState = 'CONFIRMING';
-            let html = `<div>Now I understand you have:</div><div style="margin-top:8px">`;
-            for (const s of extractedSymptoms) {
-                html += `<span class="symptom-tag">${s}</span>`;
-            }
-            html += `</div><div style="margin-top:12px">Is this correct?</div>`;
-            addBotMessage('', html, [
-                { text: '✅ Yes', value: 'yes' },
-                { text: '❌ No, clarify', value: 'no' }
-            ]);
-        }
-        return;
-    }
-    
-    if (chatState === 'CONFIRMING') {
-        if (lower.includes('no') || lower.includes('wrong') || lower.includes('incorrect') || lower.includes('clarify')) {
-            chatState = 'CLARIFYING';
-            addBotMessage('No problem! Please describe your symptoms again more clearly.');
-            return;
-        }
-        if (lower.includes('yes') || lower.includes('correct') || lower.includes('right') || lower.includes('true')) {
-            chatState = 'FOLLOW_UP';
-            confirmedSymptoms = [...extractedSymptoms];
-            predictions = predictDisease(confirmedSymptoms);
-            
-            if (predictions.length > 0) {
-                // Ask follow-up questions for top disease
-                currentFollowUpDisease = predictions[0].disease;
-                const diseaseData = MEDICAL_DATA.diseases[currentFollowUpDisease];
-                const missingSymptoms = diseaseData.symptoms.filter(s => 
-                    !confirmedSymptoms.some(cs => s.toLowerCase().includes(cs) || cs.includes(s.toLowerCase()))
-                ).slice(0, 3);
-                
-                if (missingSymptoms.length > 0) {
-                    followUpQuestions = missingSymptoms;
-                    followUpIndex = 0;
-                    const q = followUpQuestions[followUpIndex];
-                    addBotMessage(`Based on your symptoms, you might have <strong>${currentFollowUpDisease}</strong>. To help me confirm, do you also have: <strong>${q}</strong>?`, null, [
-                        { text: 'Yes', value: 'yes' },
-                        { text: 'No', value: 'no' },
-                        { text: 'Not sure', value: 'not sure' }
-                    ]);
-                } else {
-                    // No more questions, show results
-                    showResults();
-                }
-            } else {
-                addBotMessage('I could not match your symptoms to a known condition. Please try describing different symptoms, or consult a healthcare provider.');
-                chatState = 'WELCOME';
-            }
-            return;
-        }
-        // If user just typed something else, treat as clarification
-        processUserInput(text);
-        return;
-    }
-    
-    if (chatState === 'FOLLOW_UP') {
-        const currentQ = followUpQuestions[followUpIndex];
-        if (lower.includes('yes') || lower.includes('sure') || lower.includes('definitely') || lower.includes('a little')) {
-            if (!confirmedSymptoms.includes(currentQ)) {
-                confirmedSymptoms.push(currentQ);
-            }
-        }
-        // "not sure" or "no" - we just move on
-        
-        followUpIndex++;
-        if (followUpIndex < followUpQuestions.length) {
-            const q = followUpQuestions[followUpIndex];
-            addBotMessage(`Do you also have: <strong>${q}</strong>?`, null, [
-                { text: 'Yes', value: 'yes' },
-                { text: 'No', value: 'no' },
-                { text: 'Not sure', value: 'not sure' }
-            ]);
-        } else {
-            // Ask if there are other symptoms
-            addBotMessage(`Thank you! Do you have any <strong>other symptoms</strong> I should know about?`, null, [
-                { text: 'No, that's all', value: 'done' },
-                { text: 'Yes, let me tell you', value: 'more' }
-            ]);
-            chatState = 'MORE_SYMPTOMS';
-        }
-        return;
-    }
-    
-    if (chatState === 'MORE_SYMPTOMS') {
-        if (lower.includes('done') || lower.includes('all') || lower.includes('no') || lower.includes('that')) {
-            showResults();
-        } else {
-            // User wants to add more symptoms
-            const moreExtraction = extractSymptoms(text);
-            for (const s of moreExtraction.extracted) {
-                if (!confirmedSymptoms.includes(s)) {
-                    confirmedSymptoms.push(s);
-                }
-            }
-            if (moreExtraction.extracted.length > 0) {
-                let html = `<div>Added symptoms:</div><div style="margin-top:6px">`;
-                for (const s of moreExtraction.extracted) {
-                    html += `<span class="symptom-tag">${s}</span>`;
-                }
-                html += `</div><div style="margin-top:10px">Any other symptoms?</div>`;
-                addBotMessage('', html, [
-                    { text: 'No, that's all', value: 'done' },
-                    { text: 'Yes, more', value: 'more' }
-                ]);
-            } else {
-                addBotMessage('I did not understand those symptoms. Could you describe them differently? Or just say "that's all" if you're done.');
-            }
-        }
-        return;
-    }
-    
-    if (chatState === 'RESULTS') {
-        // After results, user can ask follow-up or restart
-        if (lower.includes('restart') || lower.includes('start') || lower.includes('again') || lower.includes('new')) {
-            resetChat();
-        } else if (lower.includes('thank') || lower.includes('bye') || lower.includes('goodbye')) {
-            addBotMessage('You're welcome! Take care of yourself. If you need anything else, just say "start over". 😊');
-        } else {
-            addBotMessage('I've already given you my analysis. If you want to check new symptoms, just say "start over" and we'll begin again!');
-        }
-        return;
-    }
-}
-
-function showResults() {
-    chatState = 'RESULTS';
-    predictions = predictDisease(confirmedSymptoms);
-    
-    if (predictions.length === 0) {
-        addBotMessage('I could not determine a condition from your symptoms. Please consult a healthcare provider for a proper evaluation.');
-        return;
-    }
-    
-    const top = predictions[0];
-    const textLower = userText.toLowerCase();
-    
-    // Build urgency
-    let urgencyHtml = '';
-    const severity = symptomExtraction?.severity || top.severity;
-    const emergencyConditions = ['Appendicitis', 'Pneumonia', 'COVID-19', 'Tuberculosis', 'Depression'];
-    const emergencySymptoms = ['thoughts of death', 'suicidal', 'chest pain', 'cannot breathe', 'severe abdominal pain', 'blue lips', 'confusion'];
-    const hasEmergencySymptom = emergencySymptoms.some(s => textLower.includes(s) || confirmedSymptoms.some(cs => cs.includes(s)));
-    const isEmergencyDisease = emergencyConditions.includes(top.disease);
-    
-    if (hasEmergencySymptom || (isEmergencyDisease && severity === 'Severe')) {
-        urgencyHtml = `<div class="urgency urgency-urgent"><span class="icon">🚨</span><div><strong>This may be a medical emergency.</strong> ${top.urgency_rules.emergency_if[0] || 'Seek emergency medical attention immediately.'}</div></div>`;
-    } else if (severity === 'Severe' || top.severity === 'Severe') {
-        urgencyHtml = `<div class="urgency urgency-urgent"><span class="icon">⚠️</span><div><strong>See a doctor urgently.</strong> ${top.urgency_rules.see_doctor_if[0] || 'Consult a healthcare provider as soon as possible.'}</div></div>`;
-    } else if (severity === 'Moderate' || top.severity === 'Moderate' || top.severity === 'Chronic') {
-        urgencyHtml = `<div class="urgency urgency-warning"><span class="icon">⚡</span><div><strong>Consider seeing a doctor.</strong> ${top.urgency_rules.see_doctor_if[0] || 'Schedule an appointment with a healthcare provider.'}</div></div>`;
-    } else {
-        urgencyHtml = `<div class="urgency urgency-caution"><span class="icon">💡</span><div><strong>Monitor your symptoms.</strong> If they worsen or new symptoms appear, consult a healthcare provider. Try home remedies and rest first.</div></div>`;
-    }
-    
-    // Build medications table
-    let medHtml = '<table class="med-table"><thead><tr><th>Medication</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Notes</th></tr></thead><tbody>';
-    for (const med of top.medications) {
-        medHtml += `<tr><td><span class="med-name">${med.name}</span><br><span class="med-notes">${med.dosage}</span></td><td>${med.frequency}</td><td>${med.duration}</td><td><span class="med-notes">${med.notes}</span><br><small style="color:#dc2626">Max: ${med.max_per_day}/day</small></td></tr>`;
-    }
-    medHtml += '</tbody></table>';
-    
-    // Build diet
-    let dietHtml = '<div class="diet-card-mini">';
-    dietHtml += '<div class="diet-eat-mini"><h4>🟢 Eat</h4><ul class="diet-list-mini">';
-    for (const item of top.diet?.eat || []) dietHtml += `<li>${item}</li>`;
-    dietHtml += '</ul></div>';
-    dietHtml += '<div class="diet-avoid-mini"><h4>🔴 Avoid</h4><ul class="diet-list-mini">';
-    for (const item of top.diet?.avoid || []) dietHtml += `<li>${item}</li>`;
-    dietHtml += '</ul></div></div>';
-    
-    // Build doctor card
-    const doctorInfo = MEDICAL_DATA.doctor_specialties[top.doctor_type] || 'Specialist physician';
-    let doctorHtml = `<div class="doctor-card-mini"><div class="doctor-icon">👨‍⚕️</div><div><h4>See a ${top.doctor_type}</h4><p>${doctorInfo}</p><p style="margin-top:4px;color:#dc2626;font-weight:600;font-size:0.8rem">⚠️ ${top.urgency_rules.emergency_if.length > 0 ? 'Seek emergency care if: ' + top.urgency_rules.emergency_if[0] : 'See a doctor if symptoms persist.'}</p></div></div>`;
-    
-    // Build home remedies
-    let remedyHtml = '<ul class="remedy-list-mini">';
-    for (const r of top.home_remedies || []) remedyHtml += `<li>${r}</li>`;
-    remedyHtml += '</ul>';
-    
-    // Build all predictions
-    let predictionsHtml = '';
-    for (let i = 0; i < predictions.length; i++) {
-        const p = predictions[i];
-        const isTop = i === 0;
-        const fillColor = isTop ? 'linear-gradient(90deg,#2563eb,#1e40af)' : '#94a3b8';
-        const confColor = isTop ? '#2563eb' : '#64748b';
-        predictionsHtml += `<div class="prediction-item ${isTop ? 'top' : ''}"><div style="flex:1"><div class="prediction-name">${i+1}. ${p.disease}</div><div class="prediction-severity severity-${p.severity}">${p.severity}</div></div><div class="confidence-bar"><div class="confidence-fill" style="width:${p.confidence}%;background:${fillColor}"></div></div><span class="confidence-value" style="color:${confColor}">${p.confidence}%</span></div>`;
-    }
-    
-    // Build precautions
-    let precHtml = '<div class="precaution-tags">';
-    for (const p of top.precautions || []) precHtml += `<span class="precaution-tag">${p}</span>`;
-    precHtml += '</div>';
-    
-    let riskHtml = '<div class="precaution-tags">';
-    for (const r of top.risk_factors || []) riskHtml += `<span class="precaution-tag" style="background:#f3e8ff;color:#6b21a8">${r}</span>`;
-    riskHtml += '</div>';
-    
-    let resultHtml = `
-        <div class="result-card">
-            <h3><span class="icon">🎯</span> Most Likely Condition: <strong>${top.disease}</strong></h3>
-            <p style="font-size:0.85rem;color:#64748b;margin-bottom:8px">${top.description}</p>
-            ${urgencyHtml}
-        </div>
-        
-        <div class="result-card">
-            <h3><span class="icon">💊</span> Recommended Medications</h3>
-            <p style="font-size:0.75rem;color:#64748b;margin-bottom:8px">⚠️ Always consult a doctor before taking any medication.</p>
-            ${medHtml}
-        </div>
-        
-        <div class="result-card">
-            <h3><span class="icon">👨‍⚕️</span> Doctor Recommendation</h3>
-            ${doctorHtml}
-        </div>
-        
-        <div class="result-card">
-            <h3><span class="icon">🏠</span> Home Remedies</h3>
-            ${remedyHtml}
-        </div>
-        
-        <div class="result-card">
-            <h3><span class="icon">🍎</span> Diet</h3>
-            ${dietHtml}
-        </div>
-        
-        <div class="result-card">
-            <h3><span class="icon">🛡️</span> Precautions</h3>
-            ${precHtml}
-            <h3 style="margin-top:12px"><span class="icon">⚠️</span> Risk Factors</h3>
-            ${riskHtml}
-        </div>
-        
-        <div class="result-card">
-            <h3><span class="icon">📊</span> All Possible Conditions</h3>
-            ${predictionsHtml}
-        </div>
-        
-        <div class="disclaimer-mini">
-            <strong>⚠️ Medical Disclaimer</strong><br>
-            This is an AI preliminary assessment for educational purposes only. NOT a medical diagnosis. Always consult a qualified healthcare professional before starting any treatment. In case of emergency, call your local emergency services immediately.
-        </div>
-    `;
-    
-    addBotMessage('', resultHtml);
-    
-    setTimeout(() => {
-        addBotMessage('Is there anything else I can help you with?', null, [
-            { text: '🔄 Start Over', value: 'start over' },
-            { text: '👋 Goodbye', value: 'goodbye' }
-        ]);
-    }, 500);
-}
-
-function resetChat() {
-    chatState = 'WELCOME';
-    extractedSymptoms = [];
-    userText = '';
-    symptomExtraction = null;
-    predictions = [];
-    currentFollowUpDisease = null;
-    followUpQuestions = [];
-    followUpIndex = 0;
-    confirmedSymptoms = [];
-    document.getElementById('chatMessages').innerHTML = '';
-    
-    // Welcome message
-    setTimeout(() => {
-        showTyping();
-        setTimeout(() => {
-            hideTyping();
-            addBotMessage('👋 Hello! I'm your Smart Medical Assistant. I can help you understand your symptoms and suggest possible treatments.');
-            setTimeout(() => {
-                showTyping();
-                setTimeout(() => {
-                    hideTyping();
-                    addBotMessage('📝 <strong>How are you feeling today?</strong><br><br>Please describe your symptoms in your own words. For example: "I have a headache, fever, and sore throat" or "I feel very tired and my stomach hurts".<br><br>You can write in simple English - I'll try to understand! 😊');
-                }, 800);
-            }, 400);
-        }, 1000);
-    }, 300);
-}
-
-// Symptom extraction (same logic as before)
-function extractSymptoms(text) {
-    const textLower = text.toLowerCase();
-    const extracted = [];
-    const allSymptoms = new Set();
-    for (const disease of Object.values(MEDICAL_DATA.diseases)) {
-        for (const symptom of disease.symptoms) {
-            allSymptoms.add(symptom.toLowerCase());
-        }
-    }
-    for (const symptom of allSymptoms) {
-        if (textLower.includes(symptom)) {
-            if (!extracted.includes(symptom)) extracted.push(symptom);
-        }
-    }
-    const synonymMap = {
-        'tired': 'fatigue', 'exhausted': 'fatigue', 'no energy': 'fatigue', 'weak': 'fatigue',
-        'high temperature': 'fever', 'burning up': 'fever', 'hot': 'fever',
-        'head pain': 'headache', 'splitting head': 'headache', 'migraine': 'headache',
-        'stomach pain': 'abdominal pain', 'belly pain': 'abdominal pain', 'tummy ache': 'abdominal pain',
-        'throwing up': 'vomiting', 'puking': 'vomiting', 'being sick': 'vomiting',
-        'loose stools': 'diarrhea', 'watery poop': 'diarrhea', 'the runs': 'diarrhea',
-        'hard to breathe': 'shortness of breath', 'cannot breathe': 'shortness of breath', 'gasping': 'shortness of breath',
-        'peeing a lot': 'frequent urination', 'always peeing': 'frequent urination',
-        'very thirsty': 'thirst', 'cannot stop drinking': 'thirst', 'dry mouth': 'thirst',
-        'sad all the time': 'persistent sadness', 'feeling down': 'depression', 'no interest': 'loss of interest',
-        'worry a lot': 'excessive worry', 'nervous': 'anxiety', 'panic': 'panic attacks',
-        'chest hurts': 'chest pain', 'chest pressure': 'chest tightness', 'chest discomfort': 'chest pain',
-        'joints hurt': 'joint pain', 'knees hurt': 'joint pain', 'swollen joints': 'joint swelling',
-        'yellow eyes': 'jaundice', 'yellow skin': 'jaundice', 'skin yellow': 'jaundice',
-        'shaking': 'chills', 'shivering': 'chills', 'freezing': 'chills',
-        'cannot sleep': 'insomnia', 'sleep problems': 'sleep disturbances', 'waking up at night': 'sleep disturbances',
-        'gaining weight': 'weight gain', 'getting fat': 'weight gain',
-        'losing weight': 'weight loss', 'getting thin': 'weight loss', 'wasting away': 'weight loss',
-        'cannot see clearly': 'blurred vision', 'fuzzy vision': 'blurred vision', 'vision blurry': 'blurred vision',
-        'pins and needles': 'numbness', 'tingling': 'numbness', 'asleep feeling': 'numbness',
-        'confused': 'confusion', 'disoriented': 'confusion', 'brain fog': 'difficulty concentrating',
-        'racing heart': 'heart palpitations', 'heartbeat fast': 'heart palpitations', 'heart pounding': 'heart palpitations',
-        'back hurts': 'back pain', 'spinal pain': 'back pain', 'lower back ache': 'back pain',
-        'stiff': 'stiffness', 'cannot move well': 'stiffness', 'hard to bend': 'stiffness',
-        'whistling when breathing': 'wheezing', 'noisy breathing': 'wheezing',
-        'light hurts': 'sensitivity to light', 'noise hurts': 'sensitivity to sound',
-        'bleeding nose': 'nosebleeds', 'nose bleeding': 'nosebleeds',
-        'red face': 'flushing', 'face hot': 'flushing', 'face red': 'flushing',
-        'hair falling out': 'hair loss', 'bald': 'hair loss', 'thinning hair': 'hair loss',
-        'skin dry': 'dry skin', 'flaky skin': 'dry skin',
-        'always cold': 'cold sensitivity', 'cold hands': 'cold sensitivity', 'cold feet': 'cold sensitivity',
-        'always hot': 'heat sensitivity', 'sweating a lot': 'sweating', 'drenched in sweat': 'sweating',
-        'shaky hands': 'tremor', 'shaking hands': 'tremor', 'trembling hands': 'tremor',
-        'eyes sticking out': 'bulging eyes', 'eyes puffy': 'bulging eyes',
-        'cannot focus': 'difficulty concentrating', 'cannot think straight': 'difficulty concentrating',
-        'feel worthless': 'feelings of worthlessness', 'hate myself': 'feelings of worthlessness',
-        'want to die': 'thoughts of death', 'suicidal': 'thoughts of death', 'end it all': 'thoughts of death',
-        'easily annoyed': 'irritability', 'short temper': 'irritability', 'angry easily': 'irritability',
-        'tense muscles': 'muscle tension', 'muscle tightness': 'muscle tension',
-        'broken sleep': 'sleep disturbances', 'waking up early': 'sleep disturbances'
-    };
-    for (const [phrase, canonical] of Object.entries(synonymMap)) {
-        if (textLower.includes(phrase) && !extracted.includes(canonical)) {
-            extracted.push(canonical);
-        }
-    }
-    let severity = null;
-    if (['severe', 'extreme', 'intense', 'unbearable', 'terrible', 'awful', 'worst', 'agonizing', 'crippling', 'debilitating', 'incapacitating', 'worsening', 'persistent', 'constant', 'very bad', 'really bad'].some(w => textLower.includes(w))) {
-        severity = 'Severe';
-    } else if (['moderate', 'fairly', 'quite', 'rather', 'uncomfortable', 'noticeable', 'significant', 'pretty bad'].some(w => textLower.includes(w))) {
-        severity = 'Moderate';
-    } else if (['mild', 'slight', 'minor', 'a little', 'somewhat', 'tolerable', 'bearable', 'light', 'occasional', 'not too bad'].some(w => textLower.includes(w))) {
-        severity = 'Mild';
-    }
-    let duration = null;
-    if (['weeks', 'months', 'years', 'long time', 'chronic', 'ongoing', 'persistent', 'recurring', 'for years', 'always have'].some(w => textLower.includes(w))) {
-        duration = 'Chronic';
-    } else if (['few days', 'couple days', 'three days', 'four days', 'last week', 'about a week', 'started recently', 'since last week'].some(w => textLower.includes(w))) {
-        duration = 'Subacute';
-    } else if (['sudden', 'abrupt', 'recent', 'today', 'just started', 'few hours', 'since yesterday', 'last night', 'this morning', 'started today'].some(w => textLower.includes(w))) {
-        duration = 'Acute';
-    }
-    let confidence = 0;
-    if (extracted.length >= 5) confidence = 0.95;
-    else if (extracted.length >= 3) confidence = 0.85;
-    else if (extracted.length >= 2) confidence = 0.70;
-    else if (extracted.length >= 1) confidence = 0.50;
-    if (severity && extracted.length > 0) confidence = Math.min(0.99, confidence + 0.05);
-    return { extracted, confidence: Math.round(confidence * 100), severity, duration };
-}
-
-function predictDisease(extractedSymptoms) {
-    if (!extractedSymptoms.length) return [];
-    const scores = {};
-    for (const [diseaseName, diseaseData] of Object.entries(MEDICAL_DATA.diseases)) {
-        let matches = 0;
-        for (const userSymptom of extractedSymptoms) {
-            for (const diseaseSymptom of diseaseData.symptoms) {
-                if (userSymptom.includes(diseaseSymptom.toLowerCase()) || diseaseSymptom.toLowerCase().includes(userSymptom)) {
-                    matches++;
-                    break;
-                }
-            }
-        }
-        const score = matches / Math.max(extractedSymptoms.length, diseaseData.symptoms.length);
-        scores[diseaseName] = score;
-    }
-    return Object.entries(scores)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5)
-        .map(([disease, score]) => ({
-            disease,
-            confidence: Math.round(score * 100),
-            ...MEDICAL_DATA.diseases[disease]
-        }))
-        .filter(p => p.confidence > 0);
-}
-
-// Initialize on load
-window.onload = function() {
-    setTimeout(() => {
-        showTyping();
-        setTimeout(() => {
-            hideTyping();
-            addBotMessage('👋 Hello! I'm your Smart Medical Assistant. I can help you understand your symptoms and suggest possible treatments.');
-            setTimeout(() => {
-                showTyping();
-                setTimeout(() => {
-                    hideTyping();
-                    addBotMessage('📝 <strong>How are you feeling today?</strong><br><br>Please describe your symptoms in your own words. For example: "I have a headache, fever, and sore throat" or "I feel very tired and my stomach hurts".<br><br>You can write in simple English - I'll try to understand! 😊');
-                }, 800);
-            }, 400);
-        }, 1000);
-    }, 300);
-};
+function showResults(){chatState='RESULTS';predictions=predictDisease(confirmedSymptoms);if(predictions.length===0){addBotMessage('I could not determine a condition from your symptoms. Please consult a healthcare provider for a proper evaluation.');return;}const top=predictions[0];const textLower=userText.toLowerCase();let urgencyHtml='';const severity=symptomExtraction?symptomExtraction.severity:null||top.severity;const emergencyConditions=['Appendicitis','Pneumonia','COVID-19','Tuberculosis','Depression','Dengue','Malaria','Kidney Stones','Typhoid'];const emergencySymptoms=['thoughts of death','suicidal','chest pain','cannot breathe','severe abdominal pain','blue lips','confusion','coughing up blood','vomiting blood','unconscious'];const hasEmergencySymptom=emergencySymptoms.some(s=>textLower.includes(s)||confirmedSymptoms.some(cs=>cs.includes(s)));const isEmergencyDisease=emergencyConditions.includes(top.disease);if(hasEmergencySymptom||(isEmergencyDisease&&severity==='Severe')){urgencyHtml='<div class="urgency urgency-urgent"><span class="icon">!</span><div><strong>This may be a medical emergency.</strong> '+(top.urgency_rules.emergency_if[0]||'Seek emergency medical attention immediately.')+'</div></div>';}else if(severity==='Severe'||top.severity==='Severe'){urgencyHtml='<div class="urgency urgency-urgent"><span class="icon">!</span><div><strong>See a doctor urgently.</strong> '+(top.urgency_rules.see_doctor_if[0]||'Consult a healthcare provider as soon as possible.')+'</div></div>';}else if(severity==='Moderate'||top.severity==='Moderate'||top.severity==='Chronic'){urgencyHtml='<div class="urgency urgency-warning"><span class="icon">*</span><div><strong>Consider seeing a doctor.</strong> '+(top.urgency_rules.see_doctor_if[0]||'Schedule an appointment with a healthcare provider.')+'</div></div>';}else{urgencyHtml='<div class="urgency urgency-caution"><span class="icon">+</span><div><strong>Monitor your symptoms.</strong> If they worsen or new symptoms appear, consult a healthcare provider. Try home remedies and rest first.</div></div>';}let medHtml='<table class="med-table"><thead><tr><th>Medication</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Notes</th></tr></thead><tbody>';for(const med of top.medications){medHtml+='<tr><td><span class="med-name">'+med.name+'</span><br><span class="med-notes">'+med.dosage+'</span></td><td>'+med.frequency+'</td><td>'+med.duration+'</td><td><span class="med-notes">'+med.notes+'</span><br><small style="color:#dc2626">Max: '+med.max_per_day+'/day</small></td></tr>';}medHtml+='</tbody></table>';let dietHtml='<div class="diet-card-mini">';dietHtml+='<div class="diet-eat-mini"><h4>Eat</h4><ul class="diet-list-mini">';for(const item of top.diet?top.diet.eat||[]:[])dietHtml+='<li>'+item+'</li>';dietHtml+='</ul></div>';dietHtml+='<div class="diet-avoid-mini"><h4>Avoid</h4><ul class="diet-list-mini">';for(const item of top.diet?top.diet.avoid||[]:[])dietHtml+='<li>'+item+'</li>';dietHtml+='</ul></div></div>';const doctorInfo=MEDICAL_DATA.doctor_specialties[top.doctor_type]||'Specialist physician';let doctorHtml='<div class="doctor-card-mini"><div class="doctor-icon">DR</div><div><h4>See a '+top.doctor_type+'</h4><p>'+doctorInfo+'</p><p style="margin-top:4px;color:#dc2626;font-weight:600;font-size:0.8rem">'+(top.urgency_rules.emergency_if.length>0?'Seek emergency care if: '+top.urgency_rules.emergency_if[0]:'See a doctor if symptoms persist.')+'</p></div></div>';let remedyHtml='<ul class="remedy-list-mini">';for(const r of top.home_remedies||[])remedyHtml+='<li>'+r+'</li>';remedyHtml+='</ul>';let predictionsHtml='';for(let i=0;i<predictions.length;i++){const p=predictions[i];const isTop=i===0;const fillColor=isTop?'linear-gradient(90deg,#2563eb,#1e40af)':'#94a3b8';const confColor=isTop?'#2563eb':'#64748b';predictionsHtml+='<div class="prediction-item '+(isTop?'top':'')+'"><div style="flex:1"><div class="prediction-name">'+(i+1)+'. '+p.disease+'</div><div class="prediction-severity severity-'+p.severity+'">'+p.severity+'</div></div><div class="confidence-bar"><div class="confidence-fill" style="width:'+p.confidence+'%;background:'+fillColor+'"></div></div><span class="confidence-value" style="color:'+confColor+'">'+p.confidence+'%</span></div>';}let precHtml='<div class="precaution-tags">';for(const p of top.precautions||[])precHtml+='<span class="precaution-tag">'+p+'</span>';precHtml+='</div>';let riskHtml='<div class="precaution-tags">';for(const r of top.risk_factors||[])riskHtml+='<span class="precaution-tag" style="background:#f3e8ff;color:#6b21a8">'+r+'</span>';riskHtml+='</div>';let resultHtml='<div class="result-card"><h3><span class="icon">#</span> Most Likely Condition: <strong>'+top.disease+'</strong></h3><p style="font-size:0.85rem;color:#64748b;margin-bottom:8px">'+top.description+'</p>'+urgencyHtml+'</div><div class="result-card"><h3><span class="icon">$</span> Recommended Medications</h3><p style="font-size:0.75rem;color:#64748b;margin-bottom:8px">Always consult a doctor before taking any medication.</p>'+medHtml+'</div><div class="result-card"><h3><span class="icon">@</span> Doctor Recommendation</h3>'+doctorHtml+'</div><div class="result-card"><h3><span class="icon">%</span> Home Remedies</h3>'+remedyHtml+'</div><div class="result-card"><h3><span class="icon">&</span> Diet</h3>'+dietHtml+'</div><div class="result-card"><h3><span class="icon">!</span> Precautions</h3>'+precHtml+'<h3 style="margin-top:12px"><span class="icon">?</span> Risk Factors</h3>'+riskHtml+'</div><div class="result-card"><h3><span class="icon">=</span> All Possible Conditions</h3>'+predictionsHtml+'</div><div class="disclaimer-mini"><strong>Medical Disclaimer</strong><br>This is an AI preliminary assessment for educational purposes only. NOT a medical diagnosis. Always consult a qualified healthcare professional before starting any treatment. In case of emergency, call your local emergency services immediately.</div>';addBotMessage('',resultHtml);setTimeout(()=>{addBotMessage('Is there anything else I can help you with?',null,[{text:'Start Over',value:'start over'},{text:'Goodbye',value:'goodbye'}]);},500);}
+function resetChat(){chatState='WELCOME';extractedSymptoms=[];userText='';symptomExtraction=null;predictions=[];currentFollowUpDisease=null;followUpQuestions=[];followUpIndex=0;confirmedSymptoms=[];negatedSymptoms=[];document.getElementById('chatMessages').innerHTML='';setTimeout(()=>{showTyping();setTimeout(()=>{hideTyping();addBotMessage('Hello! I am your Smart Medical Assistant. I can help you understand your symptoms and suggest possible treatments.');setTimeout(()=>{showTyping();setTimeout(()=>{hideTyping();addBotMessage('<strong>How are you feeling today?</strong><br><br>Please describe your symptoms in your own words. For example: "I have a headache, fever, and sore throat" or "I feel very tired and my stomach hurts".<br><br>You can write in simple English - I will try to understand!');},800);},400);},1000);},300);}
+function renderQuickSymptoms(){const common=['fever','headache','cough','sore throat','fatigue','nausea','diarrhea','chest pain','shortness of breath','stomach pain','back pain','dizziness'];const container=document.getElementById('quickSymptoms');container.innerHTML=common.map(s=>'<span class="symptom-chip" onclick="addQuickSymptom('+s+')">'+s+'</span>').join('');}
+function addQuickSymptom(s){const input=document.getElementById('userInput');const current=input.value.trim();if(current)input.value=current+', '+s;else input.value=s;input.focus();}
+window.onload=function(){renderQuickSymptoms();setTimeout(()=>{showTyping();setTimeout(()=>{hideTyping();addBotMessage('Hello! I am your Smart Medical Assistant. I can help you understand your symptoms and suggest possible treatments.');setTimeout(()=>{showTyping();setTimeout(()=>{hideTyping();addBotMessage('<strong>How are you feeling today?</strong><br><br>Please describe your symptoms in your own words. For example: "I have a headache, fever, and sore throat" or "I feel very tired and my stomach hurts".<br><br>You can write in simple English - I will try to understand!');},800);},400);},1000);},300);};
 </script>
 </body>
 </html>

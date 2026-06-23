@@ -5,6 +5,8 @@ Provides RESTful endpoints for symptom analysis and disease prediction
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import os
 import sys
 import pickle
@@ -23,9 +25,17 @@ from symptom_extractor import SymptomExtractor
 app = Flask(__name__)
 CORS(app)
 
-# Load models and preprocessors
-MODEL_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'models')
-DATA_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'raw')
+# Rate limiting: 100 requests per minute per IP
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["100 per minute"],
+    storage_uri="memory://"
+)
+
+# Load models and preprocessors from env vars or defaults
+MODEL_DIR = os.environ.get('MODEL_DIR', os.path.join(os.path.dirname(__file__), '..', '..', 'models'))
+DATA_DIR = os.environ.get('DATA_DIR', os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'raw'))
 
 try:
     # Load preprocessor
@@ -44,8 +54,12 @@ try:
     df = pd.read_csv(os.path.join(DATA_DIR, 'medical_dataset.csv'))
     
     # Load feature names
-    with open(os.path.join(MODEL_DIR, '..', 'data', 'processed', 'feature_names.txt'), 'r') as f:
-        feature_names = [line.strip() for line in f.readlines()]
+    feature_names_path = os.path.join(MODEL_DIR, '..', 'data', 'processed', 'feature_names.txt')
+    if os.path.exists(feature_names_path):
+        with open(feature_names_path, 'r') as f:
+            feature_names = [line.strip() for line in f.readlines()]
+    else:
+        feature_names = []
     
     MODELS_LOADED = True
     print("✓ All models loaded successfully")
@@ -57,6 +71,17 @@ except Exception as e:
 
 # Initialize NLP extractor
 extractor = SymptomExtractor()
+
+
+def validate_input(text, min_length=3, max_length=500):
+    """Validate user input text."""
+    if not text or not isinstance(text, str):
+        return False, "Input must be a non-empty string."
+    if len(text.strip()) < min_length:
+        return False, f"Please provide at least {min_length} characters."
+    if len(text.strip()) > max_length:
+        return False, f"Input too long. Maximum {max_length} characters allowed."
+    return True, None
 
 
 def get_disease_info(disease_name):
@@ -83,7 +108,7 @@ def home():
     return jsonify({
         'status': 'online',
         'service': 'Smart Medical Assistant API',
-        'version': '1.0.0',
+        'version': '2.0.0',
         'models_loaded': MODELS_LOADED,
         'endpoints': [
             '/api/health',
@@ -106,6 +131,7 @@ def health():
 
 
 @app.route('/api/analyze', methods=['POST'])
+@limiter.limit("30 per minute")
 def analyze_symptoms():
     """
     Analyze symptoms from natural language text.
@@ -119,6 +145,11 @@ def analyze_symptoms():
             return jsonify({'error': 'Missing "text" field in request'}), 400
         
         text = data['text']
+        
+        # Validate input
+        valid, error_msg = validate_input(text)
+        if not valid:
+            return jsonify({'error': error_msg}), 400
         
         # Run NLP extraction
         analysis = extractor.analyze(text)
@@ -136,10 +167,12 @@ def analyze_symptoms():
         })
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f"Analyze error: {e}")
+        return jsonify({'error': 'An internal error occurred. Please try again later.'}), 500
 
 
 @app.route('/api/predict', methods=['POST'])
+@limiter.limit("20 per minute")
 def predict_disease():
     """
     Predict disease from symptoms.
@@ -157,6 +190,11 @@ def predict_disease():
         
         text = data['text']
         include_details = data.get('include_details', True)
+        
+        # Validate input
+        valid, error_msg = validate_input(text)
+        if not valid:
+            return jsonify({'error': error_msg}), 400
         
         # Step 1: Extract symptoms using NLP
         analysis = extractor.analyze(text)
@@ -218,7 +256,7 @@ def predict_disease():
             
             if top_severity == 'Severe' and top_confidence > 80:
                 urgency_level = 'urgent'
-                action_message = '⚠️ This condition may require immediate medical attention. Please consult a doctor as soon as possible.'
+                action_message = 'This condition may require immediate medical attention. Please consult a doctor as soon as possible.'
             elif top_severity == 'Moderate' and top_confidence > 70:
                 urgency_level = 'warning'
                 action_message = 'Consider consulting a healthcare provider, especially if symptoms persist or worsen.'
@@ -255,14 +293,14 @@ def predict_disease():
             })
         
     except Exception as e:
-        import traceback
+        app.logger.error(f"Predict error: {e}")
         return jsonify({
-            'error': str(e),
-            'traceback': traceback.format_exc()
+            'error': 'An internal error occurred. Please try again later.'
         }), 500
 
 
 @app.route('/api/diseases', methods=['GET'])
+@limiter.limit("60 per minute")
 def get_diseases():
     """Get list of all supported diseases."""
     if not MODELS_LOADED:
@@ -277,6 +315,7 @@ def get_diseases():
 
 
 @app.route('/api/symptoms', methods=['GET'])
+@limiter.limit("60 per minute")
 def get_symptoms():
     """Get list of all known symptoms."""
     symptoms = list(extractor.MEDICAL_SYMPTOMS.keys())
@@ -288,6 +327,7 @@ def get_symptoms():
 
 
 @app.route('/api/disease/<disease_name>', methods=['GET'])
+@limiter.limit("60 per minute")
 def get_disease_details(disease_name):
     """Get detailed information about a specific disease."""
     info = get_disease_info(disease_name)
@@ -310,10 +350,14 @@ def not_found(error):
 def internal_error(error):
     return jsonify({'error': 'Internal server error', 'status': 500}), 500
 
+@app.errorhandler(429)
+def rate_limit_handler(error):
+    return jsonify({'error': 'Rate limit exceeded. Please slow down.', 'status': 429}), 429
+
 
 if __name__ == '__main__':
     print("Starting Smart Medical Assistant API...")
     print(f"Model directory: {MODEL_DIR}")
     print(f"Data directory: {DATA_DIR}")
     print(f"Models loaded: {MODELS_LOADED}")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)
