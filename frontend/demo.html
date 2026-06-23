@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Medical Assistant</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; color: #1e293b; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        
+        header { text-align: center; padding: 40px 0; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; border-radius: 0 0 30px 30px; margin-bottom: 30px; }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        header p { font-size: 1.1rem; opacity: 0.9; }
+        
+        .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        
+        .input-section label { display: block; font-weight: 600; margin-bottom: 8px; color: #475569; }
+        .input-section textarea { width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem; resize: vertical; min-height: 120px; transition: border-color 0.2s; }
+        .input-section textarea:focus { outline: none; border-color: #2563eb; }
+        
+        .examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        .example-chip { background: #eff6ff; color: #2563eb; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; border: none; transition: all 0.2s; }
+        .example-chip:hover { background: #dbeafe; transform: translateY(-2px); }
+        
+        .btn { display: inline-block; padding: 14px 32px; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 16px; }
+        .btn-primary { background: linear-gradient(135deg, #2563eb, #1e40af); color: white; width: 100%; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3); }
+        
+        .loading { display: none; text-align: center; padding: 40px; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .results { display: none; }
+        .result-card { background: white; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        
+        .symptom-tag { display: inline-block; background: #eff6ff; color: #2563eb; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; margin: 4px; }
+        
+        .prediction-item { display: flex; align-items: center; padding: 16px; border-radius: 12px; margin-bottom: 12px; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .prediction-item.top { border: 2px solid #2563eb; background: #eff6ff; }
+        .prediction-rank { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; margin-right: 16px; background: #94a3b8; }
+        .prediction-rank.top { background: #2563eb; }
+        .prediction-info { flex: 1; }
+        .prediction-name { font-weight: 700; font-size: 1.1rem; }
+        .prediction-severity { font-size: 0.85rem; margin-top: 4px; }
+        .severity-Mild { color: #10b981; }
+        .severity-Moderate { color: #f59e0b; }
+        .severity-Severe { color: #ef4444; }
+        .confidence-bar { width: 100px; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .confidence-fill { height: 100%; background: #2563eb; border-radius: 4px; transition: width 0.5s; }
+        .confidence-value { font-size: 0.85rem; font-weight: 600; color: #2563eb; margin-left: 8px; }
+        
+        .urgency { padding: 16px; border-radius: 12px; margin-bottom: 20px; font-weight: 600; }
+        .urgency-caution { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+        .urgency-warning { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+        .urgency-urgent { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+        
+        .treatment-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+        .treatment-card h4 { color: #15803d; margin-bottom: 8px; }
+        .precautions-card { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+        .precautions-card h4 { color: #b45309; margin-bottom: 8px; }
+        .description-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+        .description-card h4 { color: #1e40af; margin-bottom: 8px; }
+        
+        .disclaimer { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 16px; color: #991b1b; font-size: 0.9rem; text-align: center; margin-top: 20px; }
+        
+        .disease-list { max-height: 300px; overflow-y: auto; }
+        .disease-item { padding: 8px 12px; border-bottom: 1px solid #e2e8f0; cursor: pointer; transition: background 0.2s; }
+        .disease-item:hover { background: #f1f5f9; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🏥 Smart Medical Assistant</h1>
+            <p>AI-powered symptom analysis using Machine Learning & NLP</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Input Section -->
+        <div class="card input-section">
+            <label for="symptomInput">Describe your symptoms:</label>
+            <textarea id="symptomInput" placeholder="Example: I have fever, headache, and sore throat since yesterday..."></textarea>
+            <div class="examples">
+                <button class="example-chip" onclick="setExample('I have fever, headache, and sore throat')">Fever + Headache</button>
+                <button class="example-chip" onclick="setExample('I feel very tired, thirsty, and urinate frequently')">Diabetes signs</button>
+                <button class="example-chip" onclick="setExample('Severe chest pain and difficulty breathing')">Chest pain</button>
+                <button class="example-chip" onclick="setExample('Joint pain, stiffness, and swelling in my knees')">Arthritis</button>
+                <button class="example-chip" onclick="setExample('I feel sad, have no energy, and cannot sleep')">Depression</button>
+            </div>
+            <button class="btn btn-primary" onclick="analyze()">🔍 Analyze Symptoms</button>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing your symptoms with AI...</p>
+        </div>
+
+        <!-- Results -->
+        <div class="results" id="results">
+            <!-- Extracted Symptoms -->
+            <div class="result-card">
+                <h3>📝 Extracted Symptoms</h3>
+                <div id="extractedSymptoms"></div>
+                <p id="symptomConfidence" style="margin-top:10px;color:#64748b;font-size:0.9rem;"></p>
+            </div>
+
+            <!-- Urgency Alert -->
+            <div id="urgencyAlert" class="urgency"></div>
+
+            <!-- Top Prediction -->
+            <div class="result-card" id="topPredictionCard">
+                <h3>🎯 Most Likely Condition</h3>
+                <div id="topPrediction"></div>
+            </div>
+
+            <!-- All Predictions -->
+            <div class="result-card">
+                <h3>📊 Top 5 Predictions</h3>
+                <div id="allPredictions"></div>
+            </div>
+
+            <!-- Details -->
+            <div class="result-card" id="detailsCard">
+                <h3>ℹ️ About This Condition</h3>
+                <div id="detailsContent"></div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="disclaimer">
+                ⚠️ <strong>Medical Disclaimer:</strong> This is an AI-powered preliminary assessment and NOT a medical diagnosis. Always consult a qualified healthcare professional for accurate diagnosis and treatment.
+            </div>
+        </div>
+    </div>
+
+<script>
+// ===== Medical Dataset (embedded for standalone operation) =====
+const DISEASES = {
+    "Flu": { severity: "Severe", treatment: "Rest, antiviral medications, acetaminophen/ibuprofen, fluids, isolation", precautions: "Annual flu vaccination, hand hygiene, avoid crowds during outbreaks, mask if coughing", description: "Influenza is a contagious respiratory illness caused by influenza viruses, more severe than common cold." },
+    "Common Cold": { severity: "Mild", treatment: "Rest, increased fluid intake, acetaminophen for fever, saline nasal spray, throat lozenges", precautions: "Wash hands frequently, avoid close contact, use tissues, stay hydrated, get adequate rest", description: "A viral infection of the upper respiratory tract, typically mild and self-limiting within 7-10 days." },
+    "COVID-19": { severity: "Severe", treatment: "Rest, isolation, monitoring oxygen levels, supportive care, seek medical attention if breathing difficulty", precautions: "Vaccination, mask wearing, social distancing, hand hygiene, avoid crowded indoor spaces", description: "Coronavirus disease caused by SARS-CoV-2, ranging from mild to severe respiratory illness." },
+    "Diabetes": { severity: "Moderate", treatment: "Blood glucose monitoring, insulin or oral hypoglycemics, diet management, regular exercise, endocrinologist follow-up", precautions: "Regular blood sugar monitoring, balanced diet, avoid sugary foods, regular exercise, foot care", description: "Chronic condition affecting how the body processes blood sugar (glucose), Type 1 or Type 2." },
+    "Hypertension": { severity: "Moderate", treatment: "ACE inhibitors, ARBs, calcium channel blockers, lifestyle changes, regular BP monitoring, reduce salt intake", precautions: "Low sodium diet, regular exercise, weight management, limit alcohol, stress management, regular checkups", description: "High blood pressure that can lead to severe health complications if not managed properly." },
+    "Migraine": { severity: "Moderate", treatment: "Triptans, NSAIDs, anti-nausea medication, rest in dark quiet room, cold compress, avoid triggers", precautions: "Identify and avoid triggers, maintain regular sleep schedule, stay hydrated, manage stress, limit caffeine", description: "Neurological condition characterized by recurrent moderate to severe headaches, often with nausea and sensitivity." },
+    "Asthma": { severity: "Moderate", treatment: "Inhalers (bronchodilators, corticosteroids), nebulizer treatments, avoid triggers, peak flow monitoring", precautions: "Avoid allergens and irritants, use air purifier, regular exercise (as tolerated), carry rescue inhaler", description: "Chronic respiratory condition causing airway inflammation and constriction, leading to breathing difficulty." },
+    "Bronchitis": { severity: "Moderate", treatment: "Rest, fluids, expectorants, bronchodilators if wheezing, avoid smoke and irritants, antibiotics if bacterial", precautions: "Avoid smoking and secondhand smoke, use humidifier, stay hydrated, avoid cold air, flu vaccination", description: "Inflammation of the bronchial tubes causing cough and mucus production, acute or chronic." },
+    "Pneumonia": { severity: "Severe", treatment: "Antibiotics (if bacterial), oxygen therapy, rest, fluids, chest physiotherapy, hospitalization if severe", precautions: "Pneumococcal vaccination, flu vaccination, hand hygiene, avoid smoking, strengthen immune system", description: "Infection causing inflammation in the air sacs of the lungs, which may fill with fluid or pus." },
+    "Tuberculosis": { severity: "Severe", treatment: "Long-term antibiotics (isoniazid, rifampin, pyrazinamide, ethambutol), DOTS program, respiratory isolation", precautions: "BCG vaccination, avoid close contact with infected, proper ventilation, mask wearing, complete treatment course", description: "Bacterial infection primarily affecting the lungs, requiring prolonged antibiotic treatment." },
+    "Malaria": { severity: "Severe", treatment: "Antimalarial drugs (artemisinin-based combination therapy), supportive care, fluids, treat complications", precautions: "Mosquito nets, insect repellent, antimalarial prophylaxis, avoid mosquito bites, eliminate standing water", description: "Mosquito-borne infectious disease caused by Plasmodium parasites, life-threatening if untreated." },
+    "Dengue": { severity: "Severe", treatment: "Supportive care, acetaminophen, hydration, avoid NSAIDs, hospitalization if severe dengue", precautions: "Avoid mosquito bites, use repellents, wear protective clothing, remove standing water, screen windows", description: "Mosquito-borne viral infection causing fever and severe joint/muscle pain, can develop into severe dengue." },
+    "Typhoid": { severity: "Severe", treatment: "Antibiotics (azithromycin, ceftriaxone), hydration, rest, soft bland diet, hospitalization if severe", precautions: "Safe drinking water, proper food hygiene, hand washing, typhoid vaccination, avoid street food in endemic areas", description: "Bacterial infection caused by Salmonella typhi, spread through contaminated food and water." },
+    "Hepatitis A": { severity: "Mild", treatment: "Rest, hydration, avoid alcohol, nutritious diet, monitor liver function, supportive care only", precautions: "Hepatitis A vaccination, safe food and water practices, hand hygiene, avoid contaminated shellfish", description: "Viral liver infection spread through contaminated food/water, usually self-limiting with lifelong immunity." },
+    "Hepatitis B": { severity: "Moderate", treatment: "Antiviral medications (tenofovir, entecavir), regular monitoring, liver function tests, consider liver transplant if cirrhosis", precautions: "Hepatitis B vaccination, safe sex practices, avoid sharing needles, screen blood products, regular liver checks", description: "Viral liver infection transmitted through blood and bodily fluids, can become chronic and lead to cirrhosis." },
+    "Hepatitis C": { severity: "Severe", treatment: "Direct-acting antivirals (sofosbuvir, glecaprevir), 8-12 week treatment, regular liver monitoring", precautions: "Avoid sharing needles, safe sex practices, blood screening, no vaccine available, avoid alcohol", description: "Viral infection causing liver inflammation, often chronic, now highly curable with modern antivirals." },
+    "Jaundice": { severity: "Moderate", treatment: "Treat underlying cause, phototherapy for newborns, medications, liver transplant if severe liver failure", precautions: "Hepatitis vaccination, avoid alcohol, maintain healthy weight, avoid hepatotoxic medications, regular liver tests", description: "Yellow discoloration of skin and eyes caused by high bilirubin levels, a symptom of underlying liver or blood disorder." },
+    "Gastroenteritis": { severity: "Mild", treatment: "Oral rehydration solution, rest, bland diet (BRAT), antiemetics if needed, antibiotics if bacterial", precautions: "Hand washing, safe food preparation, drink clean water, avoid contaminated food, proper food storage", description: "Inflammation of the stomach and intestines causing diarrhea and vomiting, often viral (stomach flu)." },
+    "Food Poisoning": { severity: "Mild", treatment: "Rest, oral rehydration, avoid solid food initially, gradual return to bland diet, seek care if severe", precautions: "Proper food handling, cook meat thoroughly, refrigerate promptly, avoid cross-contamination, check expiry dates", description: "Illness caused by eating contaminated food or drink, symptoms typically appear within hours to days." },
+    "Appendicitis": { severity: "Severe", treatment: "Emergency appendectomy (surgical removal), IV antibiotics, pain management, nil per os until surgery", precautions: "Seek immediate medical attention if sudden severe abdominal pain, do not delay, no home remedies", description: "Inflammation of the appendix, a medical emergency requiring prompt surgical removal." },
+    "Urinary Tract Infection": { severity: "Moderate", treatment: "Antibiotics (nitrofurantoin, trimethoprim), increased water intake, cranberry juice, phenazopyridine for pain", precautions: "Drink plenty of water, urinate after intercourse, wipe front to back, avoid irritating feminine products, cotton underwear", description: "Infection in any part of the urinary system, more common in women, usually bacterial." },
+    "Kidney Stones": { severity: "Severe", treatment: "Pain relievers (NSAIDs), alpha-blockers (tamsulosin), increased fluids, lithotripsy if large, surgical removal if stuck", precautions: "Drink 2-3 liters water daily, reduce sodium and oxalate intake, maintain healthy weight, limit protein", description: "Hard mineral and salt deposits forming in kidneys, causing severe pain when passing through urinary tract." },
+    "Gallstones": { severity: "Severe", treatment: "Cholecystectomy (gallbladder removal), ursodiol to dissolve stones, pain management, low-fat diet", precautions: "Low-fat diet, maintain healthy weight, avoid rapid weight loss, regular exercise, limit cholesterol", description: "Hardened deposits in the gallbladder, can block bile ducts and cause severe pain and complications." },
+    "Arthritis": { severity: "Moderate", treatment: "NSAIDs, DMARDs, corticosteroids, physical therapy, joint replacement surgery if severe, heat/cold therapy", precautions: "Regular exercise, maintain healthy weight, joint protection techniques, anti-inflammatory diet, avoid smoking", description: "Inflammation of one or more joints causing pain and stiffness, osteoarthritis or rheumatoid types." },
+    "Osteoporosis": { severity: "Moderate", treatment: "Bisphosphonates, calcium and vitamin D supplements, weight-bearing exercises, hormone therapy, fall prevention", precautions: "Adequate calcium and vitamin D, weight-bearing exercise, avoid smoking and excessive alcohol, prevent falls", description: "Bone disease causing bones to become brittle and fragile, increasing fracture risk, especially in older adults." },
+    "Anemia": { severity: "Moderate", treatment: "Iron supplements, vitamin B12 or folate, treat underlying cause, blood transfusion if severe, dietary changes", precautions: "Iron-rich diet (red meat, leafy greens), vitamin C with iron meals, regular blood tests, treat underlying causes", description: "Condition with insufficient healthy red blood cells or hemoglobin, leading to reduced oxygen delivery." },
+    "Hypothyroidism": { severity: "Moderate", treatment: "Levothyroxine hormone replacement, regular TSH monitoring, adjust dosage, lifestyle modifications", precautions: "Regular thyroid function tests, consistent medication timing, avoid excess iodine, balanced diet, regular exercise", description: "Underactive thyroid gland producing insufficient thyroid hormones, affecting metabolism and energy levels." },
+    "Hyperthyroidism": { severity: "Moderate", treatment: "Antithyroid medications (methimazole), radioactive iodine, beta-blockers, thyroidectomy if necessary", precautions: "Regular thyroid monitoring, avoid excess iodine, stress management, balanced diet, avoid stimulants", description: "Overactive thyroid gland producing excessive thyroid hormones, accelerating metabolism." },
+    "Depression": { severity: "Severe", treatment: "Antidepressants (SSRIs, SNRIs), psychotherapy (CBT), lifestyle changes, support groups, emergency intervention if suicidal", precautions: "Regular therapy, maintain social connections, exercise, sleep hygiene, avoid alcohol and drugs, monitor mood changes", description: "Mood disorder causing persistent sadness and loss of interest, affecting daily functioning and quality of life." },
+    "Anxiety Disorder": { severity: "Moderate", treatment: "Cognitive behavioral therapy, SSRIs, benzodiazepines (short-term), relaxation techniques, mindfulness, regular exercise", precautions: "Stress management, regular exercise, adequate sleep, limit caffeine and alcohol, breathing exercises, therapy", description: "Mental health condition characterized by excessive and persistent worry, fear, and nervousness." }
+};
+
+const SYMPTOM_MAP = {
+    'fever': ['fever', 'high temperature', 'temperature'],
+    'headache': ['headache', 'head pain', 'migraine', 'head ache'],
+    'cough': ['cough', 'coughing', 'dry cough', 'wet cough'],
+    'sore throat': ['sore throat', 'throat pain', 'painful throat', 'scratchy throat'],
+    'runny nose': ['runny nose', 'runny nostrils', 'nasal discharge', 'dripping nose'],
+    'sneezing': ['sneezing', 'sneezes'],
+    'congestion': ['congestion', 'stuffy nose', 'nasal congestion', 'blocked nose'],
+    'body aches': ['body aches', 'body pain', 'muscle pain', 'muscle aches', 'myalgia', 'sore muscles'],
+    'fatigue': ['fatigue', 'tired', 'exhaustion', 'lethargy', 'no energy', 'tiredness', 'weakness'],
+    'chills': ['chills', 'shivering', 'shaking', 'rigors'],
+    'nausea': ['nausea', 'nauseated', 'feeling sick', 'queasy', 'upset stomach'],
+    'vomiting': ['vomiting', 'throwing up', 'puking', 'emesis', 'retching'],
+    'diarrhea': ['diarrhea', 'loose stools', 'watery stools', 'frequent stools'],
+    'constipation': ['constipation', 'hard stools', 'difficulty passing stool'],
+    'chest pain': ['chest pain', 'chest tightness', 'pressure in chest', 'chest discomfort'],
+    'shortness of breath': ['shortness of breath', 'breathing difficulty', 'difficulty breathing', 'dyspnea', 'cannot breathe', 'trouble breathing', 'breathlessness'],
+    'dizziness': ['dizziness', 'lightheaded', 'vertigo', 'spinning', 'unsteady', 'feeling faint'],
+    'loss of taste': ['loss of taste', 'no taste', 'tasteless', 'cannot taste'],
+    'loss of smell': ['loss of smell', 'no smell', 'anosmia', 'cannot smell'],
+    'abdominal pain': ['abdominal pain', 'stomach pain', 'belly pain', 'tummy ache', 'stomach ache', 'abdominal cramps', 'stomach cramps'],
+    'jaundice': ['jaundice', 'yellow skin', 'yellow eyes', 'yellowing'],
+    'joint pain': ['joint pain', 'arthralgia', 'aching joints', 'painful joints', 'joint swelling', 'swollen joints', 'stiff joints'],
+    'swelling': ['swelling', 'edema', 'puffy', 'bloating', 'swollen', 'water retention'],
+    'weight loss': ['weight loss', 'losing weight', 'unexplained weight loss', 'rapid weight loss'],
+    'weight gain': ['weight gain', 'gaining weight', 'unexplained weight gain'],
+    'thirst': ['thirst', 'excessive thirst', 'very thirsty', 'polydipsia', 'always thirsty'],
+    'frequent urination': ['frequent urination', 'urinating often', 'polyuria', 'peeing a lot'],
+    'burning urination': ['burning urination', 'painful urination', 'dysuria', 'burning when peeing'],
+    'blood in urine': ['blood in urine', 'hematuria', 'bloody urine', 'red urine', 'pink urine'],
+    'blurred vision': ['blurred vision', 'blurry vision', 'vision problems', 'double vision', 'seeing blurry', 'visual disturbance'],
+    'numbness': ['numbness', 'tingling', 'pins and needles', 'paresthesia', 'loss of sensation', 'numb'],
+    'confusion': ['confusion', 'disoriented', 'mental fog', 'memory problems', 'confused', 'delirium', 'altered mental state'],
+    'depression': ['depression', 'sadness', 'hopelessness', 'low mood', 'feeling down', 'persistent sadness', 'depressed mood'],
+    'anxiety': ['anxiety', 'worry', 'nervousness', 'panic', 'fear', 'unease', 'apprehension', 'restlessness', 'anxious'],
+    'insomnia': ['insomnia', 'cannot sleep', 'sleep problems', 'sleeplessness', 'difficulty sleeping', 'poor sleep', 'sleep disturbance'],
+    'sweating': ['sweating', 'excessive sweating', 'night sweats', 'perspiration', 'hyperhidrosis', 'profuse sweating'],
+    'appetite loss': ['appetite loss', 'loss of appetite', 'not hungry', 'anorexia', 'decreased appetite', 'no appetite'],
+    'heart palpitations': ['heart palpitations', 'racing heart', 'irregular heartbeat', 'fluttering', 'heart pounding', 'tachycardia'],
+    'back pain': ['back pain', 'lower back pain', 'upper back pain', 'spinal pain', 'lumbar pain', 'back ache'],
+    'stiffness': ['stiffness', 'joint stiffness', 'morning stiffness', 'rigid', 'tight muscles', 'reduced mobility'],
+    'wheezing': ['wheezing', 'wheezed', 'wheeze', 'noisy breathing', 'whistling sound'],
+    'chest tightness': ['chest tightness', 'chest pressure', 'constricted chest', 'chest heaviness', 'tight chest'],
+    'sensitivity to light': ['sensitivity to light', 'photophobia', 'light hurts', 'bright light sensitivity'],
+    'sensitivity to sound': ['sensitivity to sound', 'phonophobia', 'noise sensitivity', 'sounds hurt'],
+    'throbbing pain': ['throbbing pain', 'pulsating pain', 'throbbing headache', 'pounding pain'],
+    'visual aura': ['visual aura', 'seeing spots', 'flashing lights', 'zigzag lines', 'blind spots', 'visual disturbances'],
+    'nosebleeds': ['nosebleeds', 'nose bleeding', 'epistaxis', 'bloody nose'],
+    'flushing': ['flushing', 'red face', 'facial redness', 'hot flashes', 'blushing', 'face feels hot'],
+    'slow healing': ['slow healing', 'wounds not healing', 'poor wound healing', 'delayed healing'],
+    'hair loss': ['hair loss', 'alopecia', 'thinning hair', 'losing hair', 'baldness', 'hair falling out'],
+    'dry skin': ['dry skin', 'skin dryness', 'xerosis', 'flaky skin', 'rough skin'],
+    'cold sensitivity': ['cold sensitivity', 'cold intolerance', 'always cold', 'feeling cold', 'cold hands', 'cold feet'],
+    'heat sensitivity': ['heat sensitivity', 'heat intolerance', 'always hot', 'feeling hot', 'sweating in heat'],
+    'tremor': ['tremor', 'shaking', 'trembling', 'shaky hands', 'involuntary shaking', 'quivering'],
+    'bulging eyes': ['bulging eyes', 'proptosis', 'eye bulging', 'prominent eyes', 'eyes sticking out'],
+    'difficulty concentrating': ['difficulty concentrating', 'cannot focus', 'brain fog', 'poor concentration', 'trouble focusing', 'attention problems'],
+    'feelings of worthlessness': ['feelings of worthlessness', 'feeling worthless', 'self-loathing', 'guilt', 'inadequacy', 'self-criticism'],
+    'thoughts of death': ['thoughts of death', 'suicidal thoughts', 'wanting to die', 'death ideation', 'suicidal ideation'],
+    'panic attacks': ['panic attacks', 'panic', 'sudden fear', 'terror', 'overwhelming anxiety', 'panic episodes'],
+    'irritability': ['irritability', 'easily annoyed', 'short temper', 'mood swings', 'agitation', 'frustration'],
+    'muscle tension': ['muscle tension', 'tense muscles', 'muscle tightness', 'muscle knots', 'tight muscles'],
+    'sleep disturbances': ['sleep disturbances', 'sleeping problems', 'restless sleep', 'waking up early', 'broken sleep']
+};
+
+// Disease-symptom mapping for prediction
+const DISEASE_SYMPTOMS = {
+    "Flu": ["fever", "chills", "body aches", "fatigue", "headache", "sore throat", "cough", "weakness"],
+    "Common Cold": ["runny nose", "sneezing", "sore throat", "cough", "fever", "headache", "congestion"],
+    "COVID-19": ["fever", "cough", "fatigue", "loss of taste", "loss of smell", "shortness of breath", "muscle aches", "sore throat"],
+    "Diabetes": ["frequent urination", "thirst", "weight loss", "fatigue", "blurred vision", "slow healing", "numbness"],
+    "Hypertension": ["headache", "dizziness", "shortness of breath", "chest pain", "nosebleeds", "blurred vision", "flushing"],
+    "Migraine": ["headache", "nausea", "vomiting", "sensitivity to light", "sensitivity to sound", "visual aura", "throbbing pain"],
+    "Asthma": ["wheezing", "shortness of breath", "chest tightness", "coughing", "difficulty breathing", "rapid breathing"],
+    "Bronchitis": ["cough", "chest pain", "fatigue", "fever", "shortness of breath", "wheezing"],
+    "Pneumonia": ["fever", "chills", "cough", "chest pain", "shortness of breath", "fatigue", "confusion"],
+    "Tuberculosis": ["cough", "fever", "night sweats", "weight loss", "fatigue", "chest pain", "appetite loss"],
+    "Malaria": ["fever", "chills", "sweating", "headache", "nausea", "vomiting", "muscle aches", "fatigue", "jaundice"],
+    "Dengue": ["fever", "headache", "muscle pain", "joint pain", "rash", "nausea", "vomiting"],
+    "Typhoid": ["fever", "headache", "abdominal pain", "diarrhea", "constipation", "weakness", "appetite loss"],
+    "Hepatitis A": ["fatigue", "nausea", "vomiting", "abdominal pain", "appetite loss", "fever", "jaundice"],
+    "Hepatitis B": ["fatigue", "abdominal pain", "appetite loss", "nausea", "vomiting", "jaundice", "joint pain", "fever"],
+    "Hepatitis C": ["fatigue", "easy bruising", "jaundice", "swelling", "confusion", "appetite loss"],
+    "Jaundice": ["jaundice", "dark urine", "pale stools", "abdominal pain", "fever", "weight loss", "confusion"],
+    "Gastroenteritis": ["diarrhea", "nausea", "vomiting", "abdominal pain", "fever", "headache", "dehydration"],
+    "Food Poisoning": ["nausea", "vomiting", "diarrhea", "abdominal pain", "fever", "headache", "weakness"],
+    "Appendicitis": ["abdominal pain", "nausea", "vomiting", "appetite loss", "fever", "constipation"],
+    "Urinary Tract Infection": ["burning urination", "frequent urination", "blood in urine", "pelvic pain", "fever"],
+    "Kidney Stones": ["back pain", "pain radiating", "blood in urine", "nausea", "vomiting", "frequent urination", "burning urination"],
+    "Gallstones": ["abdominal pain", "nausea", "vomiting", "fever", "jaundice", "indigestion"],
+    "Arthritis": ["joint pain", "stiffness", "swelling", "reduced range of motion", "morning stiffness", "warmth around joints", "fatigue"],
+    "Osteoporosis": ["back pain", "loss of height", "stooped posture", "bone fractures easily"],
+    "Anemia": ["fatigue", "weakness", "pale skin", "shortness of breath", "dizziness", "cold hands", "headache", "chest pain"],
+    "Hypothyroidism": ["fatigue", "weight gain", "cold sensitivity", "constipation", "dry skin", "hair loss", "depression", "muscle weakness"],
+    "Hyperthyroidism": ["weight loss", "rapid heartbeat", "anxiety", "irritability", "tremor", "sweating", "heat sensitivity", "diarrhea", "bulging eyes"],
+    "Depression": ["depression", "appetite loss", "fatigue", "sleep disturbances", "difficulty concentrating", "feelings of worthlessness", "thoughts of death"],
+    "Anxiety Disorder": ["anxiety", "worry", "restlessness", "irritability", "muscle tension", "sleep disturbances", "rapid heartbeat", "sweating", "panic attacks"]
+};
+
+function setExample(text) {
+    document.getElementById('symptomInput').value = text;
+}
+
+function extractSymptoms(text) {
+    const textLower = text.toLowerCase();
+    const extracted = [];
+    
+    for (const [canonical, variations] of Object.entries(SYMPTOM_MAP)) {
+        for (const variant of variations) {
+            if (textLower.includes(variant)) {
+                if (!extracted.includes(canonical)) extracted.push(canonical);
+                break;
+            }
+        }
+    }
+    
+    let severity = null;
+    if (['severe', 'extreme', 'intense', 'unbearable', 'terrible', 'awful', 'worst', 'agonizing', 'crippling', 'debilitating', 'incapacitating', 'worsening', 'persistent', 'constant'].some(w => textLower.includes(w))) severity = 'Severe';
+    else if (['moderate', 'fairly', 'quite', 'rather', 'uncomfortable', 'noticeable', 'significant'].some(w => textLower.includes(w))) severity = 'Moderate';
+    else if (['mild', 'slight', 'minor', 'a little', 'somewhat', 'tolerable', 'bearable', 'light', 'occasional'].some(w => textLower.includes(w))) severity = 'Mild';
+    
+    let confidence = 0;
+    if (extracted.length >= 5) confidence = 0.95;
+    else if (extracted.length >= 3) confidence = 0.85;
+    else if (extracted.length >= 2) confidence = 0.70;
+    else if (extracted.length >= 1) confidence = 0.50;
+    
+    if (severity && extracted.length > 0) confidence = Math.min(0.99, confidence + 0.05);
+    
+    return { extracted, confidence: Math.round(confidence * 100), severity };
+}
+
+function predictDisease(extractedSymptoms) {
+    if (!extractedSymptoms.length) return [];
+    
+    const scores = {};
+    for (const [disease, symptoms] of Object.entries(DISEASE_SYMPTOMS)) {
+        let matches = 0;
+        for (const userSymptom of extractedSymptoms) {
+            for (const diseaseSymptom of symptoms) {
+                if (userSymptom.includes(diseaseSymptom) || diseaseSymptom.includes(userSymptom)) {
+                    matches++;
+                    break;
+                }
+            }
+        }
+        const score = matches / Math.max(extractedSymptoms.length, symptoms.length);
+        scores[disease] = score;
+    }
+    
+    return Object.entries(scores)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([disease, score]) => ({
+            disease,
+            confidence: Math.round(score * 100),
+            ...DISEASES[disease]
+        }))
+        .filter(p => p.confidence > 0);
+}
+
+function analyze() {
+    const text = document.getElementById('symptomInput').value.trim();
+    if (!text) {
+        alert('Please describe your symptoms first.');
+        return;
+    }
+    
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+    
+    setTimeout(() => {
+        const extraction = extractSymptoms(text);
+        const predictions = predictDisease(extraction.extracted);
+        
+        // Render extracted symptoms
+        const symptomsDiv = document.getElementById('extractedSymptoms');
+        if (extraction.extracted.length) {
+            symptomsDiv.innerHTML = extraction.extracted.map(s => `<span class="symptom-tag">${s}</span>`).join('');
+        } else {
+            symptomsDiv.innerHTML = '<p style="color:#64748b">No symptoms recognized. Try describing specific symptoms like "fever", "headache", or "cough".</p>';
+        }
+        document.getElementById('symptomConfidence').textContent = `Extraction confidence: ${extraction.confidence}%`;
+        
+        // Urgency
+        const urgencyDiv = document.getElementById('urgencyAlert');
+        if (!predictions.length) {
+            urgencyDiv.className = 'urgency urgency-warning';
+            urgencyDiv.textContent = '⚠️ No symptoms matched. Please provide more details.';
+        } else if (extraction.severity === 'Severe' && predictions[0].severity === 'Severe') {
+            urgencyDiv.className = 'urgency urgency-urgent';
+            urgencyDiv.textContent = '🚨 URGENT: This condition may require immediate medical attention. Please consult a doctor ASAP!';
+        } else if (extraction.severity === 'Moderate' || predictions[0].severity === 'Moderate') {
+            urgencyDiv.className = 'urgency urgency-warning';
+            urgencyDiv.textContent = '⚠️ Consider consulting a healthcare provider, especially if symptoms persist or worsen.';
+        } else {
+            urgencyDiv.className = 'urgency urgency-caution';
+            urgencyDiv.textContent = 'ℹ️ Monitor your symptoms. Consult a healthcare provider if they worsen or new symptoms appear.';
+        }
+        
+        // Top prediction
+        if (predictions.length) {
+            const top = predictions[0];
+            document.getElementById('topPrediction').innerHTML = `
+                <div class="prediction-item top">
+                    <div class="prediction-rank top">1</div>
+                    <div class="prediction-info">
+                        <div class="prediction-name">${top.disease}</div>
+                        <div class="prediction-severity severity-${top.severity}">Severity: ${top.severity}</div>
+                    </div>
+                    <div style="display:flex;align-items:center">
+                        <div class="confidence-bar"><div class="confidence-fill" style="width:${top.confidence}%"></div></div>
+                        <span class="confidence-value">${top.confidence}%</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // All predictions
+        document.getElementById('allPredictions').innerHTML = predictions.map((p, i) => `
+            <div class="prediction-item">
+                <div class="prediction-rank ${i===0?'top':''}">${i+1}</div>
+                <div class="prediction-info">
+                    <div class="prediction-name">${p.disease}</div>
+                    <div class="prediction-severity severity-${p.severity}">Severity: ${p.severity}</div>
+                </div>
+                <div style="display:flex;align-items:center">
+                    <div class="confidence-bar"><div class="confidence-fill" style="width:${p.confidence}%"></div></div>
+                    <span class="confidence-value">${p.confidence}%</span>
+                </div>
+            </div>
+        `).join('');
+        
+        // Details
+        if (predictions.length) {
+            const top = predictions[0];
+            document.getElementById('detailsContent').innerHTML = `
+                <div class="description-card">
+                    <h4>Description</h4>
+                    <p>${top.description}</p>
+                </div>
+                <div class="treatment-card">
+                    <h4>💊 Recommended Treatment</h4>
+                    <p>${top.treatment}</p>
+                </div>
+                <div class="precautions-card">
+                    <h4>⚠️ Precautions</h4>
+                    <p>${top.precautions}</p>
+                </div>
+            `;
+        }
+        
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }, 800);
+}
+</script>
+</body>
+</html>
